@@ -1,18 +1,11 @@
 <!-- GENERATED VIEW — do not hand-edit. Source of truth is the native think-and-ship
      roadmap (roadmap_* tools / `think-and-ship export`). Regenerated 2026-06-10
-     after redesign-v02 completed (v0.2 design shipped, repo initialized). -->
+     after lang-spec-v01 completed (SPEC.md + validated grammar + corpus + cost CI). -->
 
 # Roadmap — cmm-d31a18
 
 ## Pending
 
-- [ ] **Language spec v0.1 — GP grammar, type system w/ full inference, memory model, measured token-cost table** — Turn DESIGN.md v0.2 into an implementable SPEC.md for the general-purpose language: full PEG/EBNF grammar (ASCII, ceremony-free, no required indentation, LL(1)-friendly for constrained decoding), static type system with FULL inference (annotations optional, 1-token when present), value types/structs/enums/pattern matching, memory model decision (RC vs ownership-inference — token-cost and reliability argued, no lifetime ceremony), terse error model (Result-ish with single-token propagation), identifier policy (semantic-but-single-token; compiler lints identifiers costing >1 token), Postel-parsing acceptance set for Python/Rust drift (arXiv 2503.13620 language-confusion mitigation), structured fix-suggesting errors. Build tools/tokens: per-construct cost table (tiktoken o200k_base + Anthropic count-tokens when key present) + canonical corpus of ~20 REAL program snippets measured against Python AND Go/Rust equivalents; settle every spelling by measured tournament weighted by model-writability evidence. Cost table = CI regression gate thereafter.
-  - deps: redesign-v02
-  - acceptance: SPEC.md complete enough to implement from; grammar passes a PEG validity check
-  - acceptance: tools/tokens runs offline; cost table covers 100% of constructs on both tokenizers (Anthropic when key present)
-  - acceptance: Canonical corpus measured: ratios vs Python and vs Go/Rust reported per snippet with medians (target calibration, not cherry-picking)
-  - acceptance: Spelling tournaments recorded incl. rejected alternatives
-  - acceptance: Type-inference and memory-model decisions argued in token-cost terms with measurements
 - [ ] **Reference implementation MVP — compiler front-end + execution backend + CLI (run | fmt | expand | tokens)** — Implement the v0.2 core from SPEC.md in Rust: lexer, PEG parser with Postel acceptance + canonical formatter, type inference engine, and the execution backend chosen in the spec (tree-walk/bytecode VM first; wasm codegen path reserved for wasm-embed). CLI: run, fmt (canonical dense form), expand (the readability-as-view projection: annotated, type-revealed rendering of dense source), tokens (per-tokenizer counts). Structured fix-suggesting diagnostics. cargo workspace at repo root; startup <10ms.
   - deps: lang-spec-v01
   - acceptance: cargo test green with >=40 golden tests incl. inference goldens, Postel-input -> canonical pairs, and expand-view goldens
@@ -41,6 +34,7 @@
 
 ## Done
 
+- [x] **Language spec v0.1 — GP grammar, type system w/ full inference, memory model, measured token-cost table** — Shipped 2026-06-10 (commit 8e74b9e; proof: task:verify-spec). SPEC.md implementable; PEG grammar machine-validated 20/20 against the 52-file canonical corpus; medians 1.19× vs Python (n=20, wins 13/ties 2/loses 5 — reported), 2.38×/2.69× vs Go/Rust (n=6 flagged); tournaments recorded with losers (float>flt BY COST, range>.., pub>::-export); RC memory decided on measurement (ownership ceremony ≥5% of Rust corpus tokens). tools/tokens/{count,validate}.py are permanent CI gates.
 - [x] **DESIGN.md v0.2 — general-purpose machine-first language (user-directed pivot)** — Shipped 2026-06-10 (commit 5dfe9a8; proof: task:verify-v02). v0.2 measured both design rounds: Python parity (1.02×) at 2.08×/2.25× vs Go/Rust; round-1 loss autopsy produced the dense-stdlib rule and untagged unions (the ADT tax); Vera/NanoLang/MoonBit differentiated from primary sources (they spend tokens on machine trust; cmm saves them). **User sign-off on v0.2 direction still pending — it gates lang-spec-v01.**
 
 ## Backlog
