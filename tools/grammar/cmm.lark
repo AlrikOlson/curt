@@ -1,0 +1,127 @@
+// cmm v0.1 — Lark CFG twin of tools/tokens/grammar.peg (constrained decoding).
+//
+// PRIMARY artifact (think:15): one grammar feeds llguidance AND OpenAI
+// custom tools; cmm.gbnf is generated from THIS file by lark2gbnf.py.
+//
+// Design constraints carried over from the PEG:
+//   - EXPLICIT whitespace (no %ignore): SPEC §1 adjacency is semantic
+//     (x.f vs x .f, x? vs x ? y, Pt{ / f( / xs[ glued) — only an
+//     explicit-ws grammar can enforce it, and GBNF is explicit-ws anyway.
+//   - no required indentation; NEWLINE or ';' separate statements
+//   - juxtaposition application (flat; grouping resolved by inference)
+//   - Go-style header rule: hexpr family excludes brace-initial atoms
+//   - PEG ordered choice became plain alternation: membership-equivalent,
+//     kept honest by validate.py (corpus 20/20 + negative agreement with
+//     the Rust parser).
+//
+// Converter-friendly dialect: one rule per line (continuations start with
+// '|'), only literals, terminal refs, rule refs, (), ?, *, +. Terminals at
+// the bottom; their regexes are table-mapped in lark2gbnf.py.
+
+start: _ws stmts _ws _nl? _ws
+
+stmts: stmt (stmtsep stmt)*
+stmtsep: (_ws ";" _ws) | _nl
+
+stmt: typedecl | pubsig | sig | forstmt | whilestmt | retstmt | gostmt | equation | destructure | compound | binding | exprstmt
+
+typedecl: "type" ws1 TNAME _ws "=" _ws typeexpr
+pubsig: "pub" ws1 NAME _ws "::" _ws typesig
+sig: NAME _ws "::" _ws typesig
+typesig: typelist (_ws "->" _ws typeexpr)?
+typelist: typeexpr (ws1 typeexpr)*
+typeexpr: tunion
+tunion: tatom (_ws "|" _ws tatom)*
+tatom: trecord | TNAME | NAME | ("(" _ws typesig _ws ")")
+trecord: "{" _ws tfield (_ws "," _ws tfield)* _ws "}"
+tfield: NAME ws1 typeexpr
+
+equation: NAME (ws1 param)+ _ws "=" _ws (block | forstmt | whilestmt | gostmt | expr)
+param: NAME
+destructure: tuplepat _ws "=" _ws expr
+tuplepat: "(" _ws NAME (_ws "," _ws NAME)+ _ws ")"
+binding: target (_ws ":" _ws typeexpr)? _ws "=" _ws expr
+compound: target _ws compop _ws expr
+compop: "+=" | "-=" | "*=" | "/="
+target: NAME indexsuf*
+indexsuf: "[" _ws expr _ws "]"
+
+forstmt: "for" ws1 forpat ws1 "in" ws1 hexpr _ws block
+forpat: tuplepat | NAME
+whilestmt: "while" ws1 hexpr _ws block
+retstmt: "ret" (ws1 expr)?
+gostmt: "go" ws1 expr
+exprstmt: expr
+
+block: "{" blockpad stmts? blockpad "}"
+blockpad: _nl | _ws
+
+expr: rescue
+rescue: pipeline (ws1 "?" ws1 pipeline)*
+pipeline: orexp (_ws "|" _ws stage)*
+stage: orexp
+orexp: andexp (ws1 "or" ws1 andexp)*
+andexp: notexp (ws1 "and" ws1 notexp)*
+notexp: ("not" ws1 notexp) | cmp
+cmp: add ((_ws cmpop _ws add) | (ws1 "in" ws1 add))*
+cmpop: "==" | "!=" | "<=" | ">=" | "<" | ">"
+add: mul (_ws addop _ws mul)*
+addop: "+" | "-"
+mul: pow (_ws mulop _ws pow)*
+mulop: "*" | "/" | "%" | "^"
+pow: unary (_ws "**" _ws unary)*
+unary: ("-" unary) | app
+app: arg (ws1 arg)*
+arg: lambda | postfix
+lambda: NAME (ws1 NAME)* _ws "->" _ws expr
+postfix: atom postop*
+postop: projsuf | callsuf | propq
+projsuf: "." (NAME | INT)
+callsuf: "[" _ws slice _ws "]"
+slice: (expr _ws ":" _ws expr?) | (":" _ws expr) | expr
+propq: "?"
+
+hexpr: hrescue
+hrescue: hpipeline (ws1 "?" ws1 hpipeline)*
+hpipeline: horexp (_ws "|" _ws horexp)*
+horexp: handexp (ws1 "or" ws1 handexp)*
+handexp: hnotexp (ws1 "and" ws1 hnotexp)*
+hnotexp: ("not" ws1 hnotexp) | hcmp
+hcmp: hadd ((_ws cmpop _ws hadd) | (ws1 "in" ws1 hadd))*
+hadd: hmul (_ws addop _ws hmul)*
+hmul: hpow (_ws mulop _ws hpow)*
+hpow: hunary (_ws "**" _ws hunary)*
+hunary: ("-" hunary) | happ
+happ: harg (ws1 harg)*
+harg: hlambda | hpostfix
+hlambda: NAME (ws1 NAME)* _ws "->" _ws hexpr
+hpostfix: hatom postop*
+hatom: NUMBER | STRING | list | tuple | paren | projatom | NAME
+
+atom: matchexpr | ifexpr | NUMBER | STRING | recordlit | anonrecord | list | tuple | paren | block | projatom | TNAME | NAME
+projatom: "." NAME
+recordlit: TNAME "{" _ws field (_ws "," _ws field)* _ws "}"
+anonrecord: ("{" _ws field (_ws "," _ws field)* _ws "}") | ("{" _ws "}")
+field: NAME ":" _ws expr
+list: ("[" _ws expr (_ws "," _ws expr)* _ws "]") | ("[" _ws "]")
+tuple: "(" _ws expr (_ws "," _ws expr)+ _ws ")"
+paren: "(" _ws (lambda | expr) _ws ")"
+
+ifexpr: "if" ws1 hexpr _ws block (_ws "else" _ws (ifexpr | block))?
+matchexpr: "match" ws1 hexpr _ws "{" blockpad arm (armsep arm)* blockpad "}"
+armsep: (_ws "," blockpad) | _nl
+arm: pattern _ws "->" _ws (block | expr)
+pattern: typepat | STRING | NUMBER | tuplepat | NAME
+typepat: (TNAME | NAME) ws1 NAME
+
+_ws: WS?
+ws1: WS
+
+NUMBER: /[0-9]+(\.[0-9]+)?([ui](8|16|32|64))?/
+INT: /[0-9]+/
+STRING: /"(\\.|[^"\\])*"/
+TNAME: /[A-Z][A-Za-z0-9_]*/
+NAME: /(?!(?:if|else|while|for|in|match|type|ret|go|pub|and|or|not)(?![A-Za-z0-9_]))[a-z_][A-Za-z0-9_]*/
+WS: /[ \t]+/
+_nl: NL
+NL: /[ \t]*(#[^\n]*)?\r?\n([ \t]*(#[^\n]*)?\r?\n)*[ \t]*/
