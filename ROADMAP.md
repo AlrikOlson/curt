@@ -18,11 +18,13 @@
   - acceptance: Non-exhaustive union match = compile error with fix-suggesting JSON diagnostic (golden)
   - acceptance: expand shows inferred types on corpus samples (goldens)
   - acceptance: cargo test + clippy -D warnings green
-- [ ] **Constrained-decoding artifacts — GBNF + llguidance/XGrammar grammars + zero-error demo** *(reprioritized 60 → 25, accepted by user 2026-06-10)* — Generate GBNF (llama.cpp) and llguidance/XGrammar grammar artifacts from the spec grammar (single source of truth — derive, don't hand-maintain). Demo with an OSS runtime (vLLM or llama.cpp) showing grammar-masked generation produces 0% parse errors on a generation suite. Investigate + document honestly what is possible on closed APIs (Anthropic/OpenAI) via prefill/stop-sequence conventions vs true CFG support — a negative finding here is a finding.
+- [ ] **Constrained-decoding artifacts — Lark-primary grammars + OSS zero-error demo + OpenAI CFG conformance** *(refreshed 2026-06-10, think:15)* — The closed-API landscape moved in cmm's favor: OpenAI's GPT-5-era custom tools accept arbitrary CFGs in Lark/regex syntax, so the closed-API leg upgrades from documentation to a REQUIRED demo with measured conformance (community caveat: outputs "not guaranteed to conform", Aug 2025); Anthropic Structured Outputs is GA but JSON-schema-only (no arbitrary CFG on Claude as of mid-2026 — honest negative). Derivation flips to Lark-primary (one artifact feeds llguidance AND OpenAI) + GBNF secondary (llama.cpp), from grammar.peg with the Rust parser as divergence oracle. New quality guard: constrained-vs-unconstrained semantic correctness compared, never conflating parse-validity with quality.
   - deps: lang-spec-v01, interp-a
-  - acceptance: Grammar artifacts generated from the spec source, with a divergence test proving they accept exactly the golden corpus
+  - acceptance: Lark (primary) + GBNF (secondary) derived from grammar.peg; divergence test — both accept exactly the golden corpus, verified against the Rust parser
   - acceptance: OSS-runtime demo: 0 parse errors across >=200 constrained generations
-  - acceptance: Closed-API capability matrix documented (what each vendor can/cannot enforce in 2026)
+  - acceptance: OpenAI custom-tools demo: real cmm grammar submitted; conformance rate measured over >=100 generations; size/complexity limits documented
+  - acceptance: Capability matrix current as of execution date (OpenAI arbitrary-CFG w/ caveats; Anthropic JSON-schema-only; OSS full)
+  - acceptance: Constrained-vs-unconstrained semantic-correctness comparison on >=20 tasks reported honestly
 - [ ] **interp D — evaluator + corpus stdlib + capability IO; cmm run executes the corpus** — Tree-walk evaluator (RC via Rust Rc/RefCell), v0.1 stdlib (SPEC §9), capability-gated fs/net/args, go via threads, ?-semantics. Corpus executes with golden stdout; server smoke-tested.
   - deps: interp-c
   - acceptance: All corpus snippets execute with expected output (golden stdout; io via fixtures; 20_server smoke test)
