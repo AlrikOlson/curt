@@ -1,17 +1,11 @@
 <!-- GENERATED VIEW — do not hand-edit. Source of truth is the native think-and-ship
      roadmap (roadmap_* tools / `think-and-ship export`). Regenerated 2026-06-10
-     after the v0.2 refresh (general-purpose machine-first pivot). -->
+     after redesign-v02 completed (v0.2 design shipped, repo initialized). -->
 
 # Roadmap — cmm-d31a18
 
 ## Pending
 
-- [ ] **DESIGN.md v0.2 — general-purpose machine-first language (user-directed pivot)** — Rewrite the language concept per the user redirect: a REAL general-purpose, low-level-capable language agents write whole programs in — not an action DSL — with output-token efficiency as prime directive and human readability explicitly deprioritized. Direction (from refresh research, think:5): statically typed with FULL inference (compiled semantics at dynamic-language token cost — the mechanism behind the 2.6x token spread), expression-oriented, value types/structs/enums/pattern matching, automatic memory (RC/ownership-inference; no lifetime ceremony), wasm-first compilation + C FFI; surface = ceremony-free ASCII (no import/visibility/return ceremony, no required indentation, single-token keywords/ops), identifier policy = SEMANTIC-BUT-SINGLE-TOKEN words (buf/idx/acc — naming research: obfuscation loses accuracy and buys zero tokens), readability-as-derived-VIEW pillar (toolchain expands dense source on demand). Evidence-rejected forms documented: APL/K symbol soup ('Don't Force Your LLM to Write Terse Q/Kdb'), concatenative/stack (grammar-resistant, kills constrained decoding), single-letter obfuscation. MUST include: deep-dive on Vera + Nanolang + MoonBit (closest 2026 prior art; differentiate on measured token-cost CI + machine-first surface vs MoonBit's readable toolchain-assisted lane); measured examples on REAL programs (algorithm, parser, small server) vs Python AND Go/Rust with tiktoken; input-side economics section (codebase re-read cost — agents re-read code every session; density discounts every future read); revised honest targets + unchanged kill criterion.
-  - acceptance: DESIGN.md v0.2 replaces v0.1 (v0.1 archived); worked examples are real programs measured vs Python AND Go/Rust
-  - acceptance: Vera, Nanolang, MoonBit analyzed with explicit differentiation (or honest 'too close, reposition' finding)
-  - acceptance: Identifier policy and rejected-forms sections cite the naming/terseness studies
-  - acceptance: Input-side (re-read) economics quantified on a sample codebase
-  - acceptance: User signs off on the v0.2 direction before lang-spec-v01 starts
 - [ ] **Language spec v0.1 — GP grammar, type system w/ full inference, memory model, measured token-cost table** — Turn DESIGN.md v0.2 into an implementable SPEC.md for the general-purpose language: full PEG/EBNF grammar (ASCII, ceremony-free, no required indentation, LL(1)-friendly for constrained decoding), static type system with FULL inference (annotations optional, 1-token when present), value types/structs/enums/pattern matching, memory model decision (RC vs ownership-inference — token-cost and reliability argued, no lifetime ceremony), terse error model (Result-ish with single-token propagation), identifier policy (semantic-but-single-token; compiler lints identifiers costing >1 token), Postel-parsing acceptance set for Python/Rust drift (arXiv 2503.13620 language-confusion mitigation), structured fix-suggesting errors. Build tools/tokens: per-construct cost table (tiktoken o200k_base + Anthropic count-tokens when key present) + canonical corpus of ~20 REAL program snippets measured against Python AND Go/Rust equivalents; settle every spelling by measured tournament weighted by model-writability evidence. Cost table = CI regression gate thereafter.
   - deps: redesign-v02
   - acceptance: SPEC.md complete enough to implement from; grammar passes a PEG validity check
@@ -32,10 +26,10 @@
   - acceptance: Teachability measured across >=2 models, reported whatever the numbers are
   - acceptance: Model-legibility QA: comprehension accuracy within 5pp of same-program-in-Python or documented as a design problem feeding back to spec
   - acceptance: Sheet is the canonical source for the future MCP tool description
-- [ ] **The benchmark — output tokens AND success rate vs Python/Go/Rust (moment of truth)** — 15-20 REAL programming tasks (algorithms, data structures, a parser, text/data processing, a small multi-file module — HumanEval-class plus systems-flavored; EffiBench-X as harness prior art) with executable verifiers. For each task and language (cmm w/ cheat sheet, Python, Go, Rust; JS optional): same prompt, model generates, harness executes; record output tokens (o200k_base + Anthropic) and pass/fail; >=2 models, >=3 samples per cell. Report full distributions; split structure-heavy vs payload-heavy. THREE metrics: (1) output tokens per solved task; (2) success rate; (3) INPUT-side re-read cost — tokens to hold the equivalent codebase in context (the compounding economics for maintained software). Provisional targets (calibrated by spec corpus, honestly revisable): median >=1.3x vs Python, >=1.8x vs Go on output tokens. CARRIES THE KILL CRITERION: if cmm success is not within ~10pp of Python after one language-revision cycle, document the negative result and re-scope. One revision cycle in-scope.
+- [ ] **The benchmark — output tokens AND success rate vs Python/Go/Rust (moment of truth)** — 15-20 REAL programming tasks (algorithms, data structures, a parser, text/data processing, a small multi-file module — HumanEval-class plus systems-flavored; EffiBench-X as harness prior art) with executable verifiers. For each task and language (cmm w/ cheat sheet, Python, Go, Rust; JS optional): same prompt, model generates, harness executes; record output tokens (o200k_base + Anthropic) and pass/fail; >=2 models, >=3 samples per cell. Report full distributions; split structure-heavy vs payload-heavy. THREE metrics: (1) output tokens per solved task; (2) success rate; (3) INPUT-side re-read cost — tokens to hold the equivalent codebase in context (the compounding economics for maintained software). CARRIES THE KILL CRITERION: if cmm success is not within ~10pp of Python after one language-revision cycle, document the negative result and re-scope. One revision cycle in-scope.
   - deps: cheatsheet
   - acceptance: BENCHMARK.md with all cells reported (no cherry-picking), per-model and per-task distributions
-  - acceptance: Output-token ratios vs Python AND Go/Rust with medians + spread; provisional targets evaluated honestly
+  - acceptance: Output-token ratios vs Python AND Go/Rust with medians + spread; RECALIBRATED targets (redesign-v02 measurements): parity-to-1.2x vs Python by task mix, >=1.8x vs Go (2.08x measured on the design corpus) — evaluated honestly
   - acceptance: Input-side re-read cost measured on the multi-file task
   - acceptance: Kill criterion explicitly evaluated PASS/FAIL per model
   - acceptance: Harness re-runnable with one command
@@ -44,6 +38,10 @@
   - acceptance: Grammar artifacts generated from the spec source, with a divergence test proving they accept exactly the golden corpus
   - acceptance: OSS-runtime demo: 0 parse errors across >=200 constrained generations
   - acceptance: Closed-API capability matrix documented (what each vendor can/cannot enforce in 2026)
+
+## Done
+
+- [x] **DESIGN.md v0.2 — general-purpose machine-first language (user-directed pivot)** — Shipped 2026-06-10 (commit 5dfe9a8; proof: task:verify-v02). v0.2 measured both design rounds: Python parity (1.02×) at 2.08×/2.25× vs Go/Rust; round-1 loss autopsy produced the dense-stdlib rule and untagged unions (the ADT tax); Vera/NanoLang/MoonBit differentiated from primary sources (they spend tokens on machine trust; cmm saves them). **User sign-off on v0.2 direction still pending — it gates lang-spec-v01.**
 
 ## Backlog
 
@@ -62,7 +60,7 @@
   - acceptance: wasm build passes the golden test suite
   - acceptance: npm + PyPI packages execute the canonical corpus
   - acceptance: One smolagents-or-equivalent integration example runs
-- [ ] **Naming + identity decision (cmm vs C-- collision)** — USER DECISION REQUIRED: `cmm` collides with GHC's C-- intermediate representation (Cmm, .cmm files). Decide keep-with-pun (comm/communication, "less than C" — note the pun got BETTER under the low-level v0.2 framing) vs rebrand (candidates: pith, terse, lac). Check domain + crate/npm/PyPI name availability (mcp-domain-availability tool exists in this environment), pick file extension, write the one-paragraph identity statement.
+- [ ] **Naming + identity decision (cmm vs C-- collision)** — USER DECISION REQUIRED: `cmm` collides with GHC's C-- intermediate representation (Cmm, .cmm files). Decide keep-with-pun (comm/communication, "less than C" — the pun got BETTER under the low-level v0.2 framing) vs rebrand (candidates: pith, terse, lac). Check domain + crate/npm/PyPI name availability, pick file extension, write the one-paragraph identity statement.
   - acceptance: User has made the name call
   - acceptance: Domain/registry availability checked and recorded
   - acceptance: README/DESIGN/SPEC renamed consistently if changed
@@ -75,7 +73,7 @@
   - acceptance: Playground runs the canonical corpus in-browser via wasm
   - acceptance: Live token meter matches tools/tokens output exactly
   - acceptance: GUI passes /gui-scrutiny (light+dark, mechanical assertions)
-- [ ] **Verb set v2 — dates, regex, csv, math (measured admission only)** — Second wave of stdlib functions admitted strictly by the cost-table process: each candidate must demonstrate a recurring task pattern where its absence costs more tokens than its cheat-sheet line costs to teach. Keeps the language small under growth pressure.
+- [ ] **Stdlib v2 — dates, regex, csv, math (measured admission only)** — Second wave of stdlib functions admitted strictly by the cost-table process: each candidate must demonstrate a recurring task pattern where its absence costs more tokens than its cheat-sheet line costs to teach. Keeps the language small under growth pressure.
   - deps: token-bench
   - acceptance: Every admitted function has a measured before/after on a real task pattern
   - acceptance: Cheat sheet stays within budget after additions
