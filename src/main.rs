@@ -103,7 +103,39 @@ fn main() -> ExitCode {
             };
             match cmm::parse_source(&src) {
                 Ok(ast) => {
-                    print!("{}", cmm::expand::expand(&ast));
+                    // type-reveal when the program checks; untyped view otherwise
+                    let sigs = cmm::infer::check(&ast)
+                        .map(|(sigs, _)| sigs.into_iter().collect())
+                        .unwrap_or_default();
+                    print!("{}", cmm::expand::expand(&ast, &sigs));
+                    ExitCode::SUCCESS
+                }
+                Err(d) => {
+                    eprintln!("{d}");
+                    ExitCode::FAILURE
+                }
+            }
+        }
+        "check" => {
+            let Some(path) = args.get(2) else {
+                eprintln!("usage: cmm check <file|->");
+                return ExitCode::from(2);
+            };
+            let src = match read_input(path) {
+                Ok(s) => s,
+                Err(e) => {
+                    eprintln!("{e}");
+                    return ExitCode::FAILURE;
+                }
+            };
+            match cmm::parse_source(&src).and_then(|ast| cmm::infer::check(&ast)) {
+                Ok((sigs, warnings)) => {
+                    for (name, ty) in sigs {
+                        println!("{name} :: {ty}");
+                    }
+                    for w in warnings {
+                        eprintln!("warning: {w}");
+                    }
                     ExitCode::SUCCESS
                 }
                 Err(d) => {
@@ -121,7 +153,7 @@ fn main() -> ExitCode {
             ExitCode::SUCCESS
         }
         _ => {
-            eprintln!("usage: cmm <parse|tokens|fmt|expand|run> <file|->");
+            eprintln!("usage: cmm <parse|check|tokens|fmt|expand|run> <file|->");
             ExitCode::from(2)
         }
     }

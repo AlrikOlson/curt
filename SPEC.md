@@ -61,7 +61,20 @@ the structural rules an implementer must honor:
 3. **Application is juxtaposition**, flat and left-associated: `f x y` is one
    application node `(f, [x, y])`; **arity and grouping are resolved by type
    inference, not the grammar** (so `print show 2.5` parses flat and
-   elaborates to `print (show 2.5)`).
+   elaborates to `print (show 2.5)`). *Elaboration rules (fixed in interp-c):*
+   when a head of arity *k* receives *n > k* arguments, the surplus re-nests
+   under the *k*-th argument; partial application (*n < k*) is an error in
+   v0.1. **Pipe capture:** a pipeline captures the last argument of a
+   preceding juxtaposition — `print us | keep .active` elaborates to
+   `print (us | keep .active)`; subsequent stages apply with the piped value
+   appended as their final argument (`x | top 3 .v` ≡ `top 3 .v x`).
+   *Exhaustiveness looseness (v0.1):* a literal arm in `match` counts as
+   covering its member type; tightening is deferred (§13). *Sharp edges
+   (measured in interp-c):* a lambda body extends through `|` — parenthesize
+   an inline lambda used as a pipe stage (`keep (x -> x > 1) | sort`); and
+   application binds tighter than every operator — `c.write x + y` groups as
+   `(c.write x) + y` (this precedence caught a real bug in the original
+   20_server corpus file).
 4. **Header brace rule (Go-style):** inside `for`/`while`/`if`/`match`
    headers, `{` always begins the block — brace-initial atoms (anonymous
    records, blocks) are excluded from header expressions. Parenthesize a
@@ -227,9 +240,9 @@ Rationale: language-confusion drift toward Python/Rust is measured behavior
 | 17 export/ffi | 16 | 11 (0.69×) | — | — |
 | 18 wordfreq | 31 | 39 (1.26×) | 155 (5.00×) | 157 (5.06×) |
 | 19 parser | 257 | 234 (0.91×) | 416 (1.62×) | 439 (1.71×) |
-| 20 server | 31 | 55 (1.77×) | 94 (3.03×) | 123 (3.97×) |
+| 20 server | 32 | 55 (1.72×) | 94 (2.94×) | 123 (3.84×) |
 
-**Medians: 1.19× vs Python (n=20) · 2.38× vs Go (n=6) · 2.69× vs Rust (n=6;
+**Medians: 1.19× vs Python (n=20) · 2.34× vs Go (n=6) · 2.69× vs Rust (n=6;
 compiled subsets are small-n and flagged as such).** Honest distribution: cmm
 beats Python on 13/20, ties 2, loses 5 — the losses are pure-algorithm
 snippets (0.91–0.94×) and `17_export` (0.69×: Python has no export ceremony

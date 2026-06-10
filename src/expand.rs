@@ -6,10 +6,19 @@
 //! normalized them). Type reveal lands in interp-c.
 
 use crate::ast::*;
+use std::collections::HashMap;
 
-pub fn expand(prog: &[Stmt]) -> String {
+/// Render the desugared view. When `sigs` carries inferred equation types
+/// (from `infer::check`), each equation is prefixed with its signature —
+/// the interp-c type-reveal.
+pub fn expand(prog: &[Stmt], sigs: &HashMap<String, String>) -> String {
     let mut out = String::new();
     for s in prog {
+        if let Stmt::Equation { name, .. } = s {
+            if let Some(ty) = sigs.get(name) {
+                out.push_str(&format!("{name} :: {ty}\n"));
+            }
+        }
         stmt(s, 0, &mut out);
         out.push('\n');
     }

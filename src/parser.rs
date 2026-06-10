@@ -694,6 +694,12 @@ impl Parser {
             }
             Tok::LParen => {
                 self.bump();
+                // a parenthesized lambda: `(x -> x > 1)` — required for
+                // inline pipe stages, since a lambda body extends through `|`
+                if let Some(lam) = self.try_lambda()? {
+                    self.expect(&Tok::RParen, ")", "close the parenthesis")?;
+                    return Ok(lam);
+                }
                 let first = self.expr()?;
                 if self.eat(&Tok::Comma) {
                     let mut items = vec![first];

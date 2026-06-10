@@ -6,11 +6,11 @@ design directive** — human readability is a derived view (`cmm expand`), not a
 property of source.
 
 ```cmm
-handle c = for ln in c.lines { c.write ln.upper + "\n" }
+handle c = for ln in c.lines { c.write (ln.upper + "\n") }
 for c in net.listen 8080 { go handle c }
 ```
 
-A concurrent TCP uppercase-echo server in **31 tokens** (o200k_base).
+A concurrent TCP uppercase-echo server in **32 tokens** (o200k_base).
 Python: 55 · Go: 94 · Rust: 123.
 
 Measured across three real programs (word-frequency, expression parser,
@@ -29,7 +29,7 @@ RC-managed memory with zero token ceremony.
 
 **Status:** specified — **[SPEC.md](SPEC.md)** is implementable (grammar
 machine-validated 20/20 against [corpus/](corpus/); cost table reproducible via
-`tools/tokens/count.py`; corpus medians: **1.19× vs Python** (n=20), 2.38×/2.69×
+`tools/tokens/count.py`; corpus medians: **1.19× vs Python** (n=20), 2.34×/2.69×
 vs Go/Rust). Next: the reference implementation. The build plan lives in the
 native think-and-ship roadmap; [ROADMAP.md](ROADMAP.md) is its generated view.
 The retired v0.1 action-DSL framing is archived in

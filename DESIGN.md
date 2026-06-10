@@ -10,11 +10,11 @@
 > fails any change that regresses it.
 
 ```cmm
-handle c = for ln in c.lines { c.write ln.upper + "\n" }
+handle c = for ln in c.lines { c.write (ln.upper + "\n") }
 for c in net.listen 8080 { go handle c }
 ```
 
-A concurrent TCP uppercase-echo server. **31 tokens** (o200k_base). Python: 55.
+A concurrent TCP uppercase-echo server. **32 tokens** (o200k_base; 31 before a precedence bug — `c.write x + y` groups as `(c.write x) + y` — was caught by `cmm check` in interp-c). Python: 55.
 Go: 94. Rust: 123. Same behavior, statically typed, compiles to wasm.
 
 ## 1. What the measurements actually say (read this first)
@@ -29,7 +29,7 @@ in cmm, Python, Go, and Rust:
 |---|---|---|---|---|
 | wordfreq | **31** | 39 (1.26×) | 155 (5.00×) | 157 (5.06×) |
 | parser | **258** | 234 (**0.91×**) | 416 (1.61×) | 439 (1.70×) |
-| server | **31** | 55 (1.77×) | 94 (3.03×) | 123 (3.97×) |
+| server | **32** | 55 (1.72×) | 94 (2.94×) | 123 (3.84×) |
 | **total** | **320** | 328 (**1.02×**) | 665 (**2.08×**) | 719 (**2.25×**) |
 
 The honest reading:
@@ -246,7 +246,7 @@ say (expr (lex args.1)).0
 ### server — concurrent TCP uppercase echo *(31; Py 55, Go 94, Rust 123)*
 
 ```cmm
-handle c = for ln in c.lines { c.write ln.upper + "\n" }
+handle c = for ln in c.lines { c.write (ln.upper + "\n") }
 for c in net.listen 8080 { go handle c }
 ```
 

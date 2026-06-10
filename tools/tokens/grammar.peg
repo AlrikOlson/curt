@@ -100,7 +100,7 @@ anonrecord  = ("{" _ field (_ "," _ field)* _ "}") / ("{" _ "}")
 field       = name ":" _ expr
 list        = ("[" _ expr (_ "," _ expr)* _ "]") / ("[" _ "]")
 tuple       = "(" _ expr (_ "," _ expr)+ _ ")"
-paren       = "(" _ expr _ ")"
+paren       = "(" _ (lambda / expr) _ ")"
 
 ifexpr      = "if" __ hexpr _ block (_ "else" _ (ifexpr / block))?
 matchexpr   = "match" __ hexpr _ "{" (nl / _) arm (armsep arm)* (nl / _) "}"

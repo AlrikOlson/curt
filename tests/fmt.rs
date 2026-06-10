@@ -144,21 +144,21 @@ fn adjacency_tight_operators_preserved() {
 #[test]
 fn expand_projection_lambda() {
     let ast = cmm::parse_source("best = top 3 .score\n").unwrap();
-    let out = cmm::expand::expand(&ast);
+    let out = cmm::expand::expand(&ast, &Default::default());
     assert_eq!(out, "best = (top 3 (x -> x.score))\n");
 }
 
 #[test]
 fn expand_flat_application_grouping_visible() {
     let ast = cmm::parse_source("print hyp 3 4\n").unwrap();
-    let out = cmm::expand::expand(&ast);
+    let out = cmm::expand::expand(&ast, &Default::default());
     assert_eq!(out, "(print hyp 3 4)\n");
 }
 
 #[test]
 fn expand_pipeline_and_rescue_parenthesized() {
     let ast = cmm::parse_source("v = xs | keep .active ? {}\n").unwrap();
-    let out = cmm::expand::expand(&ast);
+    let out = cmm::expand::expand(&ast, &Default::default());
     assert!(out.contains("(x -> x.active)"), "projection expanded: {out}");
     assert!(out.starts_with("v = ("), "explicit grouping: {out}");
 }
