@@ -18,13 +18,18 @@
   - acceptance: Non-exhaustive union match = compile error with fix-suggesting JSON diagnostic (golden)
   - acceptance: expand shows inferred types on corpus samples (goldens)
   - acceptance: cargo test + clippy -D warnings green
+- [ ] **Constrained-decoding artifacts — GBNF + llguidance/XGrammar grammars + zero-error demo** *(reprioritized 60 → 25, accepted by user 2026-06-10)* — Generate GBNF (llama.cpp) and llguidance/XGrammar grammar artifacts from the spec grammar (single source of truth — derive, don't hand-maintain). Demo with an OSS runtime (vLLM or llama.cpp) showing grammar-masked generation produces 0% parse errors on a generation suite. Investigate + document honestly what is possible on closed APIs (Anthropic/OpenAI) via prefill/stop-sequence conventions vs true CFG support — a negative finding here is a finding.
+  - deps: lang-spec-v01, interp-a
+  - acceptance: Grammar artifacts generated from the spec source, with a divergence test proving they accept exactly the golden corpus
+  - acceptance: OSS-runtime demo: 0 parse errors across >=200 constrained generations
+  - acceptance: Closed-API capability matrix documented (what each vendor can/cannot enforce in 2026)
 - [ ] **interp D — evaluator + corpus stdlib + capability IO; cmm run executes the corpus** — Tree-walk evaluator (RC via Rust Rc/RefCell), v0.1 stdlib (SPEC §9), capability-gated fs/net/args, go via threads, ?-semantics. Corpus executes with golden stdout; server smoke-tested.
   - deps: interp-c
   - acceptance: All corpus snippets execute with expected output (golden stdout; io via fixtures; 20_server smoke test)
   - acceptance: Startup <10ms re-verified with evaluator linked in
   - acceptance: cargo test + clippy -D warnings green; >=40 cumulative goldens maintained
 - [ ] **The ≤2500-token cheat sheet — measured teachability AND model-legibility** — Compress the GP language into a system-prompt cheat sheet (budget raised to <=2500 tokens for the larger surface; Anthropic tokenizer primary) + few-shot pack. Measure TWO things on >=2 models, honestly reported: (a) teachability — fresh sessions write correct programs for 10 held-out tasks (syntax-validity + semantic-correctness rates); (b) model-legibility — comprehension QA over dense cmm code the model did NOT write (can it answer behavior questions as accurately as over equivalent Python? — this guards the machine-first surface against the naming/structure comprehension findings). Iterate sheet wording (not the language) up to 3 rounds.
-  - deps: interp-mvp
+  - deps: interp-d
   - acceptance: Cheat sheet measured <=2500 tokens on both tokenizers
   - acceptance: Teachability measured across >=2 models, reported whatever the numbers are
   - acceptance: Model-legibility QA: comprehension accuracy within 5pp of same-program-in-Python or documented as a design problem feeding back to spec
@@ -36,22 +41,17 @@
   - acceptance: Input-side re-read cost measured on the multi-file task
   - acceptance: Kill criterion explicitly evaluated PASS/FAIL per model
   - acceptance: Harness re-runnable with one command
-- [ ] **Constrained-decoding artifacts — GBNF + llguidance/XGrammar grammars + zero-error demo** *(re-prioritization proposed: 60 → 25, user decision pending)* — Generate GBNF (llama.cpp) and llguidance/XGrammar grammar artifacts from the spec grammar (single source of truth — derive, don't hand-maintain). Demo with an OSS runtime (vLLM or llama.cpp) showing grammar-masked generation produces 0% parse errors on a generation suite. Investigate + document honestly what is possible on closed APIs (Anthropic/OpenAI) via prefill/stop-sequence conventions vs true CFG support — a negative finding here is a finding.
-  - deps: lang-spec-v01, interp-mvp
-  - acceptance: Grammar artifacts generated from the spec source, with a divergence test proving they accept exactly the golden corpus
-  - acceptance: OSS-runtime demo: 0 parse errors across >=200 constrained generations
-  - acceptance: Closed-API capability matrix documented (what each vendor can/cannot enforce in 2026)
 
 ## Done
 
 - [x] **interp A — cargo skeleton, lexer, parser (Postel), AST; cmm parse|tokens; corpus 20/20 in Rust** — Shipped 2026-06-10 (commit b2ca8a6; proof: task:verify-a). 60/60 tests, clippy clean, exact `cmm tokens` parity with count.py on 20/20 corpus files, startup 2.66ms. Discovery: adjacency (gluedness) is a first-class semantic channel — field-vs-projection, propagate-vs-rescue, literal/call-sugar-vs-juxtaposition — SPEC §1 amendment queued for interp-b.
 - [x] **Language spec v0.1 — GP grammar, type system w/ full inference, memory model, measured token-cost table** — Shipped 2026-06-10 (commit 8e74b9e; proof: task:verify-spec). SPEC.md implementable; PEG grammar machine-validated 20/20 against the 52-file canonical corpus; medians 1.19× vs Python (n=20, wins 13/ties 2/loses 5 — reported), 2.38×/2.69× vs Go/Rust (n=6 flagged); tournaments recorded with losers (float>flt BY COST, range>.., pub>::-export); RC memory decided on measurement (ownership ceremony ≥5% of Rust corpus tokens). tools/tokens/{count,validate}.py are permanent CI gates.
-- [x] **DESIGN.md v0.2 — general-purpose machine-first language (user-directed pivot)** — Shipped 2026-06-10 (commit 5dfe9a8; proof: task:verify-v02). v0.2 measured both design rounds: Python parity (1.02×) at 2.08×/2.25× vs Go/Rust; round-1 loss autopsy produced the dense-stdlib rule and untagged unions (the ADT tax); Vera/NanoLang/MoonBit differentiated from primary sources (they spend tokens on machine trust; cmm saves them). **User sign-off on v0.2 direction still pending — it gates lang-spec-v01.**
+- [x] **DESIGN.md v0.2 — general-purpose machine-first language (user-directed pivot)** — Shipped 2026-06-10 (commit 5dfe9a8; proof: task:verify-v02). v0.2 measured both design rounds: Python parity (1.02×) at 2.08×/2.25× vs Go/Rust; round-1 loss autopsy produced the dense-stdlib rule and untagged unions (the ADT tax); Vera/NanoLang/MoonBit differentiated from primary sources (they spend tokens on machine trust; cmm saves them). v0.2 direction approved by user (recorded at lang-spec-v01 start).
 
 ## Backlog
 
 - [ ] **Host interface — C FFI, wasm imports, tool/LLM access as stdlib (not grammar)** — Replaces the obsoleted agent-prims chunk under the v0.2 framing: agent capabilities (tool calls, LLM calls, retry/parallel helpers) become a host-interface LIBRARY over C FFI / wasm imports, not language grammar. The language stays a clean general-purpose core; agent affordances are its standard host bindings (MCP-compatible registry injection preserved as a library concern). Budget caps and structured rescuable errors carry over as library/runtime features.
-  - deps: interp-mvp
+  - deps: interp-d
   - acceptance: C FFI + wasm import surface specified and implemented for the reference runtime
   - acceptance: Tool-registry library demonstrated end-to-end against a mock host
   - acceptance: ask/llm-call helper library with shape validation works against a mock backend
@@ -61,7 +61,7 @@
   - acceptance: Tool description fits the cheat-sheet budget and a fresh agent session uses cmm unprompted for a glue task
   - acceptance: Registry pass-through demonstrated: cmm program calls a tool provided by the host client
 - [ ] **wasm32-wasi build + JS/Python embeddings** — Compile the interpreter to wasm32-wasi; publish a JS package (browser/edge/Workers sandboxes) and a pyo3 Python module so CodeAct-style frameworks (smolagents, LangGraph) can swap cmm in as the action runtime without a native dependency.
-  - deps: interp-mvp
+  - deps: interp-d
   - acceptance: wasm build passes the golden test suite
   - acceptance: npm + PyPI packages execute the canonical corpus
   - acceptance: One smolagents-or-equivalent integration example runs
