@@ -1,18 +1,28 @@
 <!-- GENERATED VIEW — do not hand-edit. Source of truth is the native think-and-ship
      roadmap (roadmap_* tools / `think-and-ship export`). Regenerated 2026-06-10
-     after lang-spec-v01 completed (SPEC.md + validated grammar + corpus + cost CI). -->
+     after interp-a completed (Rust front-end; interp-mvp split into a/b/c/d). -->
 
 # Roadmap — cmm-d31a18
 
 ## Pending
 
-- [ ] **Reference implementation MVP — compiler front-end + execution backend + CLI (run | fmt | expand | tokens)** — Implement the v0.2 core from SPEC.md in Rust: lexer, PEG parser with Postel acceptance + canonical formatter, type inference engine, and the execution backend chosen in the spec (tree-walk/bytecode VM first; wasm codegen path reserved for wasm-embed). CLI: run, fmt (canonical dense form), expand (the readability-as-view projection: annotated, type-revealed rendering of dense source), tokens (per-tokenizer counts). Structured fix-suggesting diagnostics. cargo workspace at repo root; startup <10ms.
-  - deps: lang-spec-v01
-  - acceptance: cargo test green with >=40 golden tests incl. inference goldens, Postel-input -> canonical pairs, and expand-view goldens
-  - acceptance: cargo clippy --all-targets -- -D warnings clean
-  - acceptance: Canonical corpus programs execute correctly
-  - acceptance: cmm tokens reproduces the spec cost table exactly
-  - acceptance: Startup measured <10ms
+- [ ] **interp B — canonical formatter (fmt) + sugar-expand skeleton** — `cmm fmt` emits the canonical dense form (Postel input normalized; minimal whitespace; 2-space human indents). `cmm expand` v1: sugar expansion only. NOTE from interp-a (think:13): fmt must preserve token ADJACENCY — gluedness is semantic (x.f vs x .f, x? vs x ? y, Pt{..}, f(..)); adjacency-sensitive round-trip tests required + SPEC §1 amendment documenting adjacency as a first-class lexical rule.
+  - deps: interp-a
+  - acceptance: fmt is idempotent on the whole corpus (fmt(fmt(x)) == fmt(x)) and parse(fmt(x)) == parse(x)
+  - acceptance: Postel->canonical golden pairs (>=8)
+  - acceptance: fmt of every corpus file changes token count by 0 (canonical corpus is already canonical)
+  - acceptance: cargo test + clippy -D warnings green
+- [ ] **interp C — type inference (arity resolution, unions, narrowing) + expand type-reveal + diagnostics** — HM-style inference over flat applications that RESOLVES GROUPING (spec §2.3), untagged unions with exhaustiveness-checked narrowing match, int/float discipline, identifier >1-token lint; expand gains type-revealed rendering; structured JSON diagnostics with golden fixtures.
+  - deps: interp-b
+  - acceptance: Inference goldens >=15 incl. arity-resolution cases and union narrowing
+  - acceptance: Non-exhaustive union match = compile error with fix-suggesting JSON diagnostic (golden)
+  - acceptance: expand shows inferred types on corpus samples (goldens)
+  - acceptance: cargo test + clippy -D warnings green
+- [ ] **interp D — evaluator + corpus stdlib + capability IO; cmm run executes the corpus** — Tree-walk evaluator (RC via Rust Rc/RefCell), v0.1 stdlib (SPEC §9), capability-gated fs/net/args, go via threads, ?-semantics. Corpus executes with golden stdout; server smoke-tested.
+  - deps: interp-c
+  - acceptance: All corpus snippets execute with expected output (golden stdout; io via fixtures; 20_server smoke test)
+  - acceptance: Startup <10ms re-verified with evaluator linked in
+  - acceptance: cargo test + clippy -D warnings green; >=40 cumulative goldens maintained
 - [ ] **The ≤2500-token cheat sheet — measured teachability AND model-legibility** — Compress the GP language into a system-prompt cheat sheet (budget raised to <=2500 tokens for the larger surface; Anthropic tokenizer primary) + few-shot pack. Measure TWO things on >=2 models, honestly reported: (a) teachability — fresh sessions write correct programs for 10 held-out tasks (syntax-validity + semantic-correctness rates); (b) model-legibility — comprehension QA over dense cmm code the model did NOT write (can it answer behavior questions as accurately as over equivalent Python? — this guards the machine-first surface against the naming/structure comprehension findings). Iterate sheet wording (not the language) up to 3 rounds.
   - deps: interp-mvp
   - acceptance: Cheat sheet measured <=2500 tokens on both tokenizers
@@ -34,6 +44,7 @@
 
 ## Done
 
+- [x] **interp A — cargo skeleton, lexer, parser (Postel), AST; cmm parse|tokens; corpus 20/20 in Rust** — Shipped 2026-06-10 (commit b2ca8a6; proof: task:verify-a). 60/60 tests, clippy clean, exact `cmm tokens` parity with count.py on 20/20 corpus files, startup 2.66ms. Discovery: adjacency (gluedness) is a first-class semantic channel — field-vs-projection, propagate-vs-rescue, literal/call-sugar-vs-juxtaposition — SPEC §1 amendment queued for interp-b.
 - [x] **Language spec v0.1 — GP grammar, type system w/ full inference, memory model, measured token-cost table** — Shipped 2026-06-10 (commit 8e74b9e; proof: task:verify-spec). SPEC.md implementable; PEG grammar machine-validated 20/20 against the 52-file canonical corpus; medians 1.19× vs Python (n=20, wins 13/ties 2/loses 5 — reported), 2.38×/2.69× vs Go/Rust (n=6 flagged); tournaments recorded with losers (float>flt BY COST, range>.., pub>::-export); RC memory decided on measurement (ownership ceremony ≥5% of Rust corpus tokens). tools/tokens/{count,validate}.py are permanent CI gates.
 - [x] **DESIGN.md v0.2 — general-purpose machine-first language (user-directed pivot)** — Shipped 2026-06-10 (commit 5dfe9a8; proof: task:verify-v02). v0.2 measured both design rounds: Python parity (1.02×) at 2.08×/2.25× vs Go/Rust; round-1 loss autopsy produced the dense-stdlib rule and untagged unions (the ADT tax); Vera/NanoLang/MoonBit differentiated from primary sources (they spend tokens on machine trust; cmm saves them). **User sign-off on v0.2 direction still pending — it gates lang-spec-v01.**
 
@@ -74,4 +85,5 @@
 
 ## Obsoleted
 
+- [-] **Reference implementation MVP (interp-mvp)** — *Obsoleted 2026-06-10: split into interp-a/b/c/d (multi-session scope, per skill discipline); acceptance criteria distributed across the four sub-chunks.*
 - [-] **Agent primitives — host tool registry, ask {shape}, ? retry/skip, par N, budgets** — *Obsoleted 2026-06-10: user redirect — cmm is a general-purpose language, not an exec action language; grammar-level agent verbs rejected. Successor: host-ffi (backlog).*
