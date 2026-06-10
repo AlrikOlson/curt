@@ -1,6 +1,6 @@
 <!-- GENERATED VIEW — do not hand-edit. Source of truth is the native think-and-ship
      roadmap (roadmap_* tools / `think-and-ship export`). Regenerated 2026-06-10
-     after gd-a completed (constrained-decoding artifacts; grammar-decode split a/b). -->
+     after interp-d completed (evaluator; the interpreter is feature-complete). -->
 
 # Roadmap — cmm-d31a18
 
@@ -12,11 +12,6 @@
   - acceptance: OpenAI custom-tools demo: conformance rate measured over >=100 generations; limits documented
   - acceptance: Capability matrix current as of execution date
   - acceptance: Constrained-vs-unconstrained semantic-correctness comparison on >=20 tasks reported honestly
-- [ ] **interp D — evaluator + corpus stdlib + capability IO; cmm run executes the corpus** — Tree-walk evaluator (RC via Rust Rc/RefCell), v0.1 stdlib (SPEC §9), capability-gated fs/net/args, go via threads, ?-semantics. Corpus executes with golden stdout; server smoke-tested.
-  - deps: interp-c
-  - acceptance: All corpus snippets execute with expected output (golden stdout; io via fixtures; 20_server smoke test)
-  - acceptance: Startup <10ms re-verified with evaluator linked in
-  - acceptance: cargo test + clippy -D warnings green; >=40 cumulative goldens maintained
 - [ ] **The ≤2500-token cheat sheet — measured teachability AND model-legibility** — Compress the GP language into a system-prompt cheat sheet (budget raised to <=2500 tokens for the larger surface; Anthropic tokenizer primary) + few-shot pack. Measure TWO things on >=2 models, honestly reported: (a) teachability — fresh sessions write correct programs for 10 held-out tasks (syntax-validity + semantic-correctness rates); (b) model-legibility — comprehension QA over dense cmm code the model did NOT write (can it answer behavior questions as accurately as over equivalent Python? — this guards the machine-first surface against the naming/structure comprehension findings). Iterate sheet wording (not the language) up to 3 rounds.
   - deps: interp-d
   - acceptance: Cheat sheet measured <=2500 tokens on both tokenizers
@@ -33,6 +28,7 @@
 
 ## Done
 
+- [x] **interp D — evaluator + corpus stdlib + capability IO; cmm run executes the corpus** — Shipped 2026-06-10 (commit 7729652; proof: task:verify-d). 126/126 tests; all 20 corpus programs execute with golden stdout incl. a live TCP smoke test; run-startup 2.06ms; clippy clean. New shared elaboration rule: rescue captures like pipes (`print m["k"] ? 8080` ≡ `print (m["k"] ? 8080)`). Golden-caught bugs: quote-polluted string lexemes (FNV hashed quote bytes), list numeric fields, UInt operand order. Honest limit: `go` is sequential in v0.1 (Rc⇏Send; threads deferred §13). THE INTERPRETER IS COMPLETE: parse | check | fmt | expand | tokens | run.
 - [x] **grammar-decode A — Lark CFG twin + GBNF artifact + machine divergence gate** — Shipped 2026-06-10 (commit 46dc539; proof: task:verify-gda). cmm.lark (explicit whitespace — SPEC §1 adjacency survives as grammar structure; three PEG lookaheads dissolve in CFG form) validated 20/20 corpus + 10/10 negative agreement with the Rust oracle, both first run. cmm.gbnf generated deterministically (terminals pinned; documented keyword-widening — GBNF lacks lookahead). Chain of trust: Rust parser ⇄ grammar.peg ⇄ cmm.lark → cmm.gbnf. Parent grammar-decode obsoleted by split (gd-b carries the model/API demo legs).
 - [x] **interp C — type inference (arity resolution, unions, narrowing) + expand type-reveal + diagnostics** — Shipped 2026-06-10 (commit 2f5e739; proof: task:verify-c). 106/106 tests (27 new goldens), clippy clean, `cmm check` passes 20/20 corpus, startup 3.33ms. Both §2.3 elaboration rules fixed (arity re-nesting, pipe capture); UFCS receiver-last; union narrowing + exhaustiveness with fix-suggesting JSON diagnostics; int→float widening at argument positions only. THE CHECKER CAUGHT A REAL PRECEDENCE BUG in 20_server (31→32 tokens; medians re-measured: Python 1.19× unchanged, Go 2.38→2.34×) — the trust dividend, demonstrated. Parenthesized-lambda parser gap fixed; grammar.peg synced.
 - [x] **interp B — canonical formatter (fmt) + sugar-expand skeleton** — Shipped 2026-06-10 (commit 4ff4241; proof: task:verify-b). 79/79 tests all green first run; fmt is byte-identical on the canonical corpus (token delta 0), idempotent, parse-preserving; Postel goldens ×9; adjacency round-trips proven; comments/blank-lines preserved via trivia-aware lex_raw; SPEC §1 amended: adjacency is a first-class lexical rule. Known limitation recorded: expression-position `=` not rewritten to `==` until interp-c.
