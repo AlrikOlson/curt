@@ -32,6 +32,16 @@ measurements; the canonical numbers are §11 of this spec.
   significant** (measured: `"\n    "` = 2 tokens vs `"\n"` = 1; and models
   corrupt indentation in surgical edits). The canonical formatter emits
   2-space indents for human viewing; the grammar ignores them.
+- **Adjacency is semantic** *(amended in interp-b after the machine-validated
+  grammar surfaced it)*: whether two tokens touch changes meaning in exactly
+  three construct families — `x.f` (field access, glued) vs `x .f` (spaced:
+  `.f` is a projection-lambda argument); `x?` (glued: propagate) vs `x ? y`
+  (spaced: rescue); and `Pt{…}` / `f(…)` / `xs[…]` (glued: record literal /
+  call sugar / index-slice) vs their spaced forms (juxtaposition arguments).
+  Tooling MUST preserve gluedness in these families — a whitespace
+  normalizer that ignores adjacency changes program meaning. `cmm fmt`
+  therefore preserves input adjacency by default and normalizes only
+  spellings, separators, and layout.
 - **No imports.** Whole-program compilation; the stdlib and host capabilities
   (§9) are ambient. No visibility keywords except `pub` (§8). No `main` —
   toplevel statements execute in order.

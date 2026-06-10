@@ -16,6 +16,8 @@ pub enum Tok {
     TName(String),
     Num(String),
     Str(String),
+    /// trivia: only emitted by `lex_raw` (for fmt); `lex` filters it out
+    Comment(String),
     // keywords
     If,
     Elif,
@@ -78,9 +80,39 @@ pub struct Token {
     pub col: u32,
     /// No whitespace between this token and the previous one.
     pub glued: bool,
+    /// On `Newline` tokens: number of blank lines following (fmt trivia).
+    pub blanks: u8,
 }
 
+/// Parser view: trivia-free. Comments dropped; newline runs collapsed.
 pub fn lex(src: &str) -> Result<Vec<Token>, Diag> {
+    let raw = lex_raw(src)?;
+    let mut out: Vec<Token> = Vec::new();
+    for t in raw {
+        match t.tok {
+            Tok::Comment(_) => {}
+            Tok::Newline => {
+                if !matches!(out.last().map(|p| &p.tok), Some(Tok::Newline) | None) {
+                    out.push(t);
+                }
+            }
+            _ => out.push(t),
+        }
+    }
+    // a trailing comment line can leave a dangling Newline before Eof
+    while out.len() >= 2
+        && matches!(out[out.len() - 1].tok, Tok::Eof)
+        && matches!(out[out.len() - 2].tok, Tok::Newline)
+    {
+        let eof = out.pop().unwrap();
+        out.pop();
+        out.push(eof);
+    }
+    Ok(out)
+}
+
+/// Full token stream including comments and blank-line counts (for fmt).
+pub fn lex_raw(src: &str) -> Result<Vec<Token>, Diag> {
     let b = src.as_bytes();
     let mut out: Vec<Token> = Vec::new();
     let mut i = 0usize;
@@ -90,7 +122,7 @@ pub fn lex(src: &str) -> Result<Vec<Token>, Diag> {
 
     macro_rules! push {
         ($tok:expr, $start:expr, $startcol:expr) => {{
-            out.push(Token { tok: $tok, line, col: $startcol, glued: $start == prev_end });
+            out.push(Token { tok: $tok, line, col: $startcol, glued: $start == prev_end, blanks: 0 });
         }};
     }
 
@@ -102,14 +134,23 @@ pub fn lex(src: &str) -> Result<Vec<Token>, Diag> {
                 col += 1;
             }
             b'#' => {
+                let startcol = col;
+                let start = i;
                 while i < b.len() && b[i] != b'\n' {
                     i += 1;
+                    col += 1;
                 }
+                let text = src[start..i].trim_end().to_string();
+                out.push(Token { tok: Tok::Comment(text), line, col: startcol, glued: false, blanks: 0 });
             }
             b'\n' => {
-                // collapse a run of newlines (with comments/indentation) into one
-                if !matches!(out.last().map(|t| &t.tok), Some(Tok::Newline) | None) {
-                    out.push(Token { tok: Tok::Newline, line, col, glued: false });
+                // one Newline token per run; extra newlines counted as blanks
+                match out.last_mut() {
+                    Some(t) if matches!(t.tok, Tok::Newline) => {
+                        t.blanks = t.blanks.saturating_add(1);
+                    }
+                    None => {} // leading blank lines dropped
+                    _ => out.push(Token { tok: Tok::Newline, line, col, glued: false, blanks: 0 }),
                 }
                 i += 1;
                 line += 1;
@@ -283,10 +324,10 @@ pub fn lex(src: &str) -> Result<Vec<Token>, Diag> {
             }
         }
     }
-    // trim trailing newline token; parser treats Eof as terminator
+    // trim trailing newline token; Eof terminates
     while matches!(out.last().map(|t| &t.tok), Some(Tok::Newline)) {
         out.pop();
     }
-    out.push(Token { tok: Tok::Eof, line, col, glued: false });
+    out.push(Token { tok: Tok::Eof, line, col, glued: false, blanks: 0 });
     Ok(out)
 }

@@ -66,8 +66,54 @@ fn main() -> ExitCode {
                 }
             }
         }
-        "fmt" | "expand" | "run" => {
-            eprintln!("cmm {cmd}: not implemented yet (lands in interp-b/c/d; see ROADMAP.md)");
+        "fmt" => {
+            let Some(path) = args.get(2) else {
+                eprintln!("usage: cmm fmt <file|->");
+                return ExitCode::from(2);
+            };
+            let src = match read_input(path) {
+                Ok(s) => s,
+                Err(e) => {
+                    eprintln!("{e}");
+                    return ExitCode::FAILURE;
+                }
+            };
+            match cmm::fmt::format(&src) {
+                Ok(s) => {
+                    print!("{s}");
+                    ExitCode::SUCCESS
+                }
+                Err(d) => {
+                    eprintln!("{d}");
+                    ExitCode::FAILURE
+                }
+            }
+        }
+        "expand" => {
+            let Some(path) = args.get(2) else {
+                eprintln!("usage: cmm expand <file|->");
+                return ExitCode::from(2);
+            };
+            let src = match read_input(path) {
+                Ok(s) => s,
+                Err(e) => {
+                    eprintln!("{e}");
+                    return ExitCode::FAILURE;
+                }
+            };
+            match cmm::parse_source(&src) {
+                Ok(ast) => {
+                    print!("{}", cmm::expand::expand(&ast));
+                    ExitCode::SUCCESS
+                }
+                Err(d) => {
+                    eprintln!("{d}");
+                    ExitCode::FAILURE
+                }
+            }
+        }
+        "run" => {
+            eprintln!("cmm run: not implemented yet (lands in interp-d; see ROADMAP.md)");
             ExitCode::from(2)
         }
         "--version" | "version" => {
