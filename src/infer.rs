@@ -273,26 +273,13 @@ impl Checker {
         })
     }
 
-    // ---- elaboration rule 2: pipe capture (SPEC §2.6 note) ----
+    // ---- elaboration rule 2: trailing-operator capture (SPEC §2.3) ----
+    // a pipeline OR a spaced rescue captures the last argument of a
+    // preceding juxtaposition: `print us | keep ...` == print (us | ...);
+    // `print m["k"] ? 8080` == print (m["k"] ? 8080)
 
     fn rewrite_pipes(e: &Expr) -> Expr {
-        match e {
-            Expr::Pipe { stages } => {
-                let stages: Vec<Expr> = stages.iter().map(Self::rewrite_pipes).collect();
-                if let Expr::App { head, args } = &stages[0] {
-                    if !args.is_empty() {
-                        let mut new_args = args.clone();
-                        let last = new_args.pop().unwrap();
-                        let mut inner = vec![last];
-                        inner.extend(stages[1..].iter().cloned());
-                        new_args.push(Expr::Pipe { stages: inner });
-                        return Expr::App { head: head.clone(), args: new_args };
-                    }
-                }
-                Expr::Pipe { stages }
-            }
-            other => map_expr(other, &Self::rewrite_pipes),
-        }
+        rewrite_sugar(e)
     }
 
     // ---- program checking ----
@@ -928,6 +915,45 @@ fn token_cost(name: &str) -> usize {
     match BPE.get_or_init(|| tiktoken_rs::o200k_base().ok()) {
         Some(bpe) => bpe.encode_ordinary(&format!(" {name}")).len(),
         None => 1,
+    }
+}
+
+/// Elaboration rewrite shared by the checker AND the evaluator (interp-d):
+/// pipe capture + rescue capture over a preceding juxtaposition.
+pub fn rewrite_pipes(e: &Expr) -> Expr {
+    rewrite_sugar(e)
+}
+
+fn rewrite_sugar(e: &Expr) -> Expr {
+    match e {
+        Expr::Pipe { stages } => {
+            let stages: Vec<Expr> = stages.iter().map(rewrite_sugar).collect();
+            if let Expr::App { head, args } = &stages[0] {
+                if !args.is_empty() {
+                    let mut new_args = args.clone();
+                    let last = new_args.pop().unwrap();
+                    let mut inner = vec![last];
+                    inner.extend(stages[1..].iter().cloned());
+                    new_args.push(Expr::Pipe { stages: inner });
+                    return Expr::App { head: head.clone(), args: new_args };
+                }
+            }
+            Expr::Pipe { stages }
+        }
+        Expr::Rescue { value, fallback } => {
+            let value = rewrite_sugar(value);
+            let fallback = Box::new(rewrite_sugar(fallback));
+            if let Expr::App { head, args } = &value {
+                if !args.is_empty() {
+                    let mut new_args = args.clone();
+                    let last = new_args.pop().unwrap();
+                    new_args.push(Expr::Rescue { value: Box::new(last), fallback });
+                    return Expr::App { head: head.clone(), args: new_args };
+                }
+            }
+            Expr::Rescue { value: Box::new(value), fallback }
+        }
+        other => map_expr(other, &rewrite_sugar),
     }
 }
 

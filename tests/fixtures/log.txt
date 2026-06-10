@@ -1,0 +1,4 @@
+boot ok
+ERR disk full
+info idle
+ERR net down

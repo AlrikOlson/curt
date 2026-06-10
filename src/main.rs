@@ -145,8 +145,46 @@ fn main() -> ExitCode {
             }
         }
         "run" => {
-            eprintln!("cmm run: not implemented yet (lands in interp-d; see ROADMAP.md)");
-            ExitCode::from(2)
+            // cmm run [--fs] [--net] <file|-> [program args...]
+            let mut caps = cmm::eval::Caps { fs: false, net: false };
+            let mut rest = args[2..].iter();
+            let mut path: Option<String> = None;
+            let mut prog_args: Vec<String> = vec![String::from("cmm")];
+            for a in rest.by_ref() {
+                match a.as_str() {
+                    "--fs" => caps.fs = true,
+                    "--net" => caps.net = true,
+                    other => {
+                        path = Some(other.to_string());
+                        break;
+                    }
+                }
+            }
+            prog_args.extend(rest.cloned());
+            let Some(path) = path else {
+                eprintln!("usage: cmm run [--fs] [--net] <file|-> [args...]");
+                return ExitCode::from(2);
+            };
+            let src = match read_input(&path) {
+                Ok(s) => s,
+                Err(e) => {
+                    eprintln!("{e}");
+                    return ExitCode::FAILURE;
+                }
+            };
+            match cmm::parse_source(&src) {
+                Ok(ast) => match cmm::eval::Interp::run(&ast, caps, prog_args) {
+                    Ok(()) => ExitCode::SUCCESS,
+                    Err(m) => {
+                        eprintln!("{{\"err\":\"runtime\",\"msg\":\"{m}\"}}");
+                        ExitCode::FAILURE
+                    }
+                },
+                Err(d) => {
+                    eprintln!("{d}");
+                    ExitCode::FAILURE
+                }
+            }
         }
         "--version" | "version" => {
             println!("cmm {}", env!("CARGO_PKG_VERSION"));
