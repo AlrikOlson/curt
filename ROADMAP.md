@@ -1,17 +1,11 @@
 <!-- GENERATED VIEW — do not hand-edit. Source of truth is the native think-and-ship
      roadmap (roadmap_* tools / `think-and-ship export`). Regenerated 2026-06-10
-     after interp-b completed (fmt + expand; adjacency rule in SPEC §1). -->
+     after interp-c completed (type checker; corpus precedence bug caught). -->
 
 # Roadmap — cmm-d31a18
 
 ## Pending
 
-- [ ] **interp C — type inference (arity resolution, unions, narrowing) + expand type-reveal + diagnostics** — HM-style inference over flat applications that RESOLVES GROUPING (spec §2.3), untagged unions with exhaustiveness-checked narrowing match, int/float discipline, identifier >1-token lint; expand gains type-revealed rendering; structured JSON diagnostics with golden fixtures.
-  - deps: interp-b
-  - acceptance: Inference goldens >=15 incl. arity-resolution cases and union narrowing
-  - acceptance: Non-exhaustive union match = compile error with fix-suggesting JSON diagnostic (golden)
-  - acceptance: expand shows inferred types on corpus samples (goldens)
-  - acceptance: cargo test + clippy -D warnings green
 - [ ] **Constrained-decoding artifacts — Lark-primary grammars + OSS zero-error demo + OpenAI CFG conformance** *(refreshed 2026-06-10, think:15)* — The closed-API landscape moved in cmm's favor: OpenAI's GPT-5-era custom tools accept arbitrary CFGs in Lark/regex syntax, so the closed-API leg upgrades from documentation to a REQUIRED demo with measured conformance (community caveat: outputs "not guaranteed to conform", Aug 2025); Anthropic Structured Outputs is GA but JSON-schema-only (no arbitrary CFG on Claude as of mid-2026 — honest negative). Derivation flips to Lark-primary (one artifact feeds llguidance AND OpenAI) + GBNF secondary (llama.cpp), from grammar.peg with the Rust parser as divergence oracle. New quality guard: constrained-vs-unconstrained semantic correctness compared, never conflating parse-validity with quality.
   - deps: lang-spec-v01, interp-a
   - acceptance: Lark (primary) + GBNF (secondary) derived from grammar.peg; divergence test — both accept exactly the golden corpus, verified against the Rust parser
@@ -40,6 +34,7 @@
 
 ## Done
 
+- [x] **interp C — type inference (arity resolution, unions, narrowing) + expand type-reveal + diagnostics** — Shipped 2026-06-10 (commit 2f5e739; proof: task:verify-c). 106/106 tests (27 new goldens), clippy clean, `cmm check` passes 20/20 corpus, startup 3.33ms. Both §2.3 elaboration rules fixed (arity re-nesting, pipe capture); UFCS receiver-last; union narrowing + exhaustiveness with fix-suggesting JSON diagnostics; int→float widening at argument positions only. THE CHECKER CAUGHT A REAL PRECEDENCE BUG in 20_server (31→32 tokens; medians re-measured: Python 1.19× unchanged, Go 2.38→2.34×) — the trust dividend, demonstrated. Parenthesized-lambda parser gap fixed; grammar.peg synced.
 - [x] **interp B — canonical formatter (fmt) + sugar-expand skeleton** — Shipped 2026-06-10 (commit 4ff4241; proof: task:verify-b). 79/79 tests all green first run; fmt is byte-identical on the canonical corpus (token delta 0), idempotent, parse-preserving; Postel goldens ×9; adjacency round-trips proven; comments/blank-lines preserved via trivia-aware lex_raw; SPEC §1 amended: adjacency is a first-class lexical rule. Known limitation recorded: expression-position `=` not rewritten to `==` until interp-c.
 - [x] **interp A — cargo skeleton, lexer, parser (Postel), AST; cmm parse|tokens; corpus 20/20 in Rust** — Shipped 2026-06-10 (commit b2ca8a6; proof: task:verify-a). 60/60 tests, clippy clean, exact `cmm tokens` parity with count.py on 20/20 corpus files, startup 2.66ms. Discovery: adjacency (gluedness) is a first-class semantic channel — field-vs-projection, propagate-vs-rescue, literal/call-sugar-vs-juxtaposition — SPEC §1 amendment queued for interp-b.
 - [x] **Language spec v0.1 — GP grammar, type system w/ full inference, memory model, measured token-cost table** — Shipped 2026-06-10 (commit 8e74b9e; proof: task:verify-spec). SPEC.md implementable; PEG grammar machine-validated 20/20 against the 52-file canonical corpus; medians 1.19× vs Python (n=20, wins 13/ties 2/loses 5 — reported), 2.38×/2.69× vs Go/Rust (n=6 flagged); tournaments recorded with losers (float>flt BY COST, range>.., pub>::-export); RC memory decided on measurement (ownership ceremony ≥5% of Rust corpus tokens). tools/tokens/{count,validate}.py are permanent CI gates.
