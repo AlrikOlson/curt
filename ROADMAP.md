@@ -1,17 +1,16 @@
 <!-- GENERATED VIEW — do not hand-edit. Source of truth is the native think-and-ship
      roadmap (roadmap_* tools / `think-and-ship export`). Regenerated 2026-06-10
-     after interp-c completed (type checker; corpus precedence bug caught). -->
+     after gd-a completed (constrained-decoding artifacts; grammar-decode split a/b). -->
 
 # Roadmap — cmm-d31a18
 
 ## Pending
 
-- [ ] **Constrained-decoding artifacts — Lark-primary grammars + OSS zero-error demo + OpenAI CFG conformance** *(refreshed 2026-06-10, think:15)* — The closed-API landscape moved in cmm's favor: OpenAI's GPT-5-era custom tools accept arbitrary CFGs in Lark/regex syntax, so the closed-API leg upgrades from documentation to a REQUIRED demo with measured conformance (community caveat: outputs "not guaranteed to conform", Aug 2025); Anthropic Structured Outputs is GA but JSON-schema-only (no arbitrary CFG on Claude as of mid-2026 — honest negative). Derivation flips to Lark-primary (one artifact feeds llguidance AND OpenAI) + GBNF secondary (llama.cpp), from grammar.peg with the Rust parser as divergence oracle. New quality guard: constrained-vs-unconstrained semantic correctness compared, never conflating parse-validity with quality.
-  - deps: lang-spec-v01, interp-a
-  - acceptance: Lark (primary) + GBNF (secondary) derived from grammar.peg; divergence test — both accept exactly the golden corpus, verified against the Rust parser
+- [ ] **grammar-decode B — runtime demos: OSS zero-error, OpenAI conformance, capability matrix, quality guard** — Environment-gated half of the refresh (think:15): llama.cpp/vLLM zero-error demo (>=200 constrained generations), OpenAI custom-tools conformance (>=100 generations, measured — community caveat: not guaranteed), capability-matrix re-check at execution date, constrained-vs-unconstrained semantic-correctness comparison (strongest after interp-d's evaluator). NEEDS a local model + OPENAI_API_KEY — flag access at start.
+  - deps: gd-a
   - acceptance: OSS-runtime demo: 0 parse errors across >=200 constrained generations
-  - acceptance: OpenAI custom-tools demo: real cmm grammar submitted; conformance rate measured over >=100 generations; size/complexity limits documented
-  - acceptance: Capability matrix current as of execution date (OpenAI arbitrary-CFG w/ caveats; Anthropic JSON-schema-only; OSS full)
+  - acceptance: OpenAI custom-tools demo: conformance rate measured over >=100 generations; limits documented
+  - acceptance: Capability matrix current as of execution date
   - acceptance: Constrained-vs-unconstrained semantic-correctness comparison on >=20 tasks reported honestly
 - [ ] **interp D — evaluator + corpus stdlib + capability IO; cmm run executes the corpus** — Tree-walk evaluator (RC via Rust Rc/RefCell), v0.1 stdlib (SPEC §9), capability-gated fs/net/args, go via threads, ?-semantics. Corpus executes with golden stdout; server smoke-tested.
   - deps: interp-c
@@ -34,6 +33,7 @@
 
 ## Done
 
+- [x] **grammar-decode A — Lark CFG twin + GBNF artifact + machine divergence gate** — Shipped 2026-06-10 (commit 46dc539; proof: task:verify-gda). cmm.lark (explicit whitespace — SPEC §1 adjacency survives as grammar structure; three PEG lookaheads dissolve in CFG form) validated 20/20 corpus + 10/10 negative agreement with the Rust oracle, both first run. cmm.gbnf generated deterministically (terminals pinned; documented keyword-widening — GBNF lacks lookahead). Chain of trust: Rust parser ⇄ grammar.peg ⇄ cmm.lark → cmm.gbnf. Parent grammar-decode obsoleted by split (gd-b carries the model/API demo legs).
 - [x] **interp C — type inference (arity resolution, unions, narrowing) + expand type-reveal + diagnostics** — Shipped 2026-06-10 (commit 2f5e739; proof: task:verify-c). 106/106 tests (27 new goldens), clippy clean, `cmm check` passes 20/20 corpus, startup 3.33ms. Both §2.3 elaboration rules fixed (arity re-nesting, pipe capture); UFCS receiver-last; union narrowing + exhaustiveness with fix-suggesting JSON diagnostics; int→float widening at argument positions only. THE CHECKER CAUGHT A REAL PRECEDENCE BUG in 20_server (31→32 tokens; medians re-measured: Python 1.19× unchanged, Go 2.38→2.34×) — the trust dividend, demonstrated. Parenthesized-lambda parser gap fixed; grammar.peg synced.
 - [x] **interp B — canonical formatter (fmt) + sugar-expand skeleton** — Shipped 2026-06-10 (commit 4ff4241; proof: task:verify-b). 79/79 tests all green first run; fmt is byte-identical on the canonical corpus (token delta 0), idempotent, parse-preserving; Postel goldens ×9; adjacency round-trips proven; comments/blank-lines preserved via trivia-aware lex_raw; SPEC §1 amended: adjacency is a first-class lexical rule. Known limitation recorded: expression-position `=` not rewritten to `==` until interp-c.
 - [x] **interp A — cargo skeleton, lexer, parser (Postel), AST; cmm parse|tokens; corpus 20/20 in Rust** — Shipped 2026-06-10 (commit b2ca8a6; proof: task:verify-a). 60/60 tests, clippy clean, exact `cmm tokens` parity with count.py on 20/20 corpus files, startup 2.66ms. Discovery: adjacency (gluedness) is a first-class semantic channel — field-vs-projection, propagate-vs-rescue, literal/call-sugar-vs-juxtaposition — SPEC §1 amendment queued for interp-b.
@@ -77,5 +77,6 @@
 
 ## Obsoleted
 
+- [-] **Constrained-decoding artifacts (grammar-decode)** — *Obsoleted 2026-06-10: split into gd-a (local artifacts + gate, done) and gd-b (environment-gated demos, pending P27).*
 - [-] **Reference implementation MVP (interp-mvp)** — *Obsoleted 2026-06-10: split into interp-a/b/c/d (multi-session scope, per skill discipline); acceptance criteria distributed across the four sub-chunks.*
 - [-] **Agent primitives — host tool registry, ask {shape}, ? retry/skip, par N, budgets** — *Obsoleted 2026-06-10: user redirect — cmm is a general-purpose language, not an exec action language; grammar-level agent verbs rejected. Successor: host-ffi (backlog).*
