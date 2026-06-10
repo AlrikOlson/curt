@@ -1,0 +1,3 @@
+show v = match v { float x -> "num {x}", str s -> "sym {s}" }
+print show 2.5
+print show "ok"

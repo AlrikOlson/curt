@@ -1,0 +1,1 @@
+for p in (fs.read args.1).lower.words.counts | top 10 .v { print "{p.k} {p.v}" }

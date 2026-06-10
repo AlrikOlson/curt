@@ -1,0 +1,2 @@
+slug s = s.trim.lower.replace " " "-"
+print slug "  Hello World  "

@@ -1,0 +1,2 @@
+handle c = for ln in c.lines { c.write ln.upper + "\n" }
+for c in net.listen 8080 { go handle c }

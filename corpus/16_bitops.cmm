@@ -1,0 +1,6 @@
+hash s = {
+  h = 14695981039346656037u64
+  for b in s.bytes { h = (h ^ b) * 1099511628211 }
+  h
+}
+print hash "cmm"

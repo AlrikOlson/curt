@@ -1,0 +1,117 @@
+# cmm v0.1 PEG grammar (parsimonious syntax).
+# Validation gate: this grammar must parse corpus/*.cmm 20/20 (validate.py).
+# Design constraints encoded here:
+#   - no required indentation; NEWLINE or ';' separate statements
+#   - juxtaposition application (flat; arity resolved by inference, not grammar)
+#   - Go-style header rule: in for/while/if/match headers, '{' always begins
+#     the block (brace-atoms excluded from header expressions -> hexpr)
+#   - propagate-? touches its operand (no space); rescue-? is spaced binary
+#   - 'range' is a stdlib function, not an operator ('..' rejected by tournament)
+
+program     = _ stmts _ nl? _
+stmts       = stmt (stmtsep stmt)*
+stmtsep     = (_ ";" _) / nl
+nl          = ~r"[ \t]*(#[^\n]*)?\r?\n([ \t]*(#[^\n]*)?\r?\n)*[ \t]*"
+_           = ~r"[ \t]*"
+__          = ~r"[ \t]+"
+
+stmt        = typedecl / pubsig / sig / forstmt / whilestmt / retstmt / gostmt
+            / equation / destructure / compound / binding / exprstmt
+
+typedecl    = "type" __ tname _ "=" _ typeexpr
+pubsig      = "pub" __ name _ "::" _ typesig
+sig         = name _ "::" _ typesig
+typesig     = typelist (_ "->" _ typeexpr)?
+typelist    = typeexpr (__ typeexpr)*
+typeexpr    = tunion
+tunion      = tatom (_ "|" _ tatom)*
+tatom       = trecord / tname / name / ("(" _ typesig _ ")")
+trecord     = "{" _ tfield (_ "," _ tfield)* _ "}"
+tfield      = name __ typeexpr
+
+equation    = name (__ param)+ _ "=" _ (block / forstmt / whilestmt / gostmt / expr)
+param       = name
+destructure = tuplepat _ "=" _ expr
+tuplepat    = "(" _ name (_ "," _ name)+ _ ")"
+binding     = target (_ ":" _ typeexpr)? _ "=" _ expr
+compound    = target _ ("+=" / "-=" / "*=" / "/=") _ expr
+target      = name indexsuf*
+indexsuf    = "[" _ expr _ "]"
+
+forstmt     = "for" __ forpat __ "in" __ hexpr _ block
+forpat      = tuplepat / name
+whilestmt   = "while" __ hexpr _ block
+retstmt     = "ret" (__ expr)?
+gostmt      = "go" __ expr
+exprstmt    = expr
+
+block       = "{" (nl / _) stmts? (nl / _) "}"
+
+# ---- expressions (full) ----
+expr        = rescue
+rescue      = pipeline (__ "?" __ pipeline)*
+pipeline    = orexp (_ "|" _ stage)*
+stage       = orexp
+orexp       = andexp (__ "or" __ andexp)*
+andexp      = notexp (__ "and" __ notexp)*
+notexp      = ("not" __ notexp) / cmp
+cmp         = add (_ cmpop _ add)*
+cmpop       = "==" / "!=" / "<=" / ">=" / "<" / ">" / ("in" &__)
+add         = mul (_ addop _ mul)*
+addop       = "+" / "-"
+mul         = pow (_ mulop _ pow)*
+mulop       = "*" !"*" / "/" / "%" / "^"
+pow         = unary (_ "**" _ unary)*
+unary       = ("-" unary) / app
+app         = arg (__ arg)*
+arg         = lambda / postfix
+lambda      = name (__ name)* _ "->" _ expr
+postfix     = atom postop*
+postop      = projsuf / callsuf / propq
+projsuf     = "." (name / ~r"[0-9]+")
+callsuf     = "[" _ slice _ "]"
+slice       = (expr _ ":" _ expr?) / (":" _ expr) / expr
+propq       = "?" !(__)
+
+# ---- expressions (header variant: no brace-initial atoms) ----
+hexpr       = hrescue
+hrescue     = hpipeline (__ "?" __ hpipeline)*
+hpipeline   = horexp (_ "|" _ horexp)*
+horexp      = handexp (__ "or" __ handexp)*
+handexp     = hnotexp (__ "and" __ hnotexp)*
+hnotexp     = ("not" __ hnotexp) / hcmp
+hcmp        = hadd (_ cmpop _ hadd)*
+hadd        = hmul (_ addop _ hmul)*
+hmul        = hpow (_ mulop _ hpow)*
+hpow        = hunary (_ "**" _ hunary)*
+hunary      = ("-" hunary) / happ
+happ        = harg (__ harg)*
+harg        = hlambda / hpostfix
+hlambda     = name (__ name)* _ "->" _ hexpr
+hpostfix    = hatom postop*
+hatom       = number / string / list / tuple / paren / projatom / name
+
+# ---- atoms ----
+atom        = matchexpr / ifexpr / number / string / recordlit / anonrecord
+            / list / tuple / paren / block / projatom / tname / name
+projatom    = "." name
+recordlit   = tname "{" _ field (_ "," _ field)* _ "}"
+anonrecord  = ("{" _ field (_ "," _ field)* _ "}") / ("{" _ "}")
+field       = name ":" _ expr
+list        = ("[" _ expr (_ "," _ expr)* _ "]") / ("[" _ "]")
+tuple       = "(" _ expr (_ "," _ expr)+ _ ")"
+paren       = "(" _ expr _ ")"
+
+ifexpr      = "if" __ hexpr _ block (_ "else" _ (ifexpr / block))?
+matchexpr   = "match" __ hexpr _ "{" (nl / _) arm (armsep arm)* (nl / _) "}"
+armsep      = (_ "," (nl / _)) / nl
+arm         = pattern _ "->" _ (block / expr)
+pattern     = typepat / string / number / tuplepat / "_" / name
+typepat     = (tname / name) __ name
+
+number      = ~r"[0-9]+(\.[0-9]+)?([ui](8|16|32|64))?"
+string      = ~r"\"(\\.|[^\"\\])*\""
+tname       = ~r"[A-Z][A-Za-z0-9_]*"
+name        = !keyword ~r"[a-z_][A-Za-z0-9_]*"
+keyword     = ("if" / "else" / "while" / "for" / "in" / "match" / "type"
+            / "ret" / "go" / "pub" / "and" / "or" / "not") !~r"[A-Za-z0-9_]"

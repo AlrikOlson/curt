@@ -1,0 +1,2 @@
+hyp a b = (a*a + b*b).sqrt
+print hyp 3 4

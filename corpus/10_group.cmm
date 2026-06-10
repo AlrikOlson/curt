@@ -1,0 +1,2 @@
+sales = [{city:"NY", amt:50}, {city:"LA", amt:30}, {city:"NY", amt:20}]
+for g in sales.group .city { print "{g.k} {g.v | map .amt | sum}" }

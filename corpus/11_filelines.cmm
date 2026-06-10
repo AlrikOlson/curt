@@ -1,0 +1,1 @@
+for ln in (fs.read "log.txt").lines | keep x -> "ERR" in x { print ln }

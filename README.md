@@ -27,7 +27,10 @@ says obfuscation costs accuracy and buys nothing), grammar shipped as
 constrained-decoding artifacts (syntax errors become impossible), and
 RC-managed memory with zero token ceremony.
 
-**Status:** design phase, v0.2 awaiting sign-off. The build plan lives in the
+**Status:** specified — **[SPEC.md](SPEC.md)** is implementable (grammar
+machine-validated 20/20 against [corpus/](corpus/); cost table reproducible via
+`tools/tokens/count.py`; corpus medians: **1.19× vs Python** (n=20), 2.38×/2.69×
+vs Go/Rust). Next: the reference implementation. The build plan lives in the
 native think-and-ship roadmap; [ROADMAP.md](ROADMAP.md) is its generated view.
-v0.1 (the retired action-DSL framing) is archived in
+The retired v0.1 action-DSL framing is archived in
 [archive/](archive/DESIGN-v0.1.md).

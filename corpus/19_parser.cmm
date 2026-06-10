@@ -1,0 +1,28 @@
+lex s = ((s.replace "(" " ( ").replace ")" " ) ").words | map w -> if w[0].digit { w.float } else { w }
+
+expr ts = {
+  (v, r) = term ts
+  while r.len > 0 and r[0] in "+-" {
+    (v2, r2) = term r[1:]
+    v = if r[0] == "+" { v + v2 } else { v - v2 }
+    r = r2
+  }
+  (v, r)
+}
+
+term ts = {
+  (v, r) = factor ts
+  while r.len > 0 and r[0] in "*/" {
+    (v2, r2) = factor r[1:]
+    v = if r[0] == "*" { v * v2 } else { v / v2 }
+    r = r2
+  }
+  (v, r)
+}
+
+factor ts = match ts[0] {
+  float x -> (x, ts[1:]),
+  "(" -> { (v, r) = expr ts[1:]; (v, r[1:]) }
+}
+
+print (expr (lex args.1)).0
