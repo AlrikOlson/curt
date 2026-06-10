@@ -1,0 +1,16 @@
+# OS
+.DS_Store
+
+# Python venvs / caches (token harness)
+.venv/
+__pycache__/
+
+# Rust (interp-mvp onward)
+target/
+
+# Node (playground, later)
+node_modules/
+
+# Editor
+.idea/
+.vscode/
