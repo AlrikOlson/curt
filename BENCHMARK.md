@@ -193,3 +193,24 @@ cargo build --release
 
 Generation/repair are LLM calls (2026-06-11, haiku + sonnet subagents);
 the committed answers/ are the frozen record — grading is deterministic.
+
+## Tokenizer robustness (tokenizer-truth, 2026-06-11)
+
+Every ratio above was re-measured across four tokenizers
+(`tools/tokens/sensitivity.py` — one command reproduces this table):
+
+| tokenizer | corpus py/curt | bench py/curt | dbench py/curt | fragmenting verbs |
+|---|---|---|---|---|
+| o200k_base | 1.12× (n=21) | 0.94× (n=15) | 1.01× (n=10) | none |
+| cl100k_base | 1.10× (n=21) | 0.94× (n=15) | 1.01× (n=10) | none |
+| qwen2.5-coder | 1.09× (n=21) | 0.94× (n=15) | 1.01× (n=10) | none |
+| deepseek-coder | 1.19× (n=21) | 1.01× (n=15) | 1.09× (n=10) | counts(2), pairs(2), chars(2) |
+
+**The claims replicate**: per-task ratios agree within ~0.03× across
+o200k/cl100k/Qwen; DeepSeek's vocabulary is slightly MORE favorable to
+curt despite fragmenting three verbs (`counts`/`pairs`/`chars` are 2
+tokens there — listed, not renamed; the corpus-level effect is positive).
+Every stdlib verb and operator is a single token in bare, dotted, and
+piped positions on o200k, cl100k, and Qwen2.5-Coder. The Anthropic
+count-tokens lane is implemented and key-gated (`ANTHROPIC_API_KEY`);
+run it before quoting Anthropic-specific numbers.
