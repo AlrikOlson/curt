@@ -7,12 +7,6 @@
   - acceptance: Conformance rate measured over >=100 generations on the real cmm Lark grammar
   - acceptance: Size/complexity limits documented
   - acceptance: Capability matrix row updated with measured reality
-- [ ] **py2cmm — Python-subset transpiler + differential-execution data pipeline (MultiPL-T pattern)** — py2cmm — Python-subset transpiler + differential-execution data pipeline (MultiPL-T pattern, decided think:32). WARNING ABSORBED 2026-06-11 (think:55, CangjieBench arXiv 2603.14501 full-text): code-to-code translation into a low-resource language measurably UNDERPERFORMS text-to-code under identical conditions (GPT-5: 53.8% → 38.1%) because models overfit the source language's idioms line-by-line ('negative transfer'); their prescription is semantics-aligned intermediate representations. Consequence for this chunk: the transpiler must NOT produce line-by-line Python-shaped curt as training data — that would teach exactly the loop-heavy style the benchmark measured as the token-parity problem. Mitigation: pipe transpiler output through `curt dense` (idiom-density chunk) before it enters any training corpus, so the data pipeline emits idiomatic curt verified by differential execution; the IR is effectively the densified AST. Adds dep: idiom-density.
-  - deps: interp-d, idiom-density
-  - acceptance: Transpiler passes a golden suite: >=30 Python-subset programs transpile and differentially verify (python3 == curt run on all tests)
-  - acceptance: >=10,000 verified (instruction, curt, tests) pairs emitted with provenance (FT-grade volume per MultiPL-T scale); rejection rate and failure taxonomy reported honestly
-  - acceptance: Transpiled curt is fmt-canonical, check-clean, and dense-canonicalized (idiomatic style per ShortCoder pair pattern)
-  - acceptance: Pipeline re-runnable with one command
 - [ ] **HF Space playground — browser-only cmm (wasm) with live token meter** — RETARGETED 2026-06-11 (think:29): ship as a STATIC Hugging Face Space — Spaces run browser-only apps with no backend (static SDK; Transformers.js precedent), so cmm.wasm (from wasm-embed) + a live o200k token meter + cmm-vs-Python side-by-side runs at zero server cost on the Hub, embedded in the org page. Include a constrained-decoding gallery tab rendering gd-b-oss samples. The launch glamour piece.
   - deps: wasm-embed, hf-publish
   - acceptance: Playground runs the canonical corpus in-browser via wasm
@@ -137,6 +131,12 @@
   - acceptance: GitHub repo AlrikOlson/curt synced; ci badge in README points at the real green workflow
   - acceptance: Launch write-up leads with the four-experiment arc + the frozen-code delta
   - acceptance: committed on main, worktree clean
+- [x] **py2cmm — Python-subset transpiler + differential-execution data pipeline (MultiPL-T pattern)** — py2cmm — Python-subset transpiler + differential-execution data pipeline (MultiPL-T pattern, decided think:32). WARNING ABSORBED 2026-06-11 (think:55, CangjieBench arXiv 2603.14501 full-text): code-to-code translation into a low-resource language measurably UNDERPERFORMS text-to-code under identical conditions (GPT-5: 53.8% → 38.1%) because models overfit the source language's idioms line-by-line ('negative transfer'); their prescription is semantics-aligned intermediate representations. Consequence for this chunk: the transpiler must NOT produce line-by-line Python-shaped curt as training data — that would teach exactly the loop-heavy style the benchmark measured as the token-parity problem. Mitigation: pipe transpiler output through `curt dense` (idiom-density chunk) before it enters any training corpus, so the data pipeline emits idiomatic curt verified by differential execution; the IR is effectively the densified AST. Adds dep: idiom-density.
+  - deps: interp-d, idiom-density
+  - acceptance: Transpiler passes a golden suite: >=30 Python-subset programs transpile and differentially verify (python3 == curt run on all tests)
+  - acceptance: >=10,000 verified (instruction, curt, tests) pairs emitted with provenance (FT-grade volume per MultiPL-T scale); rejection rate and failure taxonomy reported honestly
+  - acceptance: Transpiled curt is fmt-canonical, check-clean, and dense-canonicalized (idiomatic style per ShortCoder pair pattern)
+  - acceptance: Pipeline re-runnable with one command
 
 ## Backlog
 
