@@ -1,6 +1,6 @@
 <!-- GENERATED VIEW — do not hand-edit. Source of truth is the native think-and-ship
      roadmap (roadmap_* tools / `think-and-ship export`). Regenerated 2026-06-10
-     after the OSS/HF launch refresh (oss-foundation + hf-publish added; launch runway). -->
+     after the training-data refresh (py2cmm transpiler route decided, think:32). -->
 
 # Roadmap — cmm-d31a18
 
@@ -40,6 +40,7 @@
 
 ## Backlog
 
+- [ ] (backlog) **py2cmm — Python-subset transpiler + differential-execution data pipeline (MultiPL-T pattern)** — DECIDED route for training data (2026-06-11, think:32): transpile MBPP/HumanEval-class test-paired Python; filter by python3 == `cmm run` + `cmm check` + fmt-canonical; emit JSONL with provenance. Proc-gen demoted to fuzzing side-stream (gd-b-oss measured why: syntax-valid nonsense). Feeds finetune-probe and the hf-publish dataset (optional enrichment). P85, deps interp-d.
 - [ ] (backlog) **Hosted fine-tune probe — put cmm INTO weights (no local training)** — Bedrock Claude 3 Haiku SFT / OpenAI hosted / Together-Fireworks OSS; fine-tune + grammar-mask combination hypothesis; deps cheatsheet. User-signaled 2026-06-11.
 - [ ] **Host interface — C FFI, wasm imports, tool/LLM access as stdlib (not grammar)** — Replaces the obsoleted agent-prims chunk under the v0.2 framing: agent capabilities (tool calls, LLM calls, retry/parallel helpers) become a host-interface LIBRARY over C FFI / wasm imports, not language grammar. The language stays a clean general-purpose core; agent affordances are its standard host bindings (MCP-compatible registry injection preserved as a library concern). Budget caps and structured rescuable errors carry over as library/runtime features.
   - deps: interp-d
