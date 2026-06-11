@@ -7,8 +7,6 @@ description = "A machine-first programming language for AI agents - output-token
 homepage = "https://curtlang.com"
 keywords = ["language", "ai-agents", "tokens", "interpreter"]
 categories = ["compilers", "parser-implementations"]
-description = "curt — a machine-first programming language measured in tokens"
-license = "MIT"
 
 [dependencies]
 tiktoken-rs = "0.6"
