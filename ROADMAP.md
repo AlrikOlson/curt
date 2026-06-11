@@ -1,6 +1,6 @@
 <!-- GENERATED VIEW — do not hand-edit. Source of truth is the native think-and-ship
      roadmap (roadmap_* tools / `think-and-ship export`). Regenerated 2026-06-10
-     after oss-foundation: launch-grade repo (license, single-source CI gate). -->
+     after the cheatsheet refresh: three-arm marginal-value experiment (think:39). -->
 
 # Roadmap — cmm-d31a18
 
@@ -8,12 +8,9 @@
 
 - [ ] **grammar-decode B/OpenAI — custom-tools CFG conformance run** *(BLOCKED: needs OPENAI_API_KEY, probed absent 2026-06-10)* — Submit the real curt Lark grammar to OpenAI custom tools; measure conformance over >=100 generations; document size/complexity limits.
   - deps: gd-a
-- [ ] **The ≤2500-token cheat sheet — measured teachability AND model-legibility** — Compress the GP language into a system-prompt cheat sheet (budget raised to <=2500 tokens for the larger surface; Anthropic tokenizer primary) + few-shot pack. Measure TWO things on >=2 models, honestly reported: (a) teachability — fresh sessions write correct programs for 10 held-out tasks (syntax-validity + semantic-correctness rates); (b) model-legibility — comprehension QA over dense curt code the model did NOT write (can it answer behavior questions as accurately as over equivalent Python? — this guards the machine-first surface against the naming/structure comprehension findings). Iterate sheet wording (not the language) up to 3 rounds.
+- [ ] **The ≤2500-token cheat sheet — three-arm marginal-value experiment + packagings** *(redesigned 2026-06-11, think:39)* — gd-b-oss already showed Haiku self-teaching curt 10/10 from raw artifacts, so the question is the sheet's VALUE PER CONTEXT TOKEN: arms = no-help / raw SPEC+corpus / sheet, ≥2 models × 10 held-out tasks, graded mechanically (curt parse/check/run). o200k primary (no Anthropic key, probed). CHEATSHEET.md canonical; docs/llms.txt emitted from it; mcp-server consumes the same source.
   - deps: interp-d
-  - acceptance: Cheat sheet measured <=2500 tokens on both tokenizers
-  - acceptance: Teachability measured across >=2 models, reported whatever the numbers are
-  - acceptance: Model-legibility QA: comprehension accuracy within 5pp of same-program-in-Python or documented as a design problem feeding back to spec
-  - acceptance: Sheet is the canonical source for the future MCP tool description
+  - acceptance: three-arm matrix reported whatever the numbers; marginal-value verdict; legibility QA within 5pp or documented; llms.txt emitted by committed script
 - [ ] **The benchmark — output tokens AND success rate vs Python/Go/Rust (moment of truth)** — 15-20 REAL programming tasks (algorithms, data structures, a parser, text/data processing, a small multi-file module — HumanEval-class plus systems-flavored; EffiBench-X as harness prior art) with executable verifiers. For each task and language (curt w/ cheat sheet, Python, Go, Rust; JS optional): same prompt, model generates, harness executes; record output tokens (o200k_base + Anthropic) and pass/fail; >=2 models, >=3 samples per cell. Report full distributions; split structure-heavy vs payload-heavy. THREE metrics: (1) output tokens per solved task; (2) success rate; (3) INPUT-side re-read cost — tokens to hold the equivalent codebase in context (the compounding economics for maintained software). CARRIES THE KILL CRITERION: if curt success is not within ~10pp of Python after one language-revision cycle, document the negative result and re-scope. One revision cycle in-scope.
   - deps: cheatsheet
   - acceptance: BENCHMARK.md with all cells reported (no cherry-picking), per-model and per-task distributions
