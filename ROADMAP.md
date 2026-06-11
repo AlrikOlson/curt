@@ -1,17 +1,13 @@
 <!-- GENERATED VIEW — do not hand-edit. Source of truth is the native think-and-ship
      roadmap (roadmap_* tools / `think-and-ship export`). Regenerated 2026-06-10
-     after interp-d completed (evaluator; the interpreter is feature-complete). -->
+     after gd-b-oss completed (mask soundness measured; gd-b split oss/openai). -->
 
 # Roadmap — cmm-d31a18
 
 ## Pending
 
-- [ ] **grammar-decode B — runtime demos: OSS zero-error, OpenAI conformance, capability matrix, quality guard** — Environment-gated half of the refresh (think:15): llama.cpp/vLLM zero-error demo (>=200 constrained generations), OpenAI custom-tools conformance (>=100 generations, measured — community caveat: not guaranteed), capability-matrix re-check at execution date, constrained-vs-unconstrained semantic-correctness comparison (strongest after interp-d's evaluator). NEEDS a local model + OPENAI_API_KEY — flag access at start.
+- [ ] **grammar-decode B/OpenAI — custom-tools CFG conformance run** *(BLOCKED: needs OPENAI_API_KEY, probed absent 2026-06-10)* — Submit the real cmm Lark grammar to OpenAI custom tools; measure conformance over >=100 generations; document size/complexity limits.
   - deps: gd-a
-  - acceptance: OSS-runtime demo: 0 parse errors across >=200 constrained generations
-  - acceptance: OpenAI custom-tools demo: conformance rate measured over >=100 generations; limits documented
-  - acceptance: Capability matrix current as of execution date
-  - acceptance: Constrained-vs-unconstrained semantic-correctness comparison on >=20 tasks reported honestly
 - [ ] **The ≤2500-token cheat sheet — measured teachability AND model-legibility** — Compress the GP language into a system-prompt cheat sheet (budget raised to <=2500 tokens for the larger surface; Anthropic tokenizer primary) + few-shot pack. Measure TWO things on >=2 models, honestly reported: (a) teachability — fresh sessions write correct programs for 10 held-out tasks (syntax-validity + semantic-correctness rates); (b) model-legibility — comprehension QA over dense cmm code the model did NOT write (can it answer behavior questions as accurately as over equivalent Python? — this guards the machine-first surface against the naming/structure comprehension findings). Iterate sheet wording (not the language) up to 3 rounds.
   - deps: interp-d
   - acceptance: Cheat sheet measured <=2500 tokens on both tokenizers
@@ -28,6 +24,7 @@
 
 ## Done
 
+- [x] **grammar-decode B/OSS — llama.cpp constrained-decoding demo (local 8B)** — Shipped 2026-06-11 (commit ea6db8e; proof: task:verify-gdb). MASK SOUNDNESS: 0 mid-stream violations / 200 constrained generations (all 31 failures valid prefixes — non-termination only) vs 55 real mid-stream errors in 100 unconstrained. Haiku: naive 7/10; self-taught from repo artifacts 10/10. Four findings: 30% keyword-widening leak → exact prefix-trie NAME in GBNF; llama.cpp grammar-state perf cliff; the termination problem + measured EOS-escape; a real arg-position grammar divergence (if/match as args) fixed across PEG+Lark+GBNF (negatives 12/12).
 - [x] **interp D — evaluator + corpus stdlib + capability IO; cmm run executes the corpus** — Shipped 2026-06-10 (commit 7729652; proof: task:verify-d). 126/126 tests; all 20 corpus programs execute with golden stdout incl. a live TCP smoke test; run-startup 2.06ms; clippy clean. New shared elaboration rule: rescue captures like pipes (`print m["k"] ? 8080` ≡ `print (m["k"] ? 8080)`). Golden-caught bugs: quote-polluted string lexemes (FNV hashed quote bytes), list numeric fields, UInt operand order. Honest limit: `go` is sequential in v0.1 (Rc⇏Send; threads deferred §13). THE INTERPRETER IS COMPLETE: parse | check | fmt | expand | tokens | run.
 - [x] **grammar-decode A — Lark CFG twin + GBNF artifact + machine divergence gate** — Shipped 2026-06-10 (commit 46dc539; proof: task:verify-gda). cmm.lark (explicit whitespace — SPEC §1 adjacency survives as grammar structure; three PEG lookaheads dissolve in CFG form) validated 20/20 corpus + 10/10 negative agreement with the Rust oracle, both first run. cmm.gbnf generated deterministically (terminals pinned; documented keyword-widening — GBNF lacks lookahead). Chain of trust: Rust parser ⇄ grammar.peg ⇄ cmm.lark → cmm.gbnf. Parent grammar-decode obsoleted by split (gd-b carries the model/API demo legs).
 - [x] **interp C — type inference (arity resolution, unions, narrowing) + expand type-reveal + diagnostics** — Shipped 2026-06-10 (commit 2f5e739; proof: task:verify-c). 106/106 tests (27 new goldens), clippy clean, `cmm check` passes 20/20 corpus, startup 3.33ms. Both §2.3 elaboration rules fixed (arity re-nesting, pipe capture); UFCS receiver-last; union narrowing + exhaustiveness with fix-suggesting JSON diagnostics; int→float widening at argument positions only. THE CHECKER CAUGHT A REAL PRECEDENCE BUG in 20_server (31→32 tokens; medians re-measured: Python 1.19× unchanged, Go 2.38→2.34×) — the trust dividend, demonstrated. Parenthesized-lambda parser gap fixed; grammar.peg synced.
@@ -38,6 +35,7 @@
 
 ## Backlog
 
+- [ ] (backlog) **Hosted fine-tune probe — put cmm INTO weights (no local training)** — Bedrock Claude 3 Haiku SFT / OpenAI hosted / Together-Fireworks OSS; fine-tune + grammar-mask combination hypothesis; deps cheatsheet. User-signaled 2026-06-11.
 - [ ] **Host interface — C FFI, wasm imports, tool/LLM access as stdlib (not grammar)** — Replaces the obsoleted agent-prims chunk under the v0.2 framing: agent capabilities (tool calls, LLM calls, retry/parallel helpers) become a host-interface LIBRARY over C FFI / wasm imports, not language grammar. The language stays a clean general-purpose core; agent affordances are its standard host bindings (MCP-compatible registry injection preserved as a library concern). Budget caps and structured rescuable errors carry over as library/runtime features.
   - deps: interp-d
   - acceptance: C FFI + wasm import surface specified and implemented for the reference runtime
