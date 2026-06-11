@@ -1,0 +1,12 @@
+sentence = "the cat sat on the mat with the cat"
+words = sentence.split " "
+freq = words.counts
+freq_list = []
+for pair in freq.pairs {
+  freq_list += [{word: pair.k, count: pair.v}]
+}
+freq_list = freq_list.sort (x -> -x.count)
+top2 = freq_list | top 2 .count
+for item in top2 {
+  print "{item.word} {item.count}"
+}

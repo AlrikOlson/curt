@@ -539,13 +539,31 @@ impl Checker {
             Expr::TName(n) => self.types.get(n).cloned().ok_or_else(|| err("unknown_name", &format!("type `{n}` is not declared"), "declare it: type Name = {{...}}")),
             Expr::Proj(_) => Ok(Ty::Fn { params: vec![Ty::Any], ret: Box::new(Ty::Any) }),
             Expr::List(items) => {
+                // homogeneous literals unify into one element type; mixed
+                // literals widen to a union (spec-truth: [7, "ok"] is a valid
+                // [int | str] — checker and evaluator must agree)
+                let tys: Res<Vec<Ty>> = items.iter().map(|i| self.expr(i)).collect();
+                let tys = tys?;
                 let elem = self.fresh();
-                for i in items {
-                    let it = self.expr(i)?;
-                    self.unify(&it, &elem)?;
+                let mut homogeneous = true;
+                for t in &tys {
+                    if self.unify(t, &elem).is_err() {
+                        homogeneous = false;
+                        break;
+                    }
                 }
-                // empty {} literal is a map; empty [] is a generic list
-                Ok(Ty::List(Box::new(elem)))
+                if homogeneous {
+                    // empty {} literal is a map; empty [] is a generic list
+                    return Ok(Ty::List(Box::new(elem)));
+                }
+                let mut parts: Vec<Ty> = Vec::new();
+                for t in &tys {
+                    let r = self.resolve(t);
+                    if !parts.iter().any(|p| p.to_string() == r.to_string()) {
+                        parts.push(r);
+                    }
+                }
+                Ok(Ty::List(Box::new(Ty::Union(parts))))
             }
             Expr::Tuple(items) => {
                 let ts: Res<Vec<Ty>> = items.iter().map(|i| self.expr(i)).collect();
@@ -650,6 +668,7 @@ impl Checker {
                 }
                 Ok(self.resolve(&vt))
             }
+            Expr::Paren(inner) => self.expr(inner),
             Expr::Propagate(inner) => self.expr(inner),
             Expr::If { cond, then, els } => {
                 let ct = self.expr(cond)?;
@@ -678,6 +697,17 @@ impl Checker {
 
     /// Elaboration rule 1: flat-application arity resolution (SPEC §2.3).
     fn app(&mut self, head: &Expr, args: &[Expr]) -> Res<Ty> {
+        // `range` is 1-or-2 ary (SPEC §5: range n / range a b) — bypass the
+        // surplus re-nesting that mis-elaborated `range 1 16` (spec-truth)
+        if let Expr::Name(n) = head {
+            if n == "range" && args.len() == 2 {
+                for a in args {
+                    let at = self.expr(a)?;
+                    self.fits(&at, &Ty::Int)?;
+                }
+                return Ok(Ty::List(Box::new(Ty::Int)));
+            }
+        }
         let ht = self.expr(head)?;
         match self.resolve(&ht) {
             Ty::Fn { params, ret } => {
@@ -927,32 +957,43 @@ pub fn rewrite_pipes(e: &Expr) -> Expr {
 fn rewrite_sugar(e: &Expr) -> Expr {
     match e {
         Expr::Pipe { stages } => {
+            // explicit parens on the first stage are a grouping barrier:
+            // `(f x) | g` pipes the RESULT of f x, never captures x
+            // (token-bench interpreter bug, spec-truth)
+            let first_grouped = matches!(stages[0], Expr::Paren(_));
             let stages: Vec<Expr> = stages.iter().map(rewrite_sugar).collect();
-            if let Expr::App { head, args } = &stages[0] {
-                if !args.is_empty() {
-                    let mut new_args = args.clone();
-                    let last = new_args.pop().unwrap();
-                    let mut inner = vec![last];
-                    inner.extend(stages[1..].iter().cloned());
-                    new_args.push(Expr::Pipe { stages: inner });
-                    return Expr::App { head: head.clone(), args: new_args };
+            if !first_grouped {
+                if let Expr::App { head, args } = &stages[0] {
+                    if !args.is_empty() {
+                        let mut new_args = args.clone();
+                        let last = new_args.pop().unwrap();
+                        let mut inner = vec![last];
+                        inner.extend(stages[1..].iter().cloned());
+                        new_args.push(Expr::Pipe { stages: inner });
+                        return Expr::App { head: head.clone(), args: new_args };
+                    }
                 }
             }
             Expr::Pipe { stages }
         }
         Expr::Rescue { value, fallback } => {
+            let grouped = matches!(**value, Expr::Paren(_));
             let value = rewrite_sugar(value);
             let fallback = Box::new(rewrite_sugar(fallback));
-            if let Expr::App { head, args } = &value {
-                if !args.is_empty() {
-                    let mut new_args = args.clone();
-                    let last = new_args.pop().unwrap();
-                    new_args.push(Expr::Rescue { value: Box::new(last), fallback });
-                    return Expr::App { head: head.clone(), args: new_args };
+            if !grouped {
+                if let Expr::App { head, args } = &value {
+                    if !args.is_empty() {
+                        let mut new_args = args.clone();
+                        let last = new_args.pop().unwrap();
+                        new_args.push(Expr::Rescue { value: Box::new(last), fallback });
+                        return Expr::App { head: head.clone(), args: new_args };
+                    }
                 }
             }
             Expr::Rescue { value: Box::new(value), fallback }
         }
+        // parens have done their job (grouping + capture barrier) — strip
+        Expr::Paren(inner) => rewrite_sugar(inner),
         other => map_expr(other, &rewrite_sugar),
     }
 }
@@ -975,6 +1016,7 @@ fn map_expr(e: &Expr, f: &dyn Fn(&Expr) -> Expr) -> Expr {
         Expr::Unary { op, expr } => Expr::Unary { op: op.clone(), expr: Box::new(f(expr)) },
         Expr::Binary { op, lhs, rhs } => Expr::Binary { op: op.clone(), lhs: Box::new(f(lhs)), rhs: Box::new(f(rhs)) },
         Expr::Rescue { value, fallback } => Expr::Rescue { value: Box::new(f(value)), fallback: Box::new(f(fallback)) },
+        Expr::Paren(inner) => Expr::Paren(Box::new(f(inner))),
         Expr::Propagate(inner) => Expr::Propagate(Box::new(f(inner))),
         Expr::If { cond, then, els } => Expr::If { cond: Box::new(f(cond)), then: then.clone(), els: els.as_ref().map(|e| Box::new(f(e))) },
         Expr::Match { subject, arms } => Expr::Match { subject: Box::new(f(subject)), arms: arms.iter().map(|(p, b)| (p.clone(), f(b))).collect() },

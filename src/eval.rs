@@ -311,9 +311,11 @@ impl Interp {
             Expr::Bool(b) => Ok(Value::Bool(*b)),
             Expr::Unit => Ok(Value::Unit),
             Expr::Name(n) => match n.as_str() {
-                "fs" => Ok(Value::Ns("fs")),
-                "net" => Ok(Value::Ns("net")),
-                "args" => Ok(Value::List(Rc::new(RefCell::new(
+                // user bindings shadow capability namespaces (spec-truth:
+                // `fs = ...` then `fs.max` must see the user's list)
+                "fs" if env.get(n).is_none() => Ok(Value::Ns("fs")),
+                "net" if env.get(n).is_none() => Ok(Value::Ns("net")),
+                "args" if env.get(n).is_none() => Ok(Value::List(Rc::new(RefCell::new(
                     self.args.iter().map(|a| Value::Str(Rc::new(a.clone()))).collect(),
                 )))),
                 _ => env
@@ -415,6 +417,7 @@ impl Interp {
                     other => Ok(other),
                 }
             }
+            Expr::Paren(inner) => self.expr(inner, env),
             Expr::Propagate(inner) => {
                 let v = self.expr(inner, env)?;
                 match v {
@@ -506,6 +509,9 @@ impl Interp {
     fn arity(&self, f: &Value) -> Option<usize> {
         match f {
             Value::Fn(c) => Some(c.params.len()),
+            // range is 1-or-2 ary (SPEC §5); no fixed arity means no
+            // surplus re-nesting, the builtin validates its own args
+            Value::Builtin("range") => None,
             Value::Builtin(name) => builtin_arity(name),
             _ => None,
         }
@@ -1157,6 +1163,12 @@ fn binop(op: &str, l: &Value, r: &Value) -> R<Value> {
     // + concatenates strings
     match (l, r) {
         (Str(a), Str(b)) if op == "+" => Ok(Str(Rc::new(format!("{a}{b}")))),
+        // list concatenation (spec-truth: top benchmark failure cause)
+        (List(a), List(b)) if op == "+" => {
+            let mut out = a.borrow().clone();
+            out.extend(b.borrow().iter().cloned());
+            Ok(List(Rc::new(RefCell::new(out))))
+        }
         (l2, r2) if matches!(l2, UInt(_)) || matches!(r2, UInt(_)) => {
             let as_u = |v: &Value| match v {
                 UInt(u) => Some(*u),

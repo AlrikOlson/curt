@@ -1,0 +1,7 @@
+s = "the quick brown fox jumps over the lazy dog"
+vowels = "aeiou"
+cnt = 0
+for c in s.chars {
+  if c in vowels { cnt += 1 }
+}
+print cnt

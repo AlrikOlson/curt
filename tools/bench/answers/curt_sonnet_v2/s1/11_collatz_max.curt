@@ -1,0 +1,23 @@
+collatz_steps n = {
+  steps = 0
+  val = n
+  while val != 1 {
+    if val - (val / 2) * 2 == 0 {
+      val = val / 2
+    } else {
+      val = 3 * val + 1
+    }
+    steps += 1
+  }
+  steps
+}
+best_n = 1
+best_s = 0
+for n in range 1 11 {
+  s = collatz_steps n
+  if s > best_s {
+    best_n = n
+    best_s = s
+  }
+}
+print "{best_n} {best_s}"

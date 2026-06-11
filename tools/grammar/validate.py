@@ -80,7 +80,7 @@ def main() -> int:
             print(f"DISAGREE {snippet!r}: lark_rejects={l_rej} rust_rejects={r_rej}")
     print(f"negative agreement: {agree}/{len(NEGATIVE)}")
 
-    good = ok == len(corpus) == 20 and agree == len(NEGATIVE)
+    good = ok == len(corpus) >= 20 and agree == len(NEGATIVE)
     return 0 if good else 1
 
 

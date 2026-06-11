@@ -34,10 +34,10 @@ print greet "ana"               # application is juxtaposition: f x y
   `xs | keep (x -> x > 1) | sort`.
 - Application binds tighter than operators: `c.write x + y` is
   `(c.write x) + y`.
-- A pipe after a call captures the call's LAST ARGUMENT, not its result:
-  `row.split "," | sum` pipes `","` — WRONG. Always wrap the call before
-  piping: `(row.split ",") | sum`. Rule: every pipeline starts from a bare
-  value or a parenthesized expression, never from an open call.
+- A pipe after an OPEN call captures the call's LAST ARGUMENT, not its
+  result: `row.split "," | sum` pipes `","` — WRONG. Parentheses are a
+  capture barrier: `(row.split ",") | sum` pipes the split result. Rule:
+  every pipeline starts from a bare value or a parenthesized expression.
 - An `if`/`match` expression can't sit bare as a call argument — bind it
   first (`word = if ... ; print word`) or parenthesize.
 
@@ -53,8 +53,12 @@ print greet "ana"               # application is juxtaposition: f x y
 
 Inference is total — annotate nothing (except `pub`/FFI). Primitives `int
 float str bool bytes`. Lists `[1,2]`, tuples `(1, "a")` (fields `.0 .1`),
-records. Maps have no literal in v0.1 — they arrive from `counts`, `.json`,
-`group`; index `m["k"]`, rescue a missing key: `m["k"] ? 0`. Records:
+records. `xs + ys` concatenates lists; `acc += [x]` appends. A mixed
+literal like `[7, "ok"]` is a `[int | str]` union list. Multiline list
+literals are fine (newlines inside `[ ]` and `( )` are plain whitespace).
+Maps have no literal in v0.1 — they arrive from `counts`, `.json`,
+`group`; index `m["k"]`, rescue a missing key: `m["k"] ? 0`; iterate
+`m.pairs` which yields records with fields `.k` and `.v`. Records:
 
 ```
 type Pt = {x float, y float}
@@ -79,7 +83,8 @@ is integer division; convert with `.float` `.int`.
 if c { a } else { b }           # else optional; else if chains
 while c { ... }
 for x in xs { ... }             # lists, maps (pairs), strings (chars)
-for i in range 10 { ... }       # 0..9 (range takes ONE arg in v0.1)
+for i in range 10 { ... }       # 0..9; range 1 16 = 1..15
+                                # no continue/break — restructure the loop
 match v { ... }
 go f x                          # spawn lightweight thread
 ```
@@ -108,6 +113,9 @@ Diagnostics are single-line JSON with a `fix` field — apply it verbatim.
   c.write`
 - `keep` = filter. `top n .f` = sort desc by `.f`, take n. `group .f` →
   list of `{k, v}`. `counts` = frequency map. `fold init acc x -> e`.
+- There is NO `contains` (membership is `x in s` — strings and lists), NO
+  key function on `sort`/`min`/`max` (use `top n (x -> key)`), NO
+  `split ""` for characters (use `.chars`).
 
 ## Worked examples
 
@@ -142,5 +150,6 @@ dist a b = ((a.x-b.x)**2 + (a.y-b.y)**2).sqrt
 
 No `def lambda import return elif try/except f"" [x for x in]`. No `:` 
 after headers — braces. No `len(x)` — `x.len`. Slices `xs[1:]` exist.
-`and or not` (not `&& || !`). `true false`. The parser forgives common
-slips (`return`, `elif`, `f(x, y)`, `True`) but emit canonical forms.
+`and or not` (not `&& || !`). `true false`. Strings are double-quoted
+(`"a"`, never `'a'`). The parser forgives common slips (`return`, `elif`,
+`f(x, y)`, `True`, `++`, `'a'`) but emit canonical forms.

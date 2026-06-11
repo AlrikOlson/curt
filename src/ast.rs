@@ -62,6 +62,9 @@ pub enum Expr {
     Unary { op: String, expr: Box<Expr> },
     Binary { op: String, lhs: Box<Expr>, rhs: Box<Expr> },
     Pipe { stages: Vec<Expr> },
+    /// explicit parentheses — a grouping barrier for the pipe/rescue capture
+    /// rewrite (SPEC §2.3); stripped by `rewrite_pipes` before eval/check
+    Paren(Box<Expr>),
     /// spaced binary `a ? b`
     Rescue { value: Box<Expr>, fallback: Box<Expr> },
     /// glued postfix `x?`

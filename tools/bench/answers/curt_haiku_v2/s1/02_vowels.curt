@@ -1,0 +1,8 @@
+s = "the quick brown fox jumps over the lazy dog"
+count = 0
+for c in s.chars {
+  if c in "aeiou" {
+    count += 1
+  }
+}
+print count

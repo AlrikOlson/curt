@@ -106,9 +106,12 @@ projatom: "." NAME
 recordlit: TNAME "{" _ws field (_ws "," _ws field)* _ws "}"
 anonrecord: ("{" _ws field (_ws "," _ws field)* _ws "}") | ("{" _ws "}")
 field: NAME ":" _ws expr
-list: ("[" _ws expr (_ws "," _ws expr)* _ws "]") | ("[" _ws "]")
-tuple: "(" _ws expr (_ws "," _ws expr)+ _ws ")"
-paren: "(" _ws (lambda | expr) _ws ")"
+// brackets suspend statement separation (spec-truth): canonical multiline
+// layout allows a newline after '[' / '(', after commas, and before ']' / ')'
+_bws: NL | WS?
+list: ("[" _bws expr (_bws "," _bws expr)* _bws "]") | ("[" _bws "]")
+tuple: "(" _bws expr (_bws "," _bws expr)+ _bws ")"
+paren: "(" _bws (lambda | expr) _bws ")"
 
 ifexpr: "if" ws1 hexpr _ws block (_ws "else" _ws (ifexpr | block))?
 matchexpr: "match" ws1 hexpr _ws "{" blockpad arm (armsep arm)* blockpad "}"

@@ -39,3 +39,4 @@ corpus_test!(c17_export_ffi, "17_export_ffi.curt");
 corpus_test!(c18_wordfreq, "18_wordfreq.curt");
 corpus_test!(c19_parser, "19_parser.curt");
 corpus_test!(c20_server, "20_server.curt");
+corpus_test!(c21_append, "21_append.curt");

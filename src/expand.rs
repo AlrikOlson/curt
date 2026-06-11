@@ -205,6 +205,7 @@ fn expr(e: &Expr, depth: usize) -> String {
         Expr::Rescue { value, fallback } => {
             format!("({} ? {})", expr(value, depth), expr(fallback, depth))
         }
+        Expr::Paren(inner) => format!("({})", expr(inner, depth)),
         Expr::Propagate(inner) => format!("({}?)", expr(inner, depth)),
         Expr::If { cond, then, els } => {
             let mut s = format!("if {} {{\n", expr(cond, depth));

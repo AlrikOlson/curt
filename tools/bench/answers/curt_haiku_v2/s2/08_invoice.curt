@@ -1,0 +1,18 @@
+items = [
+  {name: "widget", qty: 4, price: 2.5},
+  {name: "gizmo", qty: 2, price: 7.25},
+  {name: "bolt", qty: 10, price: 0.1}
+]
+total = 0.0
+maxItem = ""
+maxTotal = 0.0
+for item in items {
+  lineTotal = item.qty.float * item.price
+  total += lineTotal
+  if lineTotal > maxTotal {
+    maxTotal = lineTotal
+    maxItem = item.name
+  }
+}
+print total
+print maxItem

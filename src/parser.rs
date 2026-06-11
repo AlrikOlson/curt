@@ -716,7 +716,9 @@ impl Parser {
                     Ok(Expr::Tuple(items))
                 } else {
                     self.expect(&Tok::RParen, ")", "close the parenthesis")?;
-                    Ok(first)
+                    // mark explicit grouping: the pipe/rescue capture rewrite
+                    // must not reach inside `(f x) | g` (token-bench bug)
+                    Ok(Expr::Paren(Box::new(first)))
                 }
             }
             Tok::LBrace if !self.in_header => {

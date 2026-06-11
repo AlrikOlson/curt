@@ -119,6 +119,7 @@ pub fn lex_raw(src: &str) -> Result<Vec<Token>, Diag> {
     let mut line: u32 = 1;
     let mut col: u32 = 1;
     let mut prev_end = usize::MAX; // byte index just past the previous token
+    let mut bracket_depth: u32 = 0; // [ ( nesting — suspends Newline tokens
 
     macro_rules! push {
         ($tok:expr, $start:expr, $startcol:expr) => {{
@@ -144,6 +145,15 @@ pub fn lex_raw(src: &str) -> Result<Vec<Token>, Diag> {
                 out.push(Token { tok: Tok::Comment(text), line, col: startcol, glued: false, blanks: 0 });
             }
             b'\n' => {
+                // inside [ ] / ( ) a newline is plain whitespace, not a
+                // statement separator (multiline literals, spec-truth)
+                if bracket_depth > 0 {
+                    i += 1;
+                    line += 1;
+                    col = 1;
+                    prev_end = usize::MAX;
+                    continue;
+                }
                 // one Newline token per run; extra newlines counted as blanks
                 match out.last_mut() {
                     Some(t) if matches!(t.tok, Tok::Newline) => {
@@ -156,6 +166,30 @@ pub fn lex_raw(src: &str) -> Result<Vec<Token>, Diag> {
                 line += 1;
                 col = 1;
                 prev_end = usize::MAX;
+            }
+            b'\'' => {
+                // Postel: 'x' (single character, optionally escaped) is the
+                // C/Rust char-literal habit — canonicalize to a 1-char string
+                // (token-bench: 2 cells failed on '\''-vowel comparisons)
+                let (start, startcol) = (i, col);
+                let rest = &b[i + 1..];
+                let (ch, len) = match rest {
+                    [b'\\', e, b'\'', ..] => (format!("\\{}", *e as char), 4),
+                    [c2, b'\'', ..] if *c2 != b'\'' && *c2 != b'\n' => ((*c2 as char).to_string(), 3),
+                    _ => {
+                        return Err(Diag::at(
+                            "unexpected_char",
+                            line,
+                            col,
+                            "character '\\'' is not part of curt",
+                            "use double quotes for strings",
+                        ))
+                    }
+                };
+                push!(Tok::Str(format!("\"{ch}\"")), start, startcol);
+                i += len;
+                col += len as u32;
+                prev_end = i;
             }
             b'"' => {
                 let (start, startcol) = (i, col);
@@ -283,6 +317,7 @@ pub fn lex_raw(src: &str) -> Result<Vec<Token>, Diag> {
                     "**" => (Tok::StarStar, 2),
                     "&&" => (Tok::And, 2), // Postel
                     "||" => (Tok::Or, 2),  // Postel
+                    "++" => (Tok::Plus, 2), // Postel: string-concat habit (token-bench)
                     _ => match c {
                         b'=' => (Tok::Assign, 1),
                         b'<' => (Tok::Lt, 1),
@@ -317,6 +352,14 @@ pub fn lex_raw(src: &str) -> Result<Vec<Token>, Diag> {
                         }
                     },
                 };
+                // newline-in-brackets: [ and ( suspend statement separation
+                // (multiline list/call literals — token-bench failure 06/08);
+                // { } untouched: blocks NEED newlines as separators
+                match tok {
+                    Tok::LBrack | Tok::LParen => bracket_depth += 1,
+                    Tok::RBrack | Tok::RParen => bracket_depth = bracket_depth.saturating_sub(1),
+                    _ => {}
+                }
                 push!(tok, start, startcol);
                 i += len;
                 col += len as u32;

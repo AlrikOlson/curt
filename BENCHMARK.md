@@ -115,7 +115,30 @@ pipe-capture semantics, the interpreter bug) and put the missing facts
 into the sheet, or the Python gap will not close. The revision content
 is now fully measured, not speculative.
 
-## Reproduce
+## Post-revision re-run (spec-truth, 2026-06-11)
+
+The one revision cycle was implemented (`spec-truth`: list `+`, paren
+capture barrier, two-arg `range`, newline-in-brackets, mixed-list unions,
+Postel `++`/`'x'`, capability shadowing, CHEATSHEET v2) and the curt lanes
+re-ran on the SAME frozen tasks with fresh single-shot generations
+(`answers/curt_*_v2/`):
+
+| | v0.1 + sheet v1 (1-shot) | v0.1-revised + sheet v2 (1-shot) | Python (1-shot) |
+|---|---|---|---|
+| haiku | 29/45 (64%) | **37/45 (82%)** | 45/45 |
+| sonnet | 37/45 (82%) | **45/45 (100%)** | 45/45 |
+
+**Sonnet reaches Python parity on success with NO repair round.** Haiku
+gains +17.8pp single-shot; its residual failures are now idiom-invention
+(sort-with-key variants on 09_topwords ×3, `else` placement) rather than
+missing language surface. Caveat: the delta measures language fixes +
+sheet v2 jointly (the revision changed both, deliberately — that was the
+chunk). Token side: unchanged at parity (python/curt per-task median
+0.95×, n=15, vs 0.96× before) — the success gap closed without
+spending tokens, but the targeted 1.3× token advantage over Python
+remains future work (idiom density: models still write loop-heavy curt).
+Reference-corpus median improved 1.19× → 1.12× (n=21) with the new
+append-exercising corpus program.
 
 ```
 cargo build --release

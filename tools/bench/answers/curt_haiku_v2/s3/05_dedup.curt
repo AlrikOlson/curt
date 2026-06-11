@@ -1,0 +1,10 @@
+xs = [3, 1, 3, 2, 1, 4]
+seen = []
+result = []
+for x in xs {
+  if not (x in seen) {
+    result += [x]
+    seen += [x]
+  }
+}
+print result.join " "

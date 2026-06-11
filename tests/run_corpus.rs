@@ -127,6 +127,11 @@ fn golden_19_parser() {
 }
 
 #[test]
+fn golden_21_append() {
+    golden("21_append.curt", &[], &[], "3 1 4 1 5 9\ni7\nsok\n29\n");
+}
+
+#[test]
 fn golden_20_server_smoke() {
     // start the server, connect, send a line, expect it uppercased
     let mut child = Command::new(env!("CARGO_BIN_EXE_curt"))

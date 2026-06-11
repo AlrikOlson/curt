@@ -102,9 +102,12 @@ projatom    = "." name
 recordlit   = tname "{" _ field (_ "," _ field)* _ "}"
 anonrecord  = ("{" _ field (_ "," _ field)* _ "}") / ("{" _ "}")
 field       = name ":" _ expr
-list        = ("[" _ expr (_ "," _ expr)* _ "]") / ("[" _ "]")
-tuple       = "(" _ expr (_ "," _ expr)+ _ ")"
-paren       = "(" _ (lambda / expr) _ ")"
+# brackets suspend statement separation (spec-truth): canonical multiline
+# layout allows a newline after '[' / '(', after commas, and before ']' / ')'
+bws         = nl / _
+list        = ("[" bws expr (bws "," bws expr)* bws "]") / ("[" bws "]")
+tuple       = "(" bws expr (bws "," bws expr)+ bws ")"
+paren       = "(" bws (lambda / expr) bws ")"
 
 ifexpr      = "if" __ hexpr _ block (_ "else" _ (ifexpr / block))?
 matchexpr   = "match" __ hexpr _ "{" (nl / _) arm (armsep arm)* (nl / _) "}"

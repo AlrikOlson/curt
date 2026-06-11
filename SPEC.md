@@ -32,6 +32,12 @@ measurements; the canonical numbers are §11 of this spec.
   significant** (measured: `"\n    "` = 2 tokens vs `"\n"` = 1; and models
   corrupt indentation in surgical edits). The canonical formatter emits
   2-space indents for human viewing; the grammar ignores them.
+- **Brackets suspend statement separation** *(amended in spec-truth after
+  token-bench measured 2 failed cells)*: inside `[ ]` and `( )` a newline
+  is plain whitespace, so multiline list literals and calls are legal.
+  `{ }` is untouched — blocks need newlines as separators. Multiline
+  layout (newline after `[`/`(`, after commas, before `]`/`)`) is accepted
+  input; `curt fmt` flattens literals to one line (layout normalization).
 - **Adjacency is semantic** *(amended in interp-b after the machine-validated
   grammar surfaced it)*: whether two tokens touch changes meaning in exactly
   three construct families — `x.f` (field access, glued) vs `x .f` (spaced:
@@ -68,6 +74,10 @@ the structural rules an implementer must honor:
    preceding juxtaposition — `print us | keep .active` elaborates to
    `print (us | keep .active)`; subsequent stages apply with the piped value
    appended as their final argument (`x | top 3 .v` ≡ `top 3 .v x`).
+   **Explicit parentheses are a capture barrier** *(fixed in spec-truth —
+   token-bench found the elaborator reaching inside parens)*:
+   `(s.split ",") | sum` pipes the call's RESULT; the same barrier applies
+   to spaced rescue (`(m["k"]) ? 0`).
    *Exhaustiveness looseness (v0.1):* a literal arm in `match` counts as
    covering its member type; tightening is deferred (§13). *Sharp edges
    (measured in interp-c):* a lambda body extends through `|` — parenthesize
@@ -100,9 +110,16 @@ the structural rules an implementer must honor:
 - **Primitives:** `int` (i64), `float` (f64), `str`, `bool`, `bytes`; sized
   `i8…u64` for low-level work. `unit` is the value of statements (never
   written).
-- **Composites:** lists `[T]`, maps `{K: V}` (string-keyed maps are the
-  literal default), tuples `(A, B, …)`, records (nominal via `type Name =
-  {field T, …}`, or structural when anonymous), functions.
+- **Composites:** lists `[T]`, maps `{K: V}`, tuples `(A, B, …)`, records
+  (nominal via `type Name = {field T, …}`, or structural when anonymous),
+  functions. **Erratum (spec-truth):** maps have **no literal in v0.1** —
+  earlier drafts claimed string-keyed map literals; the toolchain never
+  implemented them and the corpus never used one. Maps arrive from
+  `counts`, `.json`, `group`; the literal is deferred (§13).
+- **Mixed list literals widen to unions** *(amended in spec-truth)*:
+  `[7, "ok"]` is `[int | str]` — the checker and evaluator agree (the
+  checker previously rejected what the evaluator ran; measured in the
+  cheatsheet experiment).
 - **Untagged unions:** `A | B` — the measured answer to the ADT tax
   (DESIGN.md §1). No constructors; values carry their runtime type tag;
   `match` narrows (§5). A union is well-formed only over distinguishable
@@ -124,6 +141,10 @@ the structural rules an implementer must honor:
 
 - `x = e` binds or rebinds (shadowing within a block is rebinding; capture in
   closures is by reference to the binding). `x += e` etc. compound-assign.
+  User bindings shadow the capability namespaces (`fs`, `net`, `args`).
+- **`+` concatenates lists** as well as strings *(added in spec-truth:
+  the missing list append was the single largest benchmark failure cause,
+  8 of 24 cells)*: `acc += [x]` appends; corpus 21 exercises it.
 - `(a, b) = e` destructures tuples; works in `for` patterns.
 - **Value semantics at boundaries:** lists/maps/records assign and pass by
   reference (RC, §6) but the stdlib is persistent-style where cheap; v0.1
@@ -211,7 +232,9 @@ shown with receiver style; UFCS: `x.f a` ≡ `f x a`):
 The parser accepts, and `fmt` canonicalizes (never errors): `==`←`=` (in
 expression position), `&&`→`and`, `||`→`or`, `!x`→`not x` (expression
 position), `True/False/None`→`true/false/()`, `return`→`ret`, `elif`→`else
-if`, trailing commas, `f(x, y)`→`f x y` (paren-call form), smart quotes.
+if`, trailing commas, `f(x, y)`→`f x y` (paren-call form), smart quotes,
+`++`→`+` and `'x'`→`"x"` *(added in spec-truth: both measured as recurring
+model slips in token-bench)*.
 Rationale: language-confusion drift toward Python/Rust is measured behavior
 (arXiv 2503.13620); recoverable habits must never cost a repair loop.
 
@@ -241,13 +264,16 @@ Rationale: language-confusion drift toward Python/Rust is measured behavior
 | 18 wordfreq | 31 | 39 (1.26×) | 155 (5.00×) | 157 (5.06×) |
 | 19 parser | 257 | 234 (0.91×) | 416 (1.62×) | 439 (1.71×) |
 | 20 server | 32 | 55 (1.72×) | 94 (2.94×) | 123 (3.84×) |
+| 21 append | 103 | 109 (1.06×) | — | — |
 
-**Medians: 1.19× vs Python (n=20) · 2.34× vs Go (n=6) · 2.69× vs Rust (n=6;
+**Medians: 1.12× vs Python (n=21) · 2.34× vs Go (n=6) · 2.69× vs Rust (n=6;
 compiled subsets are small-n and flagged as such).** Honest distribution: curt
-beats Python on 13/20, ties 2, loses 5 — the losses are pure-algorithm
+beats Python on 14/21, ties 2, loses 5 — the losses are pure-algorithm
 snippets (0.91–0.94×) and `17_export` (0.69×: Python has no export ceremony
 at all). This is consistent with DESIGN.md's parity finding and sits inside
-the token-bench targets (parity-to-1.2× vs Python; ≥1.8× vs Go).
+the token-bench targets (parity-to-1.2× vs Python; ≥1.8× vs Go). Note the
+companion measured caveat (BENCHMARK.md): on model-GENERATED code the
+Python ratio is 1.00× — reference-corpus ratios do not transfer directly.
 
 Per-construct prices: `count.py --constructs` (34 constructs; the regression
 gate fails any grammar/stdlib change that worsens the corpus).
@@ -271,7 +297,10 @@ gate fails any grammar/stdlib change that worsens the corpus).
 Zero-argument call syntax under juxtaposition; channels/`select`;
 copy-on-write experiments at mutation boundaries; surface generics; arena
 annotations for hot paths; equation-head patterns; `^` precedence tier;
-trait/interface story; string `bytes` zero-copy views.
+trait/interface story; string `bytes` zero-copy views; **map literals**
+(moved here in spec-truth — see §3 erratum); pipe-capture semantics
+revisit (capture-the-result-by-default was the dominant model expectation
+in three experiments; a measured tournament for v0.2).
 
 ---
 *Lineage: DESIGN.md v0.2 (direction, user-approved) → this spec (canonical).
