@@ -1,6 +1,6 @@
 <!-- GENERATED VIEW — do not hand-edit. Source of truth is the native think-and-ship
      roadmap (roadmap_* tools / `think-and-ship export`). Regenerated 2026-06-10
-     after gd-b-oss completed (mask soundness measured; gd-b split oss/openai). -->
+     after the OSS/HF launch refresh (oss-foundation + hf-publish added; launch runway). -->
 
 # Roadmap — cmm-d31a18
 
@@ -8,6 +8,11 @@
 
 - [ ] **grammar-decode B/OpenAI — custom-tools CFG conformance run** *(BLOCKED: needs OPENAI_API_KEY, probed absent 2026-06-10)* — Submit the real cmm Lark grammar to OpenAI custom tools; measure conformance over >=100 generations; document size/complexity limits.
   - deps: gd-a
+- [ ] **OSS foundation — dual license, CI running every gate, contributor hygiene (AAA repo baseline)** *(added 2026-06-11, think:29)* — Repo has NO LICENSE/CI/CONTRIBUTING. MIT OR Apache-2.0 dual; GitHub Actions running ALL gates (cargo, PEG, lark+negatives, count regression, GBNF determinism); CONTRIBUTING.md encoding the doctrine; release binaries.
+  - deps: interp-d
+  - acceptance: CI green on fresh checkout, every gate, none weakened
+- [ ] **Hugging Face publish — org, dataset repo, GitHub mirror, launch** *(added 2026-06-11, think:29)* — AFTER token-bench (launch carries measured numbers) and naming (gates public identifiers). Dataset repo: corpus + grammars + task suites + results; measured-claims-only launch.
+  - deps: token-bench, oss-foundation, naming
 - [ ] **The ≤2500-token cheat sheet — measured teachability AND model-legibility** — Compress the GP language into a system-prompt cheat sheet (budget raised to <=2500 tokens for the larger surface; Anthropic tokenizer primary) + few-shot pack. Measure TWO things on >=2 models, honestly reported: (a) teachability — fresh sessions write correct programs for 10 held-out tasks (syntax-validity + semantic-correctness rates); (b) model-legibility — comprehension QA over dense cmm code the model did NOT write (can it answer behavior questions as accurately as over equivalent Python? — this guards the machine-first surface against the naming/structure comprehension findings). Iterate sheet wording (not the language) up to 3 rounds.
   - deps: interp-d
   - acceptance: Cheat sheet measured <=2500 tokens on both tokenizers
