@@ -1,6 +1,6 @@
 <!-- GENERATED VIEW — do not hand-edit. Source of truth is the native think-and-ship
      roadmap (roadmap_* tools / `think-and-ship export`). Regenerated 2026-06-10
-     after the training-data refresh (py2cmm transpiler route decided, think:32). -->
+     after accepted reprios: naming P33 + playground P70, both pending. -->
 
 # Roadmap — cmm-d31a18
 
@@ -8,6 +8,7 @@
 
 - [ ] **grammar-decode B/OpenAI — custom-tools CFG conformance run** *(BLOCKED: needs OPENAI_API_KEY, probed absent 2026-06-10)* — Submit the real cmm Lark grammar to OpenAI custom tools; measure conformance over >=100 generations; document size/complexity limits.
   - deps: gd-a
+- [ ] **Naming + identity decision (cmm vs C-- collision)** *(accepted reprio 120→33, now pending — leads the launch runway)* — USER DECISION: keep `cmm` (collides with GHC's C-- IR) vs rebrand (pith/terse/lac); check domain + registry availability; pick file extension; one-paragraph identity statement.
 - [ ] **OSS foundation — dual license, CI running every gate, contributor hygiene (AAA repo baseline)** *(added 2026-06-11, think:29)* — Repo has NO LICENSE/CI/CONTRIBUTING. MIT OR Apache-2.0 dual; GitHub Actions running ALL gates (cargo, PEG, lark+negatives, count regression, GBNF determinism); CONTRIBUTING.md encoding the doctrine; release binaries.
   - deps: interp-d
   - acceptance: CI green on fresh checkout, every gate, none weakened
@@ -57,10 +58,6 @@
   - acceptance: wasm build passes the golden test suite
   - acceptance: npm + PyPI packages execute the canonical corpus
   - acceptance: One smolagents-or-equivalent integration example runs
-- [ ] **Naming + identity decision (cmm vs C-- collision)** — USER DECISION REQUIRED: `cmm` collides with GHC's C-- intermediate representation (Cmm, .cmm files). Decide keep-with-pun (comm/communication, "less than C" — the pun got BETTER under the low-level v0.2 framing) vs rebrand (candidates: pith, terse, lac). Check domain + crate/npm/PyPI name availability, pick file extension, write the one-paragraph identity statement.
-  - acceptance: User has made the name call
-  - acceptance: Domain/registry availability checked and recorded
-  - acceptance: README/DESIGN/SPEC renamed consistently if changed
 - [ ] **tree-sitter grammar + syntax highlighting** — tree-sitter-cmm derived from the spec grammar, highlight queries, and a minimal VS Code extension — humans debug cmm even if they don't write it; readable traces matter for trust.
   - deps: lang-spec-v01
   - acceptance: tree-sitter parses the full golden corpus with zero errors
