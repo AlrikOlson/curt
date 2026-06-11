@@ -1,6 +1,6 @@
 <!-- GENERATED VIEW — do not hand-edit. Source of truth is the native think-and-ship
      roadmap (roadmap_* tools / `think-and-ship export`). Regenerated 2026-06-10
-     after accepted reprios: naming P33 + playground P70, both pending. -->
+     after naming resolved: the language is curt (commit 0a75460). -->
 
 # Roadmap — cmm-d31a18
 
@@ -8,7 +8,6 @@
 
 - [ ] **grammar-decode B/OpenAI — custom-tools CFG conformance run** *(BLOCKED: needs OPENAI_API_KEY, probed absent 2026-06-10)* — Submit the real curt Lark grammar to OpenAI custom tools; measure conformance over >=100 generations; document size/complexity limits.
   - deps: gd-a
-- [ ] **Naming + identity decision (curt vs C-- collision)** *(accepted reprio 120→33, now pending — leads the launch runway)* — USER DECISION: keep `curt` (collides with GHC's C-- IR) vs rebrand (pith/terse/lac); check domain + registry availability; pick file extension; one-paragraph identity statement.
 - [ ] **OSS foundation — dual license, CI running every gate, contributor hygiene (AAA repo baseline)** *(added 2026-06-11, think:29)* — Repo has NO LICENSE/CI/CONTRIBUTING. MIT OR Apache-2.0 dual; GitHub Actions running ALL gates (cargo, PEG, lark+negatives, count regression, GBNF determinism); CONTRIBUTING.md encoding the doctrine; release binaries.
   - deps: interp-d
   - acceptance: CI green on fresh checkout, every gate, none weakened
@@ -30,6 +29,7 @@
 
 ## Done
 
+- [x] **Naming + identity decision — the language is curt** — Shipped 2026-06-11 (commit 0a75460; proof: task:decide-execute). User decision over two measured rounds (10 candidates, 4 axes: token cost, registries, domains, collisions). curt: 1 token mid-prompt; bare crates.io FREE (only candidate); GitHub org free; HF likely free; .curt extension. Lineage preserved: began as cmm (intentional C-- homage), renamed to leave GHC's Cmm its namespace — C, abbreviated. Sweep: 37 files + 22 renames; FNV golden recomputed (16_bitops now hashes "curt"); all gates green; medians unchanged.
 - [x] **grammar-decode B/OSS — llama.cpp constrained-decoding demo (local 8B)** — Shipped 2026-06-11 (commit ea6db8e; proof: task:verify-gdb). MASK SOUNDNESS: 0 mid-stream violations / 200 constrained generations (all 31 failures valid prefixes — non-termination only) vs 55 real mid-stream errors in 100 unconstrained. Haiku: naive 7/10; self-taught from repo artifacts 10/10. Four findings: 30% keyword-widening leak → exact prefix-trie NAME in GBNF; llama.cpp grammar-state perf cliff; the termination problem + measured EOS-escape; a real arg-position grammar divergence (if/match as args) fixed across PEG+Lark+GBNF (negatives 12/12).
 - [x] **interp D — evaluator + corpus stdlib + capability IO; curt run executes the corpus** — Shipped 2026-06-10 (commit 7729652; proof: task:verify-d). 126/126 tests; all 20 corpus programs execute with golden stdout incl. a live TCP smoke test; run-startup 2.06ms; clippy clean. New shared elaboration rule: rescue captures like pipes (`print m["k"] ? 8080` ≡ `print (m["k"] ? 8080)`). Golden-caught bugs: quote-polluted string lexemes (FNV hashed quote bytes), list numeric fields, UInt operand order. Honest limit: `go` is sequential in v0.1 (Rc⇏Send; threads deferred §13). THE INTERPRETER IS COMPLETE: parse | check | fmt | expand | tokens | run.
 - [x] **grammar-decode A — Lark CFG twin + GBNF artifact + machine divergence gate** — Shipped 2026-06-10 (commit 46dc539; proof: task:verify-gda). curt.lark (explicit whitespace — SPEC §1 adjacency survives as grammar structure; three PEG lookaheads dissolve in CFG form) validated 20/20 corpus + 10/10 negative agreement with the Rust oracle, both first run. curt.gbnf generated deterministically (terminals pinned; documented keyword-widening — GBNF lacks lookahead). Chain of trust: Rust parser ⇄ grammar.peg ⇄ curt.lark → curt.gbnf. Parent grammar-decode obsoleted by split (gd-b carries the model/API demo legs).
