@@ -1,0 +1,5 @@
+n = 9875
+while n >= 10 {
+  n = (str n).chars | map (c -> (int c) - 48) | sum
+}
+print n

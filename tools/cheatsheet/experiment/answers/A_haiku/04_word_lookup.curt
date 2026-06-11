@@ -1,0 +1,7 @@
+sent = "the cat and the dog and the bird"
+wds = split(sent, " ")
+freq = {}
+for w in wds:
+  freq[w] = get(freq, w, 0) + 1
+print(freq["the"])
+print(get(freq, "fish", 0))

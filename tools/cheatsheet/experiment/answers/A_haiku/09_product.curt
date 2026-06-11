@@ -1,0 +1,3 @@
+lst = [2, 3, 4, 5]
+prod = fold(lst, 1, fn(acc, x): acc * x)
+print(prod)

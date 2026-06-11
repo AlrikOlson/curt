@@ -1,0 +1,6 @@
+type Rect = {w: float, h: float}
+rects = [Rect(2.0, 3.0), Rect(1.5, 4.0)]
+total = 0.0
+for r in rects:
+  total = total + (r.w * r.h)
+print(total)

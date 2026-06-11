@@ -1,0 +1,8 @@
+fn firstneg(lst):
+  for i, x in enumerate(lst):
+    if x < 0:
+      return i
+  return -1
+
+print(firstneg([5, 2, -7, 9]))
+print(firstneg([1, 2, 3]))

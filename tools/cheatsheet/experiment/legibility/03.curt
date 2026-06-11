@@ -1,0 +1,3 @@
+f v = match v { int n -> n + 1, str s -> s.len }
+print f 10
+print f "abc"

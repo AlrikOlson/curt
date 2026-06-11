@@ -1,0 +1,1 @@
+print ("14,3,27,6".split "," | map int | sum)

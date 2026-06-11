@@ -1,0 +1,7 @@
+fn tag v:int|str ->
+  match v
+    int n -> "int " + str(n * 2)
+    str s -> "str " + upper(s)
+print tag 7
+print tag "ok"
+print tag 12

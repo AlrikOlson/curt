@@ -1,0 +1,3 @@
+freq = "the cat and the dog and the bird".words.counts
+print freq["the"] ? 0
+print freq["fish"] ? 0

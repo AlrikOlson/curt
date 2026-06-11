@@ -1,0 +1,3 @@
+lst = [3, 4, 7, 10, 5, 8]
+evens = lst | filter \x -> x % 2 == 0
+print evens | map \x -> x * x | sum

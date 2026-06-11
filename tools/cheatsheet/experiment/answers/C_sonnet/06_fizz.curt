@@ -1,0 +1,5 @@
+for i in range 15 {
+  val = i + 1
+  word = if val % 15 == 0 { "fizzbuzz" } else if val % 3 == 0 { "fizz" } else if val % 5 == 0 { "buzz" } else { str val }
+  print word
+}

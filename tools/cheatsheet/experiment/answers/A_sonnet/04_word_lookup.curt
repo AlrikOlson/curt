@@ -1,0 +1,4 @@
+words = split "the cat and the dog and the bird" " "
+freq = words | count_by id
+print freq["the"] ?? 0
+print freq["fish"] ?? 0

@@ -1,0 +1,3 @@
+safediv a b = if b == 0 { "err" } else { str (a / b) }
+print safediv 9 2
+print safediv 5 0

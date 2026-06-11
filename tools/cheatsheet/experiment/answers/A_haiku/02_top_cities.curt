@@ -1,0 +1,3 @@
+cities = [("oslo", 709), ("bergen", 291), ("trondheim", 212), ("stavanger", 144)]
+sorted_cities = sort(cities, key=lambda c: c[1], reverse=True)
+print(sorted_cities[0][0] + "," + sorted_cities[1][0])

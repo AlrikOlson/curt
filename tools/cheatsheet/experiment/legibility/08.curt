@@ -1,0 +1,2 @@
+half x = if x % 2 == 0 { x / 2 } else { 3 * x + 1 }
+print half (half 10)

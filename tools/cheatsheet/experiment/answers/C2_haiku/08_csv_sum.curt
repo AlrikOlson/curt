@@ -1,0 +1,3 @@
+csv = "14,3,27,6"
+nums = csv.split "," | map .int
+print nums | sum

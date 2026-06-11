@@ -1,0 +1,4 @@
+fn firstneg lst ->
+  lst | find_idx \x -> x < 0 ?? -1
+print firstneg [5, 2, -7, 9]
+print firstneg [1, 2, 3]

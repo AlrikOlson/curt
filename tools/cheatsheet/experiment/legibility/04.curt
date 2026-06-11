@@ -1,0 +1,3 @@
+m = "a b b c b".words.counts
+print m["b"] ? 0
+print m["x"] ? 0

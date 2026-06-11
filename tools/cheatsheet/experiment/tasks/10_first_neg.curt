@@ -1,0 +1,10 @@
+firstneg xs = {
+  i = 0
+  while i < xs.len {
+    if xs[i] < 0 { ret i }
+    i += 1
+  }
+  -1
+}
+print firstneg [5, 2, -7, 9]
+print firstneg [1, 2, 3]

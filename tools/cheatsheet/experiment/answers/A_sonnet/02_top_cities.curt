@@ -1,0 +1,3 @@
+cities = [{name:"oslo" pop:709} {name:"bergen" pop:291} {name:"trondheim" pop:212} {name:"stavanger" pop:144}]
+top2 = cities | sort_by .pop desc | take 2
+print top2 | map .name | join ","

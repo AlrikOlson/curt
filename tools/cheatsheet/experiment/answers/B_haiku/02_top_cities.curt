@@ -1,0 +1,4 @@
+type City = {name str, pop int}
+cities = [City{name:"oslo", pop:709}, City{name:"bergen", pop:291}, City{name:"trondheim", pop:212}, City{name:"stavanger", pop:144}]
+top2 = cities | sort .pop | rev | top 2 .name
+print top2 | join ","

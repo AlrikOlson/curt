@@ -1,0 +1,8 @@
+fn tag(v):
+  match v:
+    case Int(n): "int " + str(n * 2)
+    case Str(s): "str " + upper(s)
+
+print(tag(7))
+print(tag("ok"))
+print(tag(12))

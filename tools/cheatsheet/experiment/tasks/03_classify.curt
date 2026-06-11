@@ -1,0 +1,4 @@
+tag v = match v { int n -> "int {n * 2}", str s -> "str {s.upper}" }
+print tag 7
+print tag "ok"
+print tag 12

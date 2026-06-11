@@ -1,0 +1,4 @@
+sent = "the cat and the dog and the bird"
+freqs = sent.words | counts
+print freqs["the"] ? 0
+print freqs["fish"] ? 0

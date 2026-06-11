@@ -40,6 +40,15 @@ cp tools/grammar/curt.gbnf /tmp/curt-ci-gbnf.$$
 diff /tmp/curt-ci-gbnf.$$ tools/grammar/curt.gbnf
 rm -f /tmp/curt-ci-gbnf.$$
 
+say "cheat sheet: <=2500 o200k tokens + docs/llms.txt not stale"
+"$VENV/bin/python" - <<'EOF'
+import tiktoken, pathlib, sys
+n = len(tiktoken.get_encoding("o200k_base").encode(pathlib.Path("CHEATSHEET.md").read_text()))
+print(f"CHEATSHEET.md: {n} o200k tokens (ceiling 2500)")
+sys.exit(0 if n <= 2500 else 1)
+EOF
+"$VENV/bin/python" tools/cheatsheet/emit_llms.py --check
+
 say "token cost table (regression evidence in the log)"
 "$VENV/bin/python" tools/tokens/count.py
 

@@ -1,0 +1,146 @@
+# curt cheat sheet
+
+curt is a general-purpose language optimized for LLM output tokens. Whole
+program = toplevel statements, run in order. No imports, no `main`, no
+significant indentation. Comments `#` (never emit them). Statements end at
+newline or `;`.
+
+## Core shape
+
+```
+greet name = "hi {name}"        # equation: name params = expr
+total = [1,2,3].sum             # binding (= rebinds; x += 1 works)
+(a, b) = (1, 2)                 # tuple destructuring
+print greet "ana"               # application is juxtaposition: f x y
+```
+
+- Equation body: expression, or `{ block }` (value = last expression).
+- `ret e` returns early from the enclosing equation.
+- Strings interpolate: `"{x} and {y.len}"`. Escapes `\n \" \\ \{`.
+- Names lowercase (`buf`, `idx`, `acc`); types Capitalized. Prefer short
+  semantic words, never single letters.
+
+## Application, pipes, projections
+
+- `f x y` calls f with x and y. No parens, no commas. Parenthesize
+  sub-calls: `print (show 2.5)` — though extra args re-nest rightward
+  automatically, so `print show 2.5` also works.
+- UFCS: `x.f a` ≡ `f x a`. So `xs.len`, `s.upper`, `xs.map g`.
+- Pipeline `|` feeds the value as the LAST argument of the next stage:
+  `xs | keep .active | top 2 .score | map .name`
+- Bare `.field` is a lambda: `top 2 .score` ≡ `top 2 (x -> x.score)`.
+- Lambdas: `x -> e`, `acc x -> e`. A lambda body swallows `|`, so
+  parenthesize a lambda used as a pipe stage:
+  `xs | keep (x -> x > 1) | sort`.
+- Application binds tighter than operators: `c.write x + y` is
+  `(c.write x) + y`.
+- A pipe after a call captures the call's LAST ARGUMENT, not its result:
+  `row.split "," | sum` pipes `","` — WRONG. Always wrap the call before
+  piping: `(row.split ",") | sum`. Rule: every pipeline starts from a bare
+  value or a parenthesized expression, never from an open call.
+- An `if`/`match` expression can't sit bare as a call argument — bind it
+  first (`word = if ... ; print word`) or parenthesize.
+
+## Adjacency is meaning (the three traps)
+
+- `x.f` (glued) = field access; `x .f` (spaced) = passing projection `.f`.
+- `x?` (glued) = propagate error; `a ? b` (spaced) = rescue (if `a` is err
+  or missing, yield `b`).
+- `Pt{x:1}` / `f(x)` / `xs[0]` glued = record literal / call / index;
+  spaced they become juxtaposition arguments. Keep them glued.
+
+## Types
+
+Inference is total — annotate nothing (except `pub`/FFI). Primitives `int
+float str bool bytes`. Lists `[1,2]`, tuples `(1, "a")` (fields `.0 .1`),
+records. Maps have no literal in v0.1 — they arrive from `counts`, `.json`,
+`group`; index `m["k"]`, rescue a missing key: `m["k"] ? 0`. Records:
+
+```
+type Pt = {x float, y float}
+p = Pt{x:3, y:4}
+print p.x
+```
+
+Unions are untagged: `int | str`, `T | err`. `match` narrows by runtime
+type and is exhaustiveness-checked over union members:
+
+```
+show v = match v { float x -> "num {x}", str s -> "sym {s}" }
+```
+
+Arms: type patterns (`int n`), literals (`"("`, `42`), tuples, `_`, bare
+name (binds anything). `int` and `float` never mix implicitly; `/` on int
+is integer division; convert with `.float` `.int`.
+
+## Control flow (all expressions)
+
+```
+if c { a } else { b }           # else optional; else if chains
+while c { ... }
+for x in xs { ... }             # lists, maps (pairs), strings (chars)
+for i in range 10 { ... }       # 0..9 (range takes ONE arg in v0.1)
+match v { ... }
+go f x                          # spawn lightweight thread
+```
+
+Inside `for/while/if/match` headers, `{` always starts the block — don't
+put a record literal in a header unparenthesized.
+
+## Errors
+
+Failable ops return `T | err`. Two one-token tools:
+
+```
+cfg = load "app.cfg" ? {}       # rescue: fallback if err/missing
+data = (fs.read p)?             # propagate: return err to caller
+```
+
+Diagnostics are single-line JSON with a `fix` field — apply it verbatim.
+
+## Stdlib verbs (all 1 token; `x.f a` ≡ `f x a`)
+
+- seq/str: `len map keep fold sum min max sort rev top group counts pairs
+  first last flat join split words lines chars bytes trim lower upper
+  replace range`
+- conv: `int float str json`
+- io (capability-gated): `print args fs.read fs.write net.listen c.lines
+  c.write`
+- `keep` = filter. `top n .f` = sort desc by `.f`, take n. `group .f` →
+  list of `{k, v}`. `counts` = frequency map. `fold init acc x -> e`.
+
+## Worked examples
+
+```
+us = [{name:"a", score:9, active:true}, {name:"b", score:7, active:false}]
+print us | keep .active | map .name
+
+for g in sales.group .city { print "{g.k} {g.v | map .amt | sum}" }
+
+bs xs t = {
+  lo = 0
+  hi = xs.len - 1
+  while lo <= hi {
+    mid = (lo + hi) / 2
+    if xs[mid] == t { ret mid }
+    if xs[mid] < t { lo = mid + 1 } else { hi = mid - 1 }
+  }
+  -1
+}
+
+hash s = {
+  h = 14695981039346656037u64    # sized ints wrap; suffix only here
+  for b in s.bytes { h = (h ^ b) * 1099511628211 }
+  h
+}
+
+pub dist :: Pt Pt -> float       # :: only on exports/FFI
+dist a b = ((a.x-b.x)**2 + (a.y-b.y)**2).sqrt
+```
+
+## Don't write Python
+
+No `def lambda import return elif try/except f"" [x for x in]`. No `:` 
+after headers — braces. No `len(x)` — `x.len`. Slices `xs[1:]` exist.
+`and or not` (not `&& || !`). `true false`. The parser forgives common
+slips (`return`, `elif`, `f(x, y)`, `True`) but emit canonical forms.

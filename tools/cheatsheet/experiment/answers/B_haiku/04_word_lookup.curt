@@ -1,0 +1,4 @@
+s = "the cat and the dog and the bird"
+wf = s.words.counts
+print wf["the"] ? 0
+print wf["fish"] ? 0

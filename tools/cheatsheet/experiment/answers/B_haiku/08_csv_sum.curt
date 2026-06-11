@@ -1,0 +1,3 @@
+s = "14,3,27,6"
+nums = s.split "," | map x -> x.int
+print nums | sum

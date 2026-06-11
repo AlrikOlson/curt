@@ -1,0 +1,2 @@
+nums = [3, 4, 7, 10, 5, 8]
+print nums | keep (x -> x % 2 == 0) | map (x -> x * x) | sum

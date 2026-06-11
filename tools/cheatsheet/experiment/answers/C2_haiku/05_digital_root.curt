@@ -1,0 +1,7 @@
+n = 9875
+while n >= 10 {
+  sum = 0
+  for d in n.str.chars { sum = sum + (d.str.int) }
+  n = sum
+}
+print n

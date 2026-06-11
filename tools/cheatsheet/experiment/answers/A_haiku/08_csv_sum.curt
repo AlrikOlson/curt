@@ -1,0 +1,6 @@
+s = "14,3,27,6"
+parts = split(s, ",")
+sum = 0
+for p in parts:
+  sum = sum + int(p)
+print(sum)

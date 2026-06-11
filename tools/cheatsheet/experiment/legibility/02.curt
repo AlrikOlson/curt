@@ -1,0 +1,2 @@
+ws = "red green blue".words
+print ws | map .len | max

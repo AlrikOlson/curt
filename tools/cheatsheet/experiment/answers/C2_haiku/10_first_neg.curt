@@ -1,0 +1,8 @@
+firstneg lst = {
+  for i in range lst.len {
+    if lst[i] < 0 { ret i }
+  }
+  -1
+}
+print firstneg [5, 2, -7, 9]
+print firstneg [1, 2, 3]

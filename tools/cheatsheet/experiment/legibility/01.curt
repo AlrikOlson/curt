@@ -1,0 +1,2 @@
+xs = [4, 9, 2, 7]
+print xs | keep (x -> x > 3) | map (x -> x * 10) | sum

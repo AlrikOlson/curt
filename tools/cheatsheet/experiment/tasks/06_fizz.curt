@@ -1,0 +1,5 @@
+for j in range 15 {
+  i = j + 1
+  word = if i % 15 == 0 { "fizzbuzz" } else if i % 3 == 0 { "fizz" } else if i % 5 == 0 { "buzz" } else { str i }
+  print word
+}

@@ -1,0 +1,6 @@
+for i in 1..15
+  print match (i%3==0) (i%5==0)
+    true  true  -> "fizzbuzz"
+    true  false -> "fizz"
+    false true  -> "buzz"
+    _     _     -> str(i)

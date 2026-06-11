@@ -1,0 +1,2 @@
+ps = [{name:"u", age:3}, {name:"v", age:9}, {name:"w", age:6}]
+print ps | top 2 .age | map .name | join "-"

@@ -1,0 +1,6 @@
+lst = [3, 4, 7, 10, 5, 8]
+sum = 0
+for x in lst:
+  if x % 2 == 0:
+    sum = sum + x * x
+print(sum)

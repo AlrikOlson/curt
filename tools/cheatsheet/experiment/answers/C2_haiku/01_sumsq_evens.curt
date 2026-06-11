@@ -1,0 +1,4 @@
+nums = [3, 4, 7, 10, 5, 8]
+for n in nums {
+  if n % 2 == 0 { print (n * n) }
+}

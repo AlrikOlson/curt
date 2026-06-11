@@ -1,0 +1,2 @@
+evens = [3, 4, 7, 10, 5, 8]
+for x in evens { if x % 2 == 0 { print x * x } }
