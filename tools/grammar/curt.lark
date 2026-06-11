@@ -76,7 +76,8 @@ arg0: lambda | postfix
 arg: lambda | apostfix
 apostfix: aatom postop*
 aatom: NUMBER | STRING | recordlit | anonrecord | list | tuple | paren | block | projatom | TNAME | NAME
-lambda: NAME (ws1 NAME)* _ws "->" _ws expr
+lambda: NAME (ws1 NAME)* _ws "->" _ws nopipe
+nopipe: orexp (ws1 "?" ws1 orexp)*
 postfix: atom postop*
 postop: projsuf | callsuf | propq
 projsuf: "." (NAME | INT)

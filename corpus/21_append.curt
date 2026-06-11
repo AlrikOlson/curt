@@ -5,4 +5,4 @@ acc = acc + [9]
 print (acc | map str | join " ")
 tag v = match v { int n -> "i{n}", str s -> "s{s}" }
 for v in [7, "ok"] { print tag v }
-print (range 2 5) | map (n -> n * n) | sum
+print (range 2 5 | map (n -> n * n) | sum)

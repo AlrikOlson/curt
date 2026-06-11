@@ -1,0 +1,8 @@
+lines = (fs.read "users.txt").lines
+valid = lines | keep (x -> {
+  parts = x.words
+  parts | len == 3 && match (parts[2].int) { int _ -> true, err _ -> false }
+})
+adults = valid | keep (x -> (x.words[2].int ? 0) > 25)
+names = adults | map (x -> x.words[1])
+print (names | join " ")

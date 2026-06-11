@@ -1,2 +1,2 @@
 us = [{name:"a", score:9, active:true}, {name:"b", score:7, active:false}, {name:"c", score:8, active:true}]
-print us | keep .active | top 2 .score | map .name
+print (us | keep .active | top 2 .score | map .name)

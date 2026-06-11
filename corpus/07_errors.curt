@@ -1,3 +1,3 @@
 load p = (fs.read p).json
 cfg = load "app.cfg" ? {}
-print cfg["port"] ? 8080
+print (cfg["port"] ? 8080)

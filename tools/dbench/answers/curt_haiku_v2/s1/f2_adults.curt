@@ -1,0 +1,7 @@
+lines = (fs.read "users.txt").str.lines
+parse_user = line -> {
+  parts = line.split " "
+  match parts { [id, name, age_str] -> match (age_str.int ? err "bad") { int a -> (id, name, a), err _ -> err "bad" }, _ -> err "bad" }
+}
+adults = lines | keep line -> match (parse_user line) { (id, n, a) -> a > 25, err _ -> false } | map line -> match (parse_user line) { (id, n, a) -> n }
+print (adults | join " ")

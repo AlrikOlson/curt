@@ -451,6 +451,15 @@ impl Interp {
     fn pattern_matches(&self, p: &Pattern, v: &Value, scope: &Env) -> R<bool> {
         Ok(match p {
             Pattern::TypeBind { ty, name } => {
+                // `err e` narrows the error case of `T | err` (domain-bench:
+                // models wrote exactly this 5x; Zig's catch |err| precedent)
+                if ty == "err" {
+                    if let Value::Err(msg) = v {
+                        scope.define(name, Value::Str(msg.clone()));
+                        return Ok(true);
+                    }
+                    return Ok(false);
+                }
                 let hit = matches!(
                     (ty.as_str(), v),
                     ("float", Value::Float(_)) | ("float", Value::Int(_))
@@ -602,6 +611,12 @@ impl Interp {
                         Some(1) => self.builtin(leak(name), vec![other.clone()], env),
                         _ => Ok(Value::Fn(Rc::new(method_closure(name, other.clone())))),
                     }
+                } else if let Value::Map(pairs) = other {
+                    // maps answer field syntax with key lookup — models
+                    // conflate json maps and records (domain-bench, 1 cell);
+                    // a missing key is err, same as m["k"]
+                    let hit = pairs.borrow().iter().find(|(k, _)| matches!(k, Value::Str(s) if **s == *name)).map(|(_, v)| v.clone());
+                    Ok(hit.unwrap_or_else(|| Value::Err(format!("missing key {name}").into())))
                 } else {
                     Err(fail(format!("no field or method `{name}` on {}", show(other))))
                 }
@@ -711,6 +726,12 @@ impl Interp {
                 _ => Err(fail("float conversion")),
             },
             "str" => Ok(Value::Str(Rc::new(show(&args[0])))),
+            "err" => match &args[0] {
+                // `err "msg"` constructs an error value (domain-bench: models
+                // wrote this form unprompted in 6 cells)
+                Value::Str(m) => Ok(Value::Err(m.to_string().into())),
+                other => Ok(Value::Err(show(other).into())),
+            },
             "json" => match &args[0] {
                 Value::Str(s) => Ok(parse_json(s.trim()).unwrap_or_else(|| err("invalid json"))),
                 _ => Err(fail("json needs a string")),
@@ -924,6 +945,12 @@ impl Interp {
                     let v = self.expr(&rewrite_pipes(e), env)?;
                     out.push_str(&show(&v));
                 } else {
+                    if frag.trim().is_empty() {
+                        // "{}" is a literal brace pair, not an empty hole
+                        // (domain-bench: models write "{}" as empty-JSON text)
+                        out.push_str("{}");
+                        continue;
+                    }
                     return Err(fail(format!("interpolation `{{{frag}}}` is not an expression")));
                 }
             } else if c == '\\' {
@@ -957,13 +984,14 @@ const BUILTINS: &[&str] = &[
     "print", "range", "len", "sqrt", "trim", "lower", "upper", "replace", "split", "words", "lines",
     "chars", "bytes", "digit", "int", "float", "str", "json", "counts", "pairs", "map", "keep", "top",
     "sort", "rev", "first", "last", "min", "max", "sum", "fold", "group", "flat", "join", "write",
+    "err",
 ];
 
 fn builtin_arity(name: &str) -> Option<usize> {
     Some(match name {
         "print" | "len" | "sqrt" | "trim" | "lower" | "upper" | "words" | "lines" | "chars" | "bytes"
         | "digit" | "int" | "float" | "str" | "json" | "counts" | "pairs" | "sort" | "rev" | "first"
-        | "last" | "min" | "max" | "sum" | "flat" | "range" | "fs.read" | "net.listen" => 1,
+        | "last" | "min" | "max" | "sum" | "flat" | "range" | "fs.read" | "net.listen" | "err" => 1,
         "split" | "map" | "keep" | "group" | "join" | "write" | "fs.write" => 2,
         "replace" | "top" | "fold" => 3,
         _ => return None,
@@ -1099,6 +1127,7 @@ fn slice(recv: &Value, lo: Option<Value>, hi: Option<Value>) -> R<Value> {
 
 fn eq(a: &Value, b: &Value) -> bool {
     match (a, b) {
+        (Value::Err(x), Value::Err(y)) => x == y,
         (Value::Int(x), Value::Int(y)) => x == y,
         (Value::UInt(x), Value::UInt(y)) => x == y,
         (Value::Int(x), Value::Float(y)) | (Value::Float(y), Value::Int(x)) => *x as f64 == *y,
@@ -1130,6 +1159,13 @@ fn cmp_vals(a: &Value, b: &Value) -> std::cmp::Ordering {
 
 fn binop(op: &str, l: &Value, r: &Value) -> R<Value> {
     use Value::*;
+    // equality COMPARES err values instead of propagating them — models
+    // test `x == err "..."` deliberately (domain-bench)
+    match op {
+        "==" => return Ok(Bool(eq(l, r))),
+        "!=" => return Ok(Bool(!eq(l, r))),
+        _ => {}
+    }
     if let Value::Err(_) = l {
         return Ok(l.clone());
     }
@@ -1137,8 +1173,6 @@ fn binop(op: &str, l: &Value, r: &Value) -> R<Value> {
         return Ok(r.clone());
     }
     match op {
-        "==" => return Ok(Bool(eq(l, r))),
-        "!=" => return Ok(Bool(!eq(l, r))),
         "<" | "<=" | ">" | ">=" => {
             let ord = cmp_vals(l, r);
             let b = match op {

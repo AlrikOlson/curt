@@ -1,0 +1,10 @@
+lines = (fs.read "users.txt").lines
+valid = lines | keep (x -> {
+  parts = x.words
+  parts | len == 3 && match (parts[2].int) { int _ -> true, err _ -> false }
+})
+valid_count = valid | len
+ages = valid | map (x -> x.words[2].int ? 0)
+avg = (ages | sum) / valid_count
+print valid_count
+print avg

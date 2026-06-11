@@ -1,0 +1,5 @@
+lines = (fs.read "users.txt").lines
+valid = lines | keep l -> l.words.len == 3 and (l.words[2].int ? "bad") != "bad"
+oldest = valid | top 1 l -> (l.words[2].int ? 0) | first
+w = oldest.words
+print "{w[1]} {w[2]}"

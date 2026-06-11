@@ -40,16 +40,65 @@ fn pipe_capture_respects_parens_at_binding() {
     );
 }
 
-/// ...and the un-parenthesized form still captures (corpus 08 idiom).
+/// v0.2: the un-parenthesized form pipes the WHOLE left expression —
+/// the capture rule is deleted (domain-bench + 4 prior experiments).
 #[test]
-fn pipe_capture_still_works_without_parens() {
-    run_ok("us = [3, 1, 2]\nprint us | sort | first\n", "1\n");
+fn pipe_takes_whole_left_expression() {
+    run_ok(
+        "s = \"a=1,b=22,c=333\"\ntotal = s.split \",\" | map (p -> (p.split \"=\")[1].int) | sum\nprint total\n",
+        "356\n",
+    );
 }
 
-/// rescue capture has the same barrier.
+/// v0.2: a bare lambda pipe stage works and its body stops at `|`
+/// (the five-experiment lambda-swallow footgun, deleted by grammar).
+#[test]
+fn bare_lambda_stage_terminates_at_pipe() {
+    run_ok("print ([1, 2, 3] | map x -> x * x | sum)\n", "14\n");
+}
+
+/// v0.2: rescue applies to the whole left call — the sheet example
+/// `data = fs.read p ? fallback` now means (fs.read p) ? fallback.
+#[test]
+fn rescue_takes_whole_left_call() {
+    run_ok("data = fs.read \"definitely_missing.txt\" ? \"fb\"\nprint data\n", "fb\n");
+}
+
+/// domain-bench: err is a match type-pattern, binding the message.
+#[test]
+fn err_type_pattern_in_match() {
+    run_ok(
+        "v = \"x\".int\nmsg = match v { err e -> \"bad\", int n -> \"ok\" }\nprint msg\n",
+        "bad\n",
+    );
+}
+
+/// domain-bench: block lambdas inside call parens keep their newlines.
+#[test]
+fn block_lambda_in_call_parens() {
+    run_ok(
+        "xs = [\"a b c\", \"bad\"]\nok = xs | keep (l -> {\n  p = l.words\n  p.len == 3\n})\nprint ok.len\n",
+        "1\n",
+    );
+}
+
+/// domain-bench: maps answer field syntax with key lookup.
+#[test]
+fn map_field_access_falls_back_to_key() {
+    run_ok("m = ('{\"a\": 5}').json\nprint m.a\nprint (m.zz ? 0)\n", "5\n0\n");
+}
+
+/// domain-bench: "{}" is literal text; single-quoted strings are raw.
+#[test]
+fn literal_braces_and_single_quoted_strings() {
+    run_ok("print \"{}\"\nprint 'no {hole} here'\n", "{}\nno {hole} here\n");
+}
+
+/// v0.2: rescue inside the print parens (statement-level rescue on unit
+/// is now a loud checker error — see infer rescue-on-unit).
 #[test]
 fn rescue_capture_respects_parens() {
-    run_ok("m = \"a b a\".words.counts\nprint (m[\"z\"]) ? 0\n", "0\n");
+    run_ok("m = \"a b a\".words.counts\nprint (m[\"z\"] ? 0)\n", "0\n");
 }
 
 /// token-bench top failure cause (8 cells): list concatenation with `+`/`+=`.

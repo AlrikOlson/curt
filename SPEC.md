@@ -70,18 +70,20 @@ the structural rules an implementer must honor:
    elaborates to `print (show 2.5)`). *Elaboration rules (fixed in interp-c):*
    when a head of arity *k* receives *n > k* arguments, the surplus re-nests
    under the *k*-th argument; partial application (*n < k*) is an error in
-   v0.1. **Pipe capture:** a pipeline captures the last argument of a
-   preceding juxtaposition — `print us | keep .active` elaborates to
-   `print (us | keep .active)`; subsequent stages apply with the piped value
-   appended as their final argument (`x | top 3 .v` ≡ `top 3 .v x`).
-   **Explicit parentheses are a capture barrier** *(fixed in spec-truth —
-   token-bench found the elaborator reaching inside parens)*:
-   `(s.split ",") | sum` pipes the call's RESULT; the same barrier applies
-   to spaced rescue (`(m["k"]) ? 0`).
+   v0.1. **Pipe (v0.2):** `|` is the loosest binary operator and takes the
+   WHOLE expression on its left — `s.split "," | sum` pipes the result of
+   the split, like every shipped pipeline language (F#, Elixir). The v0.1
+   capture-last-argument rule is DELETED (a five-experiment measured
+   footgun; see BENCHMARK.md and tools/dbench/DOMAINBENCH.md). Stages apply
+   with the piped value appended as their final argument (`x | top 3 .v` ≡
+   `top 3 .v x`). A lambda body STOPS at `|`, so bare lambda stages compose:
+   `xs | map x -> x * x | sum`. Spaced rescue `?` likewise applies to the
+   whole left expression (`fs.read p ? fallback` rescues the read).
+   Consequence: `print`/`?` belong OUTSIDE or AROUND a pipeline, never at
+   its head — `print (xs | sum)`, `print (m["k"] ? 0)`; the checker rejects
+   rescue-on-unit (`print x ? y`) loudly.
    *Exhaustiveness looseness (v0.1):* a literal arm in `match` counts as
-   covering its member type; tightening is deferred (§13). *Sharp edges
-   (measured in interp-c):* a lambda body extends through `|` — parenthesize
-   an inline lambda used as a pipe stage (`keep (x -> x > 1) | sort`); and
+   covering its member type; tightening is deferred (§13). *Sharp edge:*
    application binds tighter than every operator — `c.write x + y` groups as
    `(c.write x) + y` (this precedence caught a real bug in the original
    20_server corpus file).
@@ -298,9 +300,11 @@ Zero-argument call syntax under juxtaposition; channels/`select`;
 copy-on-write experiments at mutation boundaries; surface generics; arena
 annotations for hot paths; equation-head patterns; `^` precedence tier;
 trait/interface story; string `bytes` zero-copy views; **map literals**
-(moved here in spec-truth — see §3 erratum); pipe-capture semantics
-revisit (capture-the-result-by-default was the dominant model expectation
-in three experiments; a measured tournament for v0.2).
+(moved here in spec-truth — see §3 erratum). *Resolved in v02-footguns:*
+pipe/rescue take the whole left expression (capture deleted); `err e` is a
+match type-pattern; maps answer field syntax with key lookup; `'...'` raw
+strings; `"{}"` is literal text; block lambdas keep newlines inside call
+parens.
 
 ---
 *Lineage: DESIGN.md v0.2 (direction, user-approved) → this spec (canonical).

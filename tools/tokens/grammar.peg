@@ -69,7 +69,8 @@ arg         = lambda / apostfix
 apostfix    = aatom postop*
 aatom       = number / string / recordlit / anonrecord / list / tuple / paren
             / block / projatom / tname / name
-lambda      = name (__ name)* _ "->" _ expr
+lambda      = name (__ name)* _ "->" _ nopipe
+nopipe      = orexp (__ "?" __ orexp)*
 postfix     = atom postop*
 postop      = projsuf / callsuf / propq
 projsuf     = "." (name / ~r"[0-9]+")

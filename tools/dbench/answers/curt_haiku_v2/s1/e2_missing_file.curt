@@ -1,0 +1,6 @@
+missing = (fs.read "missing.cfg")?
+name = match missing { err _ -> "default", bytes b -> (b.str.json).name ? "default" }
+print name
+cfg = (fs.read "app.cfg").str.json
+port = cfg["port"] ? 0
+print port

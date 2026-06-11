@@ -1,0 +1,5 @@
+ages = [34, -2, 19, 150, 42, 27]
+valid = ages.keep (a -> a >= 0 && a <= 120)
+print (valid.len)
+print (ages.len - valid.len)
+print (valid.sum)

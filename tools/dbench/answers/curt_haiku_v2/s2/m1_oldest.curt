@@ -1,0 +1,9 @@
+lines = (fs.read "users.txt").lines
+valid = lines | keep (x -> {
+  parts = x.words
+  parts | len == 3 && match (parts[2].int) { int _ -> true, err _ -> false }
+})
+oldest = valid | top 1 (x -> x.words[2].int ? 0) | first
+name = oldest.words[1]
+age = oldest.words[2]
+print "{name} {age}"

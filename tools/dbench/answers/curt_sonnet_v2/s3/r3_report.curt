@@ -1,0 +1,5 @@
+cfg = (fs.read "app.cfg").json
+orders = (fs.read "orders.json").json
+paid = orders | keep o -> o.status == "paid"
+total = paid | map .amt | sum
+print "{cfg.name}: {paid.len} paid, total {total}"

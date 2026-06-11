@@ -74,9 +74,13 @@ fn infer_no_partial_application() {
 
 #[test]
 fn infer_pipe_capture_rule() {
-    // print (us | keep ...): would be a type error as (print us) | keep
-    let src = "us = [1, 2, 3]\nprint us | keep x -> x > 1\n";
-    assert!(check_src(src).is_ok(), "pipe must capture the juxtaposition's last argument");
+    // v0.2: pipe takes the WHOLE left expression (F#/Elixir semantics).
+    // `print us | keep ...` is now a loud type error — (print us) is unit —
+    // which is the checker catching the print-heads-a-pipe mistake.
+    let src = "us = [1, 2, 3]\nprint us | keep (x -> x > 1)\n";
+    assert!(check_src(src).is_err(), "print-headed pipes must be a loud type error, not silent capture");
+    let good = "us = [1, 2, 3]\nprint (us | keep (x -> x > 1))\n";
+    assert!(check_src(good).is_ok());
 }
 
 #[test]

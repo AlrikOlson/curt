@@ -1,0 +1,5 @@
+lines = (fs.read "users.txt").lines
+valid = lines.keep (line -> line.words.len == 3 && (line.words[2].int ? err "bad") != err "bad")
+users = valid.map (line -> {name: line.words[1], age: line.words[2].int})
+oldest = users | sort (u -> -u.age) | first
+print "{oldest.name} {oldest.age}"

@@ -1,0 +1,8 @@
+lines = (fs.read "users.txt").str.lines
+parse_user = line -> {
+  parts = line.split " "
+  match parts { [id, name, age_str] -> match (age_str.int ? err "bad") { int a -> (id, name, a), err _ -> err "bad" }, _ -> err "bad" }
+}
+valid = lines | keep line -> match (parse_user line) { err _ -> false, _ -> true } | map line -> match (parse_user line) { (id, n, a) -> (n, a) }
+oldest = valid | top 1 (p -> p.1) | first
+print "{oldest.0} {oldest.1}"

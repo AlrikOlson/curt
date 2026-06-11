@@ -1,0 +1,5 @@
+strs = ["12", "x", "7", "-", "30"]
+parsed = strs | map s -> s.int ? 0
+print (parsed | sum)
+bad = strs | keep s -> match (s.int ? err "x") { err _ -> true, int _ -> false }
+print (bad | len)

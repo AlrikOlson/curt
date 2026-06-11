@@ -528,7 +528,15 @@ fn render_expr(e: &Expr) -> String {
             }
             s
         }
-        Expr::Lambda { params, body } => format!("{} -> {}", params.join(" "), render_expr(body)),
+        Expr::Lambda { params, body } => {
+            // a rendered lambda body must not leak into an enclosing pipe —
+            // bodies stop at `|` since v0.2, so parenthesize pipe bodies
+            let b = match &**body {
+                Expr::Pipe { .. } => format!("({})", render_expr(body)),
+                _ => render_expr(body),
+            };
+            format!("{} -> {}", params.join(" "), b)
+        }
         Expr::Field { recv, name } => format!("{}.{name}", wrap_recv(recv)),
         Expr::Index { recv, index } => format!("{}[{}]", wrap_recv(recv), render_expr(index)),
         Expr::Slice { recv, lo, hi } => format!(

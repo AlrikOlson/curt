@@ -1,0 +1,5 @@
+vals = ["12", "x", "7", "-", "30"]
+parsed = vals | map (x -> x.int ? 0)
+bad = vals | keep (x -> match (x.int) { err _ -> true, int _ -> false })
+print (parsed | sum)
+print (bad | len)

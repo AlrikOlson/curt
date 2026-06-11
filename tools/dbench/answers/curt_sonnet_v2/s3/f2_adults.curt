@@ -1,0 +1,4 @@
+lines = (fs.read "users.txt").lines
+valid = lines | keep l -> l.words.len == 3 and (l.words[2].int ? "bad") != "bad"
+adults = valid | keep l -> (l.words[2].int ? 0) > 25 | map l -> l.words[1]
+print (adults | join " ")

@@ -91,3 +91,35 @@ cargo build --release
 
 Generations are LLM calls (2026-06-11, haiku/sonnet subagents); the
 committed answers/ are the frozen record — grading is deterministic.
+
+## Post-fix re-run (v02-footguns, 2026-06-11)
+
+The four language flaws were fixed (v0.2: pipe/rescue take the whole left
+expression — capture DELETED; lambda bodies stop at `|`; `err` is both a
+match pattern and a constructor (`err "msg"`), equality compares err
+values; maps answer field syntax with key lookup; block lambdas keep
+newlines inside call parens; `'...'` raw strings; `"{}"` literal) and the
+curt lanes re-ran fresh on the SAME frozen tasks with sheet v4
+(`answers/curt_*_v2/`):
+
+| | v0.1 lanes | v0.1 lanes regraded under v0.2 | fresh v0.2 lanes |
+|---|---|---|---|
+| haiku | 10/30 | 18/30 | **21/30** |
+| sonnet | 26/30 | 29/30 | **30/30** |
+| total | 36/60 (60%) | 47/60 | **51/60 (85%)** |
+
+**The frozen-code column is the purest measurement**: the same committed
+model programs gain +11 cells with zero regeneration — the failures were
+the language's, not the models'. One frozen cell regressed (a
+`print x ? y` statement-level rescue that old capture made work; the
+checker now rejects that form loudly). Fresh sonnet reaches **100%**;
+fresh haiku's 9 residual failures are idiom inventions (list patterns in
+match, logic slips) — model skill, not language surface.
+
+**The three target failure classes are at ZERO** in the fresh lanes:
+no lambda-swallow, no err-inexpressibility, no silent comparison
+wrongness. Tokens: fresh lanes at 1.01× vs Python (parity maintained;
+no token cost paid for the fixes). The 45-task algorithmic bench shows
+NO regression (sonnet v2 45/45 unchanged; the frozen sonnet v3 lane
+IMPROVES 42→45 — its three pipe-capture failures were correct code the
+old language broke).

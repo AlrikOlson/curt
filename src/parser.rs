@@ -421,6 +421,19 @@ impl Parser {
         Ok(lhs)
     }
 
+    /// Expression that stops at `|` — lambda bodies use this so a lambda
+    /// used as a pipe stage terminates at the next stage (v0.2: the
+    /// five-experiment lambda-swallow footgun dies here).
+    fn no_pipe_expr(&mut self) -> Result<Expr, Diag> {
+        let mut lhs = self.or_expr()?;
+        while matches!(self.peek(), Tok::Question) && !self.glued() {
+            self.bump();
+            let rhs = self.or_expr()?;
+            lhs = Expr::Rescue { value: Box::new(lhs), fallback: Box::new(rhs) };
+        }
+        Ok(lhs)
+    }
+
     fn pipeline(&mut self) -> Result<Expr, Diag> {
         let first = self.or_expr()?;
         if matches!(self.peek(), Tok::Pipe) {
@@ -535,10 +548,19 @@ impl Parser {
     }
 
     fn app(&mut self) -> Result<Expr, Diag> {
+        // bare single-param lambda at expression start: `f = a -> ...`,
+        // `xs | x -> ...` (domain-bench: Arrow-at-statement parse failures).
+        // Multi-name prefixes fall through so `map x -> e` reads as
+        // map applied to the lambda (x -> e), not a 2-param lambda.
+        if matches!(self.peek(), Tok::Name(_)) && matches!(self.peek_at(1), Tok::Arrow) {
+            if let Some(lam) = self.try_lambda(false)? {
+                return Ok(lam);
+            }
+        }
         let head = self.postfix()?;
         let mut args = Vec::new();
         while self.arg_start() {
-            if let Some(lam) = self.try_lambda()? {
+            if let Some(lam) = self.try_lambda(false)? {
                 args.push(lam);
             } else {
                 args.push(self.postfix()?);
@@ -560,7 +582,7 @@ impl Parser {
         }
     }
 
-    fn try_lambda(&mut self) -> Result<Option<Expr>, Diag> {
+    fn try_lambda(&mut self, full_body: bool) -> Result<Option<Expr>, Diag> {
         let save = self.pos;
         let mut params = Vec::new();
         while let Tok::Name(n) = self.peek().clone() {
@@ -572,7 +594,9 @@ impl Parser {
             return Ok(None);
         }
         self.bump(); // ->
-        let body = self.expr()?;
+        // a bare lambda body stops at `|` so pipe stages compose; inside
+        // parens the full expression (pipes included) is the body
+        let body = if full_body { self.expr()? } else { self.no_pipe_expr()? };
         Ok(Some(Expr::Lambda { params, body: Box::new(body) }))
     }
 
@@ -694,9 +718,9 @@ impl Parser {
             }
             Tok::LParen => {
                 self.bump();
-                // a parenthesized lambda: `(x -> x > 1)` — required for
-                // inline pipe stages, since a lambda body extends through `|`
-                if let Some(lam) = self.try_lambda()? {
+                // a parenthesized lambda: `(x -> x > 1)`; inside parens the
+                // body may contain pipes (the parens are the delimiter)
+                if let Some(lam) = self.try_lambda(true)? {
                     self.expect(&Tok::RParen, ")", "close the parenthesis")?;
                     return Ok(lam);
                 }

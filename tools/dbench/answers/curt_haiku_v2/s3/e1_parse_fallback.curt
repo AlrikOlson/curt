@@ -1,0 +1,5 @@
+vals = ["12", "x", "7", "-", "30"]
+parsed = vals.map (v -> v.int ? 0)
+print (parsed.sum)
+unparseable = vals.map (v -> match (v.int ? err "bad") { int _ -> 0, err _ -> 1 }) | sum
+print unparseable

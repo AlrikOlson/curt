@@ -1,0 +1,5 @@
+orders = (fs.read "orders.json").json
+paid_total = orders.keep (o -> o.status == "paid") | map .amt | sum
+open_count = orders.keep (o -> o.status == "open") | len
+print paid_total
+print open_count

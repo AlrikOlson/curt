@@ -33,15 +33,17 @@ print greet "ana"               # application is juxtaposition: f x y
 - Pipeline `|` feeds the value as the LAST argument of the next stage:
   `xs | keep .active | top 2 .score | map .name`
 - Bare `.field` is a lambda: `top 2 .score` ≡ `top 2 (x -> x.score)`.
-- Lambdas: `x -> e`, `acc x -> e`. A lambda body swallows `|`, so
-  parenthesize a lambda used as a pipe stage:
-  `xs | keep (x -> x > 1) | sort`.
+- Lambdas: `x -> e`, `acc x -> e`. A lambda body stops at `|`, so bare
+  lambda stages compose: `xs | map x -> x * x | sum`.
+- The pipe takes the WHOLE expression on its left:
+  `row.split "," | sum` pipes the split result.
+- `print` and `?` wrap a pipeline, never head it: `print (xs | sum)`,
+  `print (m["k"] ? 0)` — `print xs | sum` pipes print's unit (checker
+  rejects it).
+- Dots chain only when GLUED: `xs.keep(f).map(g)` chains; with spaces,
+  chain with `|` instead.
 - Application binds tighter than operators: `c.write x + y` is
   `(c.write x) + y`.
-- A pipe after an OPEN call captures the call's LAST ARGUMENT, not its
-  result: `row.split "," | sum` pipes `","` — WRONG. Parentheses are a
-  capture barrier: `(row.split ",") | sum` pipes the split result. Rule:
-  every pipeline starts from a bare value or a parenthesized expression.
 - An `if`/`match` expression can't sit bare as a call argument — bind it
   first (`word = if ... ; print word`) or parenthesize.
 
@@ -61,8 +63,9 @@ records. `xs + ys` concatenates lists; `acc += [x]` appends. A mixed
 literal like `[7, "ok"]` is a `[int | str]` union list. Multiline list
 literals are fine (newlines inside `[ ]` and `( )` are plain whitespace).
 Maps have no literal in v0.1 — they arrive from `counts`, `.json`,
-`group`; index `m["k"]`, rescue a missing key: `m["k"] ? 0`; iterate
-`m.pairs` which yields records with fields `.k` and `.v`. Records:
+`group`; index `m["k"]` or `m.k` (field syntax does key lookup), rescue
+a missing key: `m["k"] ? 0`; iterate `m.pairs` which yields records
+with fields `.k` and `.v`. Records:
 
 ```
 type Pt = {x float, y float}
@@ -101,11 +104,13 @@ put a record literal in a header unparenthesized.
 Failable ops return `T | err`. Two one-token tools:
 
 ```
-cfg = load "app.cfg" ? {}       # rescue: fallback if err/missing
+cfg = fs.read "app.cfg" ? ""    # rescue: fallback if the READ errs
 data = (fs.read p)?             # propagate: return err to caller
+ok = match v { err e -> "failed: {e}", int n -> "got {n}" }
 ```
 
-Diagnostics are single-line JSON with a `fix` field — apply it verbatim.
+`err e` is a match pattern binding the message. Diagnostics are
+single-line JSON with a `fix` field — apply it verbatim.
 
 ## Stdlib verbs (all 1 token; `x.f a` ≡ `f x a`)
 
@@ -152,9 +157,10 @@ Loop only when state threads between iterations; otherwise verbs first.
 
 No `def lambda import return elif try/except f"" [x for x in]`. No `:` 
 after headers — braces. No `len(x)` — `x.len`. Slices `xs[1:]` exist.
-`and or not` (not `&& || !`). `true false`. Strings are double-quoted
-(`"a"`, never `'a'`). The parser forgives common slips (`return`, `elif`,
-`f(x, y)`, `True`, `++`, `'a'`) but emit canonical forms.
+`and or not` (not `&& || !`). `true false`. Strings are double-quoted;
+`'...'` is a raw string (no interpolation — handy inside `"{...}"` holes).
+`"{}"` is literal braces. The parser forgives common slips (`return`,
+`elif`, `f(x, y)`, `True`, `++`) but emit canonical forms.
 
 ## Deeper artifacts
 

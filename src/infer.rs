@@ -268,6 +268,7 @@ impl Checker {
             "float" => f1(vec![Ty::Any], Ty::Float),
             "str" => f1(vec![Ty::Any], Ty::Str),
             "json" => f1(vec![Ty::Str], Ty::Any),
+            "err" => f1(vec![Ty::Str], Ty::Any),
             "digit" => f1(vec![Ty::Str], Ty::Bool),
             _ => return None,
         })
@@ -661,6 +662,15 @@ impl Checker {
             }
             Expr::Rescue { value, fallback } => {
                 let vt = self.expr(value)?;
+                // `print x ? y` rescues print's unit and silently discards y
+                // (v0.2 whole-expression rescue) — catch it loudly
+                if matches!(self.resolve(&vt), Ty::Unit) {
+                    return Err(err(
+                        "type_mismatch",
+                        "rescue on unit — the left side never fails",
+                        "rescue the value, not the statement: print (x ? fallback)",
+                    ));
+                }
                 let ft = self.expr(fallback)?;
                 // fallback replaces an err/absent value; both sides flow out
                 if self.unify(&vt, &ft).is_err() {
@@ -956,42 +966,11 @@ pub fn rewrite_pipes(e: &Expr) -> Expr {
 
 fn rewrite_sugar(e: &Expr) -> Expr {
     match e {
-        Expr::Pipe { stages } => {
-            // explicit parens on the first stage are a grouping barrier:
-            // `(f x) | g` pipes the RESULT of f x, never captures x
-            // (token-bench interpreter bug, spec-truth)
-            let first_grouped = matches!(stages[0], Expr::Paren(_));
-            let stages: Vec<Expr> = stages.iter().map(rewrite_sugar).collect();
-            if !first_grouped {
-                if let Expr::App { head, args } = &stages[0] {
-                    if !args.is_empty() {
-                        let mut new_args = args.clone();
-                        let last = new_args.pop().unwrap();
-                        let mut inner = vec![last];
-                        inner.extend(stages[1..].iter().cloned());
-                        new_args.push(Expr::Pipe { stages: inner });
-                        return Expr::App { head: head.clone(), args: new_args };
-                    }
-                }
-            }
-            Expr::Pipe { stages }
-        }
-        Expr::Rescue { value, fallback } => {
-            let grouped = matches!(**value, Expr::Paren(_));
-            let value = rewrite_sugar(value);
-            let fallback = Box::new(rewrite_sugar(fallback));
-            if !grouped {
-                if let Expr::App { head, args } = &value {
-                    if !args.is_empty() {
-                        let mut new_args = args.clone();
-                        let last = new_args.pop().unwrap();
-                        new_args.push(Expr::Rescue { value: Box::new(last), fallback });
-                        return Expr::App { head: head.clone(), args: new_args };
-                    }
-                }
-            }
-            Expr::Rescue { value: Box::new(value), fallback }
-        }
+        // v0.2: NO capture rewrites. `f x | g` pipes the result of `f x`
+        // and `f x ? y` rescues the result of `f x` — the whole left
+        // expression, like every shipped pipeline language (F#, Elixir).
+        // The v0.1 capture-last-argument rule was a measured five-experiment
+        // footgun and is deleted, not patched.
         // parens have done their job (grouping + capture barrier) — strip
         Expr::Paren(inner) => rewrite_sugar(inner),
         other => map_expr(other, &rewrite_sugar),

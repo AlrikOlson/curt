@@ -119,7 +119,7 @@ pub fn lex_raw(src: &str) -> Result<Vec<Token>, Diag> {
     let mut line: u32 = 1;
     let mut col: u32 = 1;
     let mut prev_end = usize::MAX; // byte index just past the previous token
-    let mut bracket_depth: u32 = 0; // [ ( nesting — suspends Newline tokens
+    let mut delims: Vec<u8> = Vec::new(); // open-delimiter stack; newline suspended only directly inside ( or [
 
     macro_rules! push {
         ($tok:expr, $start:expr, $startcol:expr) => {{
@@ -146,8 +146,10 @@ pub fn lex_raw(src: &str) -> Result<Vec<Token>, Diag> {
             }
             b'\n' => {
                 // inside [ ] / ( ) a newline is plain whitespace, not a
-                // statement separator (multiline literals, spec-truth)
-                if bracket_depth > 0 {
+                // statement separator (multiline literals, spec-truth) —
+                // unless a { } block is open inside (blocks NEED newlines;
+                // domain-bench: block lambdas inside call parens flattened)
+                if matches!(delims.last(), Some(b'(') | Some(b'[')) {
                     i += 1;
                     line += 1;
                     col = 1;
@@ -176,6 +178,20 @@ pub fn lex_raw(src: &str) -> Result<Vec<Token>, Diag> {
                 let (ch, len) = match rest {
                     [b'\\', e, b'\'', ..] => (format!("\\{}", *e as char), 4),
                     [c2, b'\'', ..] if *c2 != b'\'' && *c2 != b'\n' => ((*c2 as char).to_string(), 3),
+                    _ if rest.iter().take_while(|c| **c != b'\n').any(|c| *c == b'\'') => {
+                        // Postel: '...' multi-char single-quoted string —
+                        // canonicalize to a double-quoted string, escaping
+                        // any embedded double quotes (domain-bench:
+                        // interpolation holes can't carry double quotes)
+                        let end = rest.iter().position(|c| *c == b'\'').unwrap();
+                        // raw semantics: escape quotes AND interpolation
+                        // braces so '...' text never opens a hole
+                        let body = String::from_utf8_lossy(&rest[..end])
+                            .replace('\\', "\\\\")
+                            .replace('"', "\\\"")
+                            .replace('{', "\\{");
+                        (body, end + 2)
+                    }
                     _ => {
                         return Err(Diag::at(
                             "unexpected_char",
@@ -356,8 +372,12 @@ pub fn lex_raw(src: &str) -> Result<Vec<Token>, Diag> {
                 // (multiline list/call literals — token-bench failure 06/08);
                 // { } untouched: blocks NEED newlines as separators
                 match tok {
-                    Tok::LBrack | Tok::LParen => bracket_depth += 1,
-                    Tok::RBrack | Tok::RParen => bracket_depth = bracket_depth.saturating_sub(1),
+                    Tok::LBrack => delims.push(b'['),
+                    Tok::LParen => delims.push(b'('),
+                    Tok::LBrace => delims.push(b'{'),
+                    Tok::RBrack | Tok::RParen | Tok::RBrace => {
+                        delims.pop();
+                    }
                     _ => {}
                 }
                 push!(tok, start, startcol);
