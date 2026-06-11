@@ -1,0 +1,7 @@
+cfg_missing = (fs.read "missing.cfg" ? "{}").json
+name = cfg_missing["name"] ? "default"
+print name
+
+cfg = (fs.read "app.cfg").json
+port = cfg["port"] ? 0
+print port

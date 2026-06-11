@@ -1,0 +1,3 @@
+vals = ["12", "x", "7", "-", "30"]
+print (vals | map (v -> v.int ? 0) | sum)
+print (vals | keep (v -> (v.int ? -999999) == -999999)).len

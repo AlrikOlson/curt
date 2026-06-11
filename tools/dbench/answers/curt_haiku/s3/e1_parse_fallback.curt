@@ -1,0 +1,5 @@
+vals = ["12", "x", "7", "-", "30"]
+nums = vals.map (v -> v.int ? 0)
+bad = vals.keep (v -> v != "0" and (v.int ? 0) == 0).len
+print nums.sum
+print bad

@@ -1,0 +1,6 @@
+vals = ["12", "x", "7", "-", "30"]
+parsed = vals | map (v -> v.int ? 0)
+total = parsed.sum
+bad = vals | keep (v -> (v.int ? err) == err) | len
+print total
+print bad

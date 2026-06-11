@@ -1,0 +1,5 @@
+lines = (fs.read "users.txt").lines
+valid = lines | keep (ln -> (ln.words.len) == 3 and ((ln.words[2]).int ? "err") != "err")
+ages = valid | map (ln -> (ln.words[2]).int ? 0)
+print (valid.len)
+print (ages.sum / valid.len)

@@ -1,0 +1,5 @@
+xs = ["12", "x", "7", "-", "30"]
+nums = xs.map (x -> x.int ? 0)
+print (nums.sum)
+check x = match (x.int) { int n -> false, err -> true }
+print (xs.keep check | len)

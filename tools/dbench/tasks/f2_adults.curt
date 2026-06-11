@@ -1,0 +1,2 @@
+rows = (fs.read "users.txt").lines | map (l -> l.words) | keep (p -> p.len == 3)
+print (rows | keep (p -> (p[2].int ? 0) > 25) | map (p -> p[1]) | join " ")

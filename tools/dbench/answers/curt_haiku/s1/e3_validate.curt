@@ -1,0 +1,7 @@
+ages = [34, -2, 19, 150, 42, 27]
+is_valid = a -> a >= 0 && a <= 120
+valid = ages.keep is_valid
+invalid = ages.keep (a -> !is_valid a)
+print (valid.len)
+print (invalid.len)
+print (valid.sum)

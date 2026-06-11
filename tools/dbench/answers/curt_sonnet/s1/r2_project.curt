@@ -1,0 +1,3 @@
+orders = (fs.read "orders.json").json
+result = orders | keep (o -> o["amt"] > 25) | top (orders.len) (o -> o["amt"]) | map (o -> str o["id"]) | join ","
+print result

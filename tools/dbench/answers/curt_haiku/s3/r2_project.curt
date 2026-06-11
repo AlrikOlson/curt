@@ -1,0 +1,5 @@
+orders = (fs.read "orders.json").json
+filtered = orders.keep (o -> o["amt"] > 25)
+sorted = filtered.top filtered.len (o -> o["amt"])
+ids = sorted.map (o -> o["id"]).map str
+print (ids.join ",")

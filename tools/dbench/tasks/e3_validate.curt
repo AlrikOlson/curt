@@ -1,0 +1,5 @@
+ages = [34, -2, 19, 150, 42, 27]
+ok = ages | keep (a -> a >= 0 and a <= 120)
+print ok.len
+print (ages.len - ok.len)
+print ok.sum

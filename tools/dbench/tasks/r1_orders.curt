@@ -1,0 +1,3 @@
+orders = (fs.read "orders.json").json
+print (orders | keep (o -> o["status"] == "paid") | map (o -> o["amt"]) | sum)
+print (orders | keep (o -> o["status"] == "open")).len

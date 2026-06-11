@@ -1,0 +1,5 @@
+u1 alice 34
+u2 bob 19
+u3 carol 42
+badline
+u4 dave 27

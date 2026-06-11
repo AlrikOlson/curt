@@ -1,0 +1,5 @@
+vals = ["12", "x", "7", "-", "30"]
+nums = vals | map (v -> v.int ? 0)
+bad = vals | keep (v -> (v.int ? "err") in [err]) | len
+print (nums.sum)
+print bad

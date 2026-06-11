@@ -1,0 +1,7 @@
+lines = (fs.read "users.txt").lines
+valid = lines | keep (ln -> (ln.words.len == 3 && (ln.words[2].int ? err) != err))
+users = valid | map (ln -> {id: ln.words[0], name: ln.words[1], age: ln.words[2].int})
+count = users.len
+avg = users | map (u -> u.age) | sum / count
+print count
+print avg

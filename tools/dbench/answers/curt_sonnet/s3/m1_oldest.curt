@@ -1,0 +1,6 @@
+lines = (fs.read "users.txt").lines
+valid = lines | keep (ln -> (ln.words.len == 3) and ((ln.words[2].int ? "err") != "err"))
+oldest = valid | top 1 (ln -> ln.words[2].int ? 0) | first
+nm = oldest.words[1]
+age = oldest.words[2].int ? 0
+print "{nm} {age}"

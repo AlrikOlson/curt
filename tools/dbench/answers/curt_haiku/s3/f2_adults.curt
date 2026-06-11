@@ -1,0 +1,11 @@
+lines = (fs.read "users.txt").lines
+valid = lines.keep (line -> {
+  parts = line.split " "
+  parts.len == 3 and (parts[2].int ? -1) >= 0
+})
+adults = valid.keep (line -> {
+  age = (line.split " ")[2].int ? 0
+  age > 25
+})
+names = adults.map (line -> (line.split " ")[1])
+print (names.join " ")

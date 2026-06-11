@@ -1,0 +1,11 @@
+users_data = (fs.read "users.txt") ? ""
+lines = users_data.lines
+parse_user = line -> {
+  parts = line.words
+  if parts.len == 3 { (parts[0], parts[1], parts[2].int ? null) } else { null }
+}
+users = lines.map parse_user | keep (u -> u != null)
+print (users.len)
+ages = users.map (u -> u.2)
+avg_age = (ages.sum) / (ages.len)
+print avg_age

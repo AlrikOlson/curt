@@ -1,0 +1,4 @@
+rows = (fs.read "users.txt").lines | map (l -> l.words) | keep (p -> p.len == 3)
+ages = rows | map (p -> p[2].int ? -1) | keep (a -> a >= 0)
+print ages.len
+print (ages.sum / ages.len)

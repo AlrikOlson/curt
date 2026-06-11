@@ -1,0 +1,6 @@
+lines = (fs.read "users.txt").lines
+valid = lines | keep (ln -> (ln.words.len == 3) and ((ln.words[2].int ? "err") != "err"))
+cnt = valid.len
+avg = (valid | map (ln -> ln.words[2].int ? 0) | sum) / cnt
+print cnt
+print avg

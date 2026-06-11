@@ -1,0 +1,5 @@
+cfg = (fs.read "app.cfg").json
+host = cfg["host"] ? "localhost"
+port = cfg["port"] ? 0
+mode = if (cfg["debug"] ? false) { "debug" } else { "prod" }
+print "{mode} {host}:{port}"

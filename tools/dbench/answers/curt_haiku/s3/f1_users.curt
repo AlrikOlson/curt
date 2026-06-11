@@ -1,0 +1,10 @@
+lines = (fs.read "users.txt").lines
+valid = lines.keep (line -> {
+  parts = line.split " "
+  parts.len == 3 and (parts[2].int ? -1) >= 0
+})
+count = valid.len
+ages = valid.map (line -> (line.split " ")[2].int ? 0)
+avg = ages.sum / count
+print count
+print avg
