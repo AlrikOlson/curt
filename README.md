@@ -1,6 +1,7 @@
 # curt
 
 [![ci](https://github.com/AlrikOlson/curt/actions/workflows/ci.yml/badge.svg)](https://github.com/AlrikOlson/curt/actions/workflows/ci.yml)
+[![dataset](https://img.shields.io/badge/%F0%9F%A4%97%20dataset-curt--benchmarks-blue)](https://huggingface.co/datasets/therikkening/curt-benchmarks)
 
 A **general-purpose, machine-first programming language** for AI agents:
 statically typed, compiled (wasm-first), with **output-token cost as the prime
