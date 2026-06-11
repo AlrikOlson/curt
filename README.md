@@ -1,5 +1,7 @@
 # curt
 
+[![ci](https://github.com/AlrikOlson/curt/actions/workflows/ci.yml/badge.svg)](https://github.com/AlrikOlson/curt/actions/workflows/ci.yml)
+
 A **general-purpose, machine-first programming language** for AI agents:
 statically typed, compiled (wasm-first), with **output-token cost as the prime
 design directive** — human readability is a derived view (`curt expand`), not a
