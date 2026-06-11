@@ -50,6 +50,9 @@ def norm_eq(a, b):
         for u, v in zip(tx, ty):
             if u == v:
                 continue
+            # bool tokens render True/False in Python, true/false in curt
+            if u.lower() == v.lower() and u.lower() in ("true", "false"):
+                continue
             try:
                 if abs(float(u) - float(v)) < 1e-9:
                     continue

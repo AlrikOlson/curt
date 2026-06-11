@@ -20,11 +20,16 @@ class Unsupported(Exception):
 
 
 STR_VARS: set = set()
+USER_FNS: set = set()
 
 
 def transpile(src: str) -> str:
     tree = ast.parse(src)
     STR_VARS.clear()
+    USER_FNS.clear()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef):
+            USER_FNS.add(node.name)
     for node in ast.walk(tree):
         if (
             isinstance(node, ast.Assign)
@@ -65,12 +70,15 @@ def stmt(n, d):
             return f"{pad}({names}) = {expr(n.value)}"
         raise Unsupported("assign-target", ast.dump(t)[:40])
     if isinstance(n, ast.AugAssign):
-        if not isinstance(n.target, ast.Name):
-            raise Unsupported("augassign-target")
         op = BIN.get(type(n.op))
         if op is None:
             raise Unsupported("augassign-op")
-        return f"{pad}{n.target.id} {op}= {expr(n.value)}"
+        if isinstance(n.target, ast.Name):
+            return f"{pad}{n.target.id} {op}= {expr(n.value)}"
+        if isinstance(n.target, ast.Subscript) and not isinstance(n.target.slice, ast.Slice):
+            t = expr(n.target)
+            return f"{pad}{t} = {t} {op} {paren(n.value)}"
+        raise Unsupported("augassign-target")
     if isinstance(n, ast.Expr):
         return f"{pad}{expr_stmt(n.value)}"
     if isinstance(n, ast.For):
@@ -184,10 +192,18 @@ def expr(n):
         return f"if {expr(n.test)} {{ {expr(n.body)} }} else {{ {expr(n.orelse)} }}"
     if isinstance(n, ast.Subscript):
         if isinstance(n.slice, ast.Slice):
+            if n.slice.step is not None:
+                # xs[::-1] is the Python reversal idiom -> .rev
+                s = n.slice.step
+                if (
+                    isinstance(s, ast.UnaryOp) and isinstance(s.op, ast.USub)
+                    and isinstance(s.operand, ast.Constant) and s.operand.value == 1
+                    and n.slice.lower is None and n.slice.upper is None
+                ):
+                    return f"{paren(n.value)}.rev"
+                raise Unsupported("slice-step")
             lo = expr(n.slice.lower) if n.slice.lower else ""
             hi = expr(n.slice.upper) if n.slice.upper else ""
-            if n.slice.step:
-                raise Unsupported("slice-step")
             return f"{paren(n.value)}[{lo}:{hi}]"
         return f"{paren(n.value)}[{expr(n.slice)}]"
     if isinstance(n, ast.JoinedStr):
@@ -204,6 +220,14 @@ def expr(n):
         return comprehension(n)
     if isinstance(n, ast.Call):
         return call(n)
+    if isinstance(n, ast.Lambda):
+        a = n.args
+        if (
+            len(a.args) != 1
+            or a.kwonlyargs or a.posonlyargs or a.defaults or a.vararg or a.kwarg
+        ):
+            raise Unsupported("lambda-shape")
+        return f"({a.args[0].arg} -> {expr(n.body)})"
     raise Unsupported("expr", type(n).__name__)
 
 
@@ -266,6 +290,22 @@ def call(n):
             if isinstance(inner, (ast.ListComp, ast.GeneratorExp)):
                 return f"{comprehension(inner)} | {verb}"
             return f"{paren(inner)}.{verb}"
+        # list(range(..)) / list(comprehension) are identities: range and
+        # pipelines already yield lists in curt
+        if f == "list" and len(n.args) == 1:
+            inner = n.args[0]
+            if isinstance(inner, ast.Call) and isinstance(inner.func, ast.Name) \
+                    and inner.func.id == "range":
+                return f"({expr(inner)})"
+            if isinstance(inner, (ast.ListComp, ast.GeneratorExp)):
+                return comprehension(inner)
+            raise Unsupported("builtin", "list")
+        # min(a, b) / max(a, b) variadic forms become list verbs
+        if f in ("min", "max") and len(n.args) > 1:
+            items = ", ".join(expr(a) for a in n.args)
+            return f"[{items}].{f}"
+        if f not in USER_FNS:
+            raise Unsupported("builtin", f)
         # user-defined function call: juxtaposition
         args = " ".join(paren(a) for a in n.args)
         return f"{f} {args}" if args else f"{f}()"
