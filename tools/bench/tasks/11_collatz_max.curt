@@ -1,0 +1,13 @@
+bestn = 0
+bests = -1
+for j in range 10 {
+  n = j + 1
+  m = n
+  k = 0
+  while m != 1 {
+    m = if m % 2 == 0 { m / 2 } else { 3 * m + 1 }
+    k += 1
+  }
+  if k > bests { bestn = n; bests = k }
+}
+print "{bestn} {bests}"

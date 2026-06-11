@@ -1,0 +1,7 @@
+s = "the cat sat on the mat with the cat"
+ws = s.words
+freq = ws.counts
+top2 = freq.sort (a -> -(a.v)).keep (x -> x).top 2 (x -> x.v)
+for item in top2 {
+  print "{item.k} {item.v}"
+}

@@ -1,0 +1,12 @@
+toBin n = {
+  if n == 0 { "0" } else {
+    res = ""
+    while n > 0 {
+      res = (n % 2).str + res
+      n = n / 2
+    }
+    res
+  }
+}
+print toBin 13
+print toBin 64

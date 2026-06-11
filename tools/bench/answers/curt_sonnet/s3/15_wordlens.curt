@@ -1,0 +1,5 @@
+ws = "pack my box with five dozen liquor jugs".words
+longest = ws | top 1 (w -> w.len) | first
+avg = (ws | map (w -> w.len) | sum).float / ws.len.float
+print longest
+print avg.int

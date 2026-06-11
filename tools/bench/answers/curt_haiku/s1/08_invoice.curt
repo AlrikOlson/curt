@@ -1,0 +1,15 @@
+type Item = {name str, qty int, price float}
+items = [Item{name:"widget", qty:4, price:2.5}, Item{name:"gizmo", qty:2, price:7.25}, Item{name:"bolt", qty:10, price:0.1}]
+total = 0.0
+best_item = ""
+best_amt = 0.0
+for item in items {
+  amt = item.qty.float * item.price
+  total += amt
+  if amt > best_amt {
+    best_amt = amt
+    best_item = item.name
+  }
+}
+print total
+print best_item

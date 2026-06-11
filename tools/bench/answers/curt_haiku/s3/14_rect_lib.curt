@@ -1,0 +1,9 @@
+type Rect = {w float, h float}
+area r = r.w * r.h
+perim r = 2.0 * (r.w + r.h)
+scale r f = Rect{w: r.w * f, h: r.h * f}
+rect = Rect{w: 3.0, h: 4.0}
+print area rect
+print perim rect
+scaled = scale rect 2.0
+print area scaled

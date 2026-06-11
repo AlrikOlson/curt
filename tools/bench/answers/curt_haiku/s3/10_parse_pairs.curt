@@ -1,0 +1,9 @@
+s = "a=1,b=22,c=333"
+pairs = s.split ","
+sum_val = 0
+for p in pairs {
+  parts = p.split "="
+  val = parts[1].int
+  sum_val += val
+}
+print sum_val

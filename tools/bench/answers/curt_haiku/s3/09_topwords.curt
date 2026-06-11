@@ -1,0 +1,8 @@
+s = "the cat sat on the mat with the cat"
+words = s.lower.split " "
+freq = words.counts
+pairs = freq.pairs
+sorted_pairs = pairs.sort (a -> a.v)
+sorted_pairs = sorted_pairs.rev
+print "{sorted_pairs[0].k} {sorted_pairs[0].v}"
+print "{sorted_pairs[1].k} {sorted_pairs[1].v}"

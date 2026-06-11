@@ -1,0 +1,3 @@
+items = [{name:"widget", qty:4, price:2.5}, {name:"gizmo", qty:2, price:7.25}, {name:"bolt", qty:10, price:0.1}]
+print (items | map (it -> (it.qty.float) * it.price) | sum)
+print (items | top 1 (it -> (it.qty.float) * it.price) | map .name | join "")

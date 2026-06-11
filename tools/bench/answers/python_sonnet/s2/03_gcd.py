@@ -1,0 +1,4 @@
+a, b = 252, 105
+while b != 0:
+    a, b = b, a % b
+print(a)

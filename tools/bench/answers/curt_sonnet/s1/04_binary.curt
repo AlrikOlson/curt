@@ -1,0 +1,12 @@
+to_bin n = {
+  if n == 0 { ret "0" }
+  bits = ""
+  val = n
+  while val > 0 {
+    bits = (str (val % 2)) + bits
+    val = val / 2
+  }
+  bits
+}
+print (to_bin 13)
+print (to_bin 64)

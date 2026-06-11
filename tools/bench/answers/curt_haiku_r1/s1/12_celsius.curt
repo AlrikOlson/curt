@@ -1,0 +1,7 @@
+cs = [12.5, 30.0, -5.0]
+temps = []
+for c in cs {
+  f = c * 9.0 / 5.0 + 32.0
+  temps = [temps, [f]].flat
+}
+print temps.max

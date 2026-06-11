@@ -1,0 +1,23 @@
+package main
+
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
+
+func main() {
+	s := "a=1,b=22,c=333"
+	pairs := strings.Split(s, ",")
+	sum := 0
+	for _, pair := range pairs {
+		parts := strings.Split(pair, "=")
+		if len(parts) == 2 {
+			val, err := strconv.Atoi(parts[1])
+			if err == nil {
+				sum += val
+			}
+		}
+	}
+	fmt.Println(sum)
+}

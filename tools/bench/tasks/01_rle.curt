@@ -1,0 +1,11 @@
+s = "aaabbcccca"
+cs = s.chars
+out = ""
+i = 0
+while i < cs.len {
+  j = i
+  while j < cs.len and cs[j] == cs[i] { j += 1 }
+  out = out + cs[i] + "{j - i}"
+  i = j
+}
+print out

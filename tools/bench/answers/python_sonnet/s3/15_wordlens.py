@@ -1,0 +1,5 @@
+words = "pack my box with five dozen liquor jugs".split()
+longest = max(words, key=len)
+avg = sum(len(w) for w in words) / len(words)
+print(longest)
+print(int(avg))

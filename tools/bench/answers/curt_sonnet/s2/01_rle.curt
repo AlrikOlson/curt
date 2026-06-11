@@ -1,0 +1,13 @@
+s = "aaabbcccca"
+out = ""
+idx = 0
+while idx < s.len {
+  ch = s[idx]
+  cnt = 0
+  while idx < s.len and s[idx] == ch {
+    cnt += 1
+    idx += 1
+  }
+  out = "{out}{ch}{cnt}"
+}
+print out

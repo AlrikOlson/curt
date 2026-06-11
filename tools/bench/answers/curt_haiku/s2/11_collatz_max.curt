@@ -1,0 +1,20 @@
+max_n = 1
+max_steps = 0
+for n in range 10 {
+  n = n + 1
+  cur = n
+  steps = 0
+  while cur != 1 {
+    if cur % 2 == 0 {
+      cur = cur / 2
+    } else {
+      cur = 3 * cur + 1
+    }
+    steps = steps + 1
+  }
+  if steps > max_steps {
+    max_steps = steps
+    max_n = n
+  }
+}
+print "{max_n} {max_steps}"

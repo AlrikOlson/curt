@@ -1,0 +1,14 @@
+xs = [3, 1, 3, 2, 1, 4]
+seen = []
+res = []
+for x in xs {
+  found = false
+  for s in seen {
+    if s == x { found = true }
+  }
+  if not found {
+    seen += [x]
+    res += [x]
+  }
+}
+print (res | map .str | join " ")

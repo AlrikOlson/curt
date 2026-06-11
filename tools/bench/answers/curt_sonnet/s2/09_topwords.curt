@@ -1,0 +1,4 @@
+s = "the cat sat on the mat with the cat"
+freq = (s.words).counts
+top2 = freq | top 2 .v
+for p in top2 { print "{p.k} {p.v}" }

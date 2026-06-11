@@ -1,0 +1,15 @@
+s = "pack my box with five dozen liquor jugs"
+words = s.split " "
+max_word = ""
+max_len = 0
+sum_len = 0
+for w in words {
+  sum_len += w.len
+  if w.len > max_len {
+    max_len = w.len
+    max_word = w
+  }
+}
+avg_len = sum_len / words.len
+print max_word
+print avg_len

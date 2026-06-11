@@ -1,0 +1,6 @@
+s = "pack my box with five dozen liquor jugs"
+ws = s.split " "
+longest = ws | top 1 .len | join ""
+avg_len = ((ws.map .len) | sum).float / ws.len.float
+print longest
+print (((ws.map .len) | sum) / ws.len)

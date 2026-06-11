@@ -1,0 +1,3 @@
+ws = "pack my box with five dozen liquor jugs".words
+print (ws | top 1 .len | join "")
+print ((ws | map .len | sum) / ws.len)

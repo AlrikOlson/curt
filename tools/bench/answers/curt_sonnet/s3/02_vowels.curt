@@ -1,0 +1,7 @@
+s = "the quick brown fox jumps over the lazy dog"
+vowels = "aeiou"
+cnt = 0
+for ch in s.chars {
+  if vowels.split "" | keep (v -> v == ch) | len > 0 { cnt += 1 }
+}
+print cnt

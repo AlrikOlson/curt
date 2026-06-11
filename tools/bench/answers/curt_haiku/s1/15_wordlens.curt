@@ -1,0 +1,6 @@
+s = "pack my box with five dozen liquor jugs"
+ws = s.split " "
+longest = ws | sort (x -> 0 - x.len) | first
+avg_len = ws | map .len | (x -> x.sum.float / x.len.float)
+print longest
+print (avg_len.int)

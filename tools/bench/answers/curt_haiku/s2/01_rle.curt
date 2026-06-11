@@ -1,0 +1,13 @@
+s = "aaabbcccca"
+i = 0
+res = ""
+while i < s.len {
+  ch = s[i]
+  cnt = 1
+  while i + cnt < s.len and s[i + cnt] == ch {
+    cnt = cnt + 1
+  }
+  res = res + ch + (cnt.str)
+  i = i + cnt
+}
+print res

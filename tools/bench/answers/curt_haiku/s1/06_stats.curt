@@ -1,0 +1,5 @@
+xs = [4, 8, 15, 16, 23]
+print xs.min
+print xs.max
+mean = xs.sum.float / xs.len.float
+print mean

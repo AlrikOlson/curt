@@ -1,0 +1,6 @@
+s = "pack my box with five dozen liquor jugs"
+wds = s.words
+longest = wds | fold "" (acc w -> if w.len > acc.len { w } else { acc })
+print longest
+avg = wds | map .len | sum
+print (avg / wds.len)

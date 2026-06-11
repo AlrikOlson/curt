@@ -1,0 +1,6 @@
+s = "the cat sat on the mat with the cat"
+words = s.split " "
+freq = words.counts
+top2 = freq.pairs | top 2 .v
+print "{top2[0].k} {top2[0].v}"
+print "{top2[1].k} {top2[1].v}"

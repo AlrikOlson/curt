@@ -1,0 +1,7 @@
+cs = [12.5, 30.0, -5.0]
+fs = []
+for c in cs {
+  f = c * 9.0 / 5.0 + 32.0
+  fs += [f]
+}
+print fs.max

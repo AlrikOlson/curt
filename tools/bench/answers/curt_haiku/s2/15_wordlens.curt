@@ -1,0 +1,6 @@
+s = "pack my box with five dozen liquor jugs"
+ws = s.words
+longest = ws.max (w -> w.len)
+avg_len = (ws.len).float / (ws.map .len | fold 0 acc x -> acc + x).float
+print longest
+print ((ws.map .len | fold 0 acc x -> acc + x) / ws.len)
