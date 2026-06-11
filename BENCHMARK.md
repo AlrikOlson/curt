@@ -140,15 +140,6 @@ remains future work (idiom density: models still write loop-heavy curt).
 Reference-corpus median improved 1.19× → 1.12× (n=21) with the new
 append-exercising corpus program.
 
-```
-cargo build --release
-.ci-venv/bin/python tools/bench/grade_bench.py --all   # every cell
-.ci-venv/bin/python tools/bench/measure.py             # token table
-```
-
-Generation/repair are LLM calls (2026-06-11, haiku + sonnet subagents);
-the committed answers/ are the frozen record — grading is deterministic.
-
 ## The idiom-density experiment (2026-06-11): hypothesis tested, half refuted
 
 Pre-registered hypothesis (roadmap `idiom-density`, from full-text reads of
@@ -191,3 +182,14 @@ domain-weighted benchmark is the honest next measurement.
 Also measured during pair selection: pipeline forms with lambdas cost
 the same as the loops they replace (sumsq pair delta = 0); the real
 token wins are lambda-free verb forms (`.max`, `join`, `top n .f`).
+
+## Reproduce
+
+```
+cargo build --release
+.ci-venv/bin/python tools/bench/grade_bench.py --all   # every cell
+.ci-venv/bin/python tools/bench/measure.py             # token table
+```
+
+Generation/repair are LLM calls (2026-06-11, haiku + sonnet subagents);
+the committed answers/ are the frozen record — grading is deterministic.
