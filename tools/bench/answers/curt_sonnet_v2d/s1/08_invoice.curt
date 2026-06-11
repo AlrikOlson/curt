@@ -1,0 +1,10 @@
+items = [
+  {name:"widget", qty:4, price:2.5},
+  {name:"gizmo", qty:2, price:7.25},
+  {name:"bolt", qty:10, price:0.1}
+]
+totals = items | map (item -> {name:item.name, total:item.qty.float * item.price})
+grand = totals | map .total | sum
+best = totals | top 1 .total | first
+print grand
+print best.name

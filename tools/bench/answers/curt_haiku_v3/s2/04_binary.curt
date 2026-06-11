@@ -1,0 +1,9 @@
+for num in [13, 64] {
+  bin = ""
+  n = num
+  while n > 0 {
+    bin = (n % 2 | str) + bin
+    n = n / 2
+  }
+  print bin
+}

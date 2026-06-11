@@ -1,0 +1,18 @@
+items = [
+  {name: "widget", qty: 4, price: 2.5},
+  {name: "gizmo", qty: 2, price: 7.25},
+  {name: "bolt", qty: 10, price: 0.1}
+]
+grand = 0
+maxitem = ""
+maxline = 0
+for item in items {
+  line = item.qty * item.price
+  grand += line
+  if line > maxline {
+    maxline = line
+    maxitem = item.name
+  }
+}
+print grand
+print maxitem

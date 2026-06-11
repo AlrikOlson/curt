@@ -1,0 +1,7 @@
+s = "the cat sat on the mat with the cat"
+ws = s.lower.split " "
+freq = ws.counts
+sorted_ws = freq.pairs | sort (x -> -(x.v)) | top 2 (x -> -(x.v))
+for entry in sorted_ws {
+  print "{entry.k} {entry.v}"
+}

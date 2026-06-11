@@ -1,0 +1,9 @@
+for num in [13, 64] {
+  bits = ""
+  n = num
+  while n > 0 {
+    bits = (n % 2).str + bits
+    n = n / 2
+  }
+  print bits
+}

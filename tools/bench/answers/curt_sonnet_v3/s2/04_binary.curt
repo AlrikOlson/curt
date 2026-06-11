@@ -1,0 +1,10 @@
+to_bin n = {
+  bits = ""
+  while n > 0 {
+    bits = (str (n - (n / 2) * 2)) + bits
+    n = n / 2
+  }
+  bits
+}
+print (to_bin 13)
+print (to_bin 64)

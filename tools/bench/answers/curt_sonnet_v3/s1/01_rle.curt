@@ -1,0 +1,15 @@
+s = "aaabbcccca"
+out = ""
+cur = s.chars[0]
+cnt = 1
+for ch in s.chars[1:] {
+  if ch == cur {
+    cnt += 1
+  } else {
+    out = out + cur + (str cnt)
+    cur = ch
+    cnt = 1
+  }
+}
+out = out + cur + (str cnt)
+print out

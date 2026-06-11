@@ -1,0 +1,7 @@
+sent = "pack my box with five dozen liquor jugs"
+ws = sent.split " "
+longest = ws.max (x -> x.len)
+lens = ws | map .len
+avgLen = (lens.sum).float / ws.len.float
+print longest
+print avgLen.int

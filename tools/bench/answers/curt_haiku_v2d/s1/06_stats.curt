@@ -1,0 +1,7 @@
+xs = [4, 8, 15, 16, 23]
+minval = xs.min
+maxval = xs.max
+mean = xs.sum / xs.len
+print minval
+print maxval
+print mean

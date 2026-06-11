@@ -1,0 +1,5 @@
+nums = [4, 8, 15, 16, 23]
+print (nums.min)
+print (nums.max)
+mean = (nums.sum).float / nums.len.float
+print mean

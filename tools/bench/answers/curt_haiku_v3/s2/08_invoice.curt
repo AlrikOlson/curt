@@ -1,0 +1,18 @@
+items = [
+  {name: "widget", qty: 4, price: 2.5},
+  {name: "gizmo", qty: 2, price: 7.25},
+  {name: "bolt", qty: 10, price: 0.1}
+]
+total = 0
+best_item = items[0]
+best_amt = items[0].qty.float * items[0].price
+for it in items {
+  amt = it.qty.float * it.price
+  total = total + amt
+  if amt > best_amt {
+    best_amt = amt
+    best_item = it
+  }
+}
+print total
+print best_item.name

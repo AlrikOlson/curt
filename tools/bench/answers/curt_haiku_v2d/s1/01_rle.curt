@@ -1,0 +1,13 @@
+s = "aaabbcccca"
+result = ""
+i = 0
+while i < s.len {
+  c = s[i]
+  count = 1
+  while i + count < s.len and s[i + count] == c {
+    count += 1
+  }
+  result += "{c}{count}"
+  i += count
+}
+print result

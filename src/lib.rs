@@ -1,6 +1,7 @@
 //! curt reference implementation library (front-end as of interp-a).
 
 pub mod ast;
+pub mod dense;
 pub mod diag;
 pub mod expand;
 pub mod fmt;

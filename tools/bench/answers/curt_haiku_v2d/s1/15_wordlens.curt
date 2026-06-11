@@ -1,0 +1,6 @@
+s = "pack my box with five dozen liquor jugs"
+words = s.split " "
+longest = words.max
+avglen = words.map .len | (x -> x).fold 0 acc x -> acc + x / words.len
+print longest
+print avglen.int

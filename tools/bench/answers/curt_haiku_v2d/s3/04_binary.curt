@@ -1,0 +1,13 @@
+nums = [13, 64]
+for num in nums {
+  if num == 0 { print "0" }
+  else {
+    bits = ""
+    n = num
+    while n > 0 {
+      bits = (n % 2).str + bits
+      n = n / 2
+    }
+    print bits
+  }
+}

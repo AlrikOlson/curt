@@ -1,0 +1,8 @@
+a = 252
+b = 105
+while b != 0 {
+  tmp = b
+  b = a % b
+  a = tmp
+}
+print a

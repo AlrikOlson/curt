@@ -1,0 +1,7 @@
+sent = "the cat sat on the mat with the cat"
+ws = sent.split " "
+freqs = ws.counts
+top2 = freqs | map {k: .k, v: .v} | sort (x -> -x.v) | first 2
+for it in top2 {
+  print "{it.k} {it.v}"
+}

@@ -89,6 +89,29 @@ fn main() -> ExitCode {
                 }
             }
         }
+        "dense" => {
+            let Some(path) = args.get(2) else {
+                eprintln!("usage: curt dense <file|->");
+                return ExitCode::from(2);
+            };
+            let src = match read_input(path) {
+                Ok(s) => s,
+                Err(e) => {
+                    eprintln!("{e}");
+                    return ExitCode::FAILURE;
+                }
+            };
+            match curt::dense::dense(&src) {
+                Ok(out) => {
+                    print!("{out}");
+                    ExitCode::SUCCESS
+                }
+                Err(d) => {
+                    eprintln!("{d}");
+                    ExitCode::FAILURE
+                }
+            }
+        }
         "expand" => {
             let Some(path) = args.get(2) else {
                 eprintln!("usage: curt expand <file|->");
@@ -191,7 +214,7 @@ fn main() -> ExitCode {
             ExitCode::SUCCESS
         }
         _ => {
-            eprintln!("usage: curt <parse|check|tokens|fmt|expand|run> <file|->");
+            eprintln!("usage: curt <parse|check|tokens|fmt|expand|dense|run> <file|->");
             ExitCode::from(2)
         }
     }

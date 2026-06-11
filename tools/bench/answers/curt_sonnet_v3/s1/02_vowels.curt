@@ -1,0 +1,4 @@
+s = "the quick brown fox jumps over the lazy dog"
+vowels = ["a","e","i","o","u"]
+cnt = s.chars | keep (ch -> ch in vowels) | len
+print cnt

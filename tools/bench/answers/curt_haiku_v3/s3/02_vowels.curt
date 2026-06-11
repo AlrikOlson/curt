@@ -1,0 +1,8 @@
+text = "the quick brown fox jumps over the lazy dog"
+cnt = 0
+for ch in text.chars {
+  if ch in "aeiou" {
+    cnt += 1
+  }
+}
+print cnt

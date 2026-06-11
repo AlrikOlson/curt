@@ -1,0 +1,15 @@
+src = "aaabbcccca"
+out = ""
+cur = src[0]
+cnt = 1
+for ch in src[1:] {
+  if ch == cur {
+    cnt += 1
+  } else {
+    out = out + cur + (str cnt)
+    cur = ch
+    cnt = 1
+  }
+}
+out = out + cur + (str cnt)
+print out

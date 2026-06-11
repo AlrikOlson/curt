@@ -1,0 +1,7 @@
+xs = [4, 8, 15, 16, 23]
+mn = xs.min
+mx = xs.max
+avg = xs.sum.float / xs.len.float
+print mn
+print mx
+print avg

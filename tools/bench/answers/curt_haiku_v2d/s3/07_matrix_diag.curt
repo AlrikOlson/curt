@@ -1,0 +1,3 @@
+matrix = [[5, 1, 2], [3, 6, 4], [7, 8, 9]]
+diag_sum = (range 3) | map (i -> matrix[i][i]) | sum
+print diag_sum

@@ -1,0 +1,19 @@
+max_n = 1
+max_steps = 0
+for n in range 1 11 {
+  steps = 0
+  curr = n
+  while curr != 1 {
+    if curr % 2 == 0 {
+      curr = curr / 2
+    } else {
+      curr = 3 * curr + 1
+    }
+    steps += 1
+  }
+  if steps > max_steps {
+    max_steps = steps
+    max_n = n
+  }
+}
+print "{max_n} {max_steps}"

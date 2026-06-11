@@ -1,0 +1,8 @@
+type Rect = {w float, h float}
+area r = r.w * r.h
+perimeter r = 2.0 * (r.w + r.h)
+scale r fac = Rect{w: r.w * fac, h: r.h * fac}
+r = Rect{w: 3.0, h: 4.0}
+print (area r)
+print (perimeter r)
+print (area (scale r 2.0))

@@ -1,0 +1,7 @@
+type Item = {name str, qty int, price float}
+items = [Item{name:"widget", qty:4, price:2.5}, Item{name:"gizmo", qty:2, price:7.25}, Item{name:"bolt", qty:10, price:0.1}]
+line_total item = item.qty.float * item.price
+grand = items | map line_total | sum
+print grand
+best = items | top 1 line_total | first
+print best.name

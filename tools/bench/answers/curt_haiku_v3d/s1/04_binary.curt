@@ -1,0 +1,17 @@
+for n in [13, 64] {
+  bits = ""
+  x = n
+  if x == 0 {
+    print "0"
+  } else {
+    while x > 0 {
+      if x % 2 == 1 {
+        bits = "1" + bits
+      } else {
+        bits = "0" + bits
+      }
+      x = x / 2
+    }
+    print bits
+  }
+}

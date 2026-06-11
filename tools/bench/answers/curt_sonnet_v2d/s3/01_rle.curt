@@ -1,0 +1,11 @@
+s = "aaabbcccca"
+out = ""
+idx = 0
+while idx < s.len {
+  ch = s[idx]
+  cnt = 1
+  while idx + cnt < s.len and s[idx + cnt] == ch { cnt += 1 }
+  out += "{ch}{cnt}"
+  idx += cnt
+}
+print out

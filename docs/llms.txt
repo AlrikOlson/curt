@@ -124,31 +124,29 @@ Diagnostics are single-line JSON with a `fix` field — apply it verbatim.
 ## Worked examples
 
 ```
-us = [{name:"a", score:9, active:true}, {name:"b", score:7, active:false}]
-print us | keep .active | map .name
-
 for g in sales.group .city { print "{g.k} {g.v | map .amt | sum}" }
-
-bs xs t = {
-  lo = 0
-  hi = xs.len - 1
-  while lo <= hi {
-    mid = (lo + hi) / 2
-    if xs[mid] == t { ret mid }
-    if xs[mid] < t { lo = mid + 1 } else { hi = mid - 1 }
-  }
-  -1
-}
-
-hash s = {
-  h = 14695981039346656037u64    # sized ints wrap; suffix only here
-  for b in s.bytes { h = (h ^ b) * 1099511628211 }
-  h
-}
 
 pub dist :: Pt Pt -> float       # :: only on exports/FFI
 dist a b = ((a.x-b.x)**2 + (a.y-b.y)**2).sqrt
 ```
+
+## Dense beats loops (pairs verified identical — write the dense form)
+
+```
+best = xs[0]                                # 22 tok
+for x in xs { if x > best { best = x } }
+best = xs.max                               # 4 tok
+
+out = ""; sep = ""                          # 27 tok
+for w in ws { out = out + sep + w; sep = "-" }
+print (ws | join "-")                       # 7 tok
+
+best = us[0]                                # 27 tok
+for u in us { if u.score > best.score { best = u } }
+print (us | top 1 .score | map .name | join "")   # 16 tok
+```
+
+Loop only when state threads between iterations; otherwise verbs first.
 
 ## Don't write Python
 

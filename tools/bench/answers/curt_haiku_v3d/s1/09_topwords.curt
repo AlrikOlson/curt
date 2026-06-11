@@ -1,0 +1,8 @@
+s = "the cat sat on the mat with the cat"
+words = (s.lower).split " "
+freq = words.counts
+sorted_words = (freq.pairs | sort (acc x -> 0 - x.v))
+top_2 = sorted_words | top 2 .v
+for item in top_2 {
+  print "{item.k} {item.v}"
+}

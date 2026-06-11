@@ -148,3 +148,46 @@ cargo build --release
 
 Generation/repair are LLM calls (2026-06-11, haiku + sonnet subagents);
 the committed answers/ are the frozen record — grading is deterministic.
+
+## The idiom-density experiment (2026-06-11): hypothesis tested, half refuted
+
+Pre-registered hypothesis (roadmap `idiom-density`, from full-text reads of
+CangjieBench 2603.14501, ShortCoder 2601.09703, CL4SE 2602.23047): idiom
+density is a style that transfers via within-language cost-contrast pairs;
+where it doesn't, a verifier-backed densifier (`curt dense`) banks the
+token win mechanically. Four arms on the frozen tasks, 2 models × 3
+samples each:
+
+| arm | context/processing | solved/90 | py/arm per-task ratio |
+|---|---|---|---|
+| A | sheet v2 (prose rules) | 82 | 0.95× |
+| B | sheet v3 (rules + 3 verified cost-contrast pairs, −10 tok budget) | 81 | 0.94× |
+| C | A + post-hoc `curt dense` | 82 | **1.01×** |
+| D | B + post-hoc `curt dense` | 81 | 0.99× |
+
+**Leg 1 REFUTED:** in-context cost-contrast pairs did not move idiom
+density (0.94× vs 0.95×, noise) — and made sonnet's pipe usage MORE
+eager, reintroducing the pipe-capture slip on 10_parse_pairs in all
+three samples (the footgun's fourth consecutive experiment). This
+refines CL4SE: their style-transfer-via-exemplars finding (NL summaries)
+does not extend to token-level code idioms in a pretraining-absent
+language at a 3-pair budget.
+
+**Leg 2 CONFIRMED but narrow:** `curt dense` preserved success exactly
+(the differential gate held: 0 divergences across 225 committed programs
++ all arms) and recovered +6pp of token ratio — but rewrite library
+R1–R4 only touches single-statement loop bodies (13/225 programs).
+Magnitude is bounded by the library, not the mechanism.
+
+**The reframe the data forces:** even the maximally idiomatic reference
+solutions sit near Python parity on these tasks. The reference-corpus
+advantage (1.12× median) is concentrated in CEREMONY domains — errors
+(1.38×), concurrency (1.75×), serving (1.72×), records (1.27×) — which
+this benchmark's algorithm/text task mix undersamples. **The token bet
+is domain-shaped, not style-shaped**: where Python is terse, curt ties;
+where Python (and especially Go/Rust) pay ceremony, curt wins. A
+domain-weighted benchmark is the honest next measurement.
+
+Also measured during pair selection: pipeline forms with lambdas cost
+the same as the loops they replace (sumsq pair delta = 0); the real
+token wins are lambda-free verb forms (`.max`, `join`, `top n .f`).
