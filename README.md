@@ -35,10 +35,30 @@ says obfuscation costs accuracy and buys nothing), grammar shipped as
 constrained-decoding artifacts (syntax errors become impossible), and
 RC-managed memory with zero token ceremony.
 
-**Status:** specified — **[SPEC.md](SPEC.md)** is implementable (grammar
-machine-validated 20/20 against [corpus/](corpus/); cost table reproducible via
-`tools/tokens/count.py`; corpus medians: **1.19× vs Python** (n=20), 2.34×/2.69×
-vs Go/Rust). Next: the reference implementation. The build plan lives in the
-native think-and-ship roadmap; [ROADMAP.md](ROADMAP.md) is its generated view.
-The retired v0.1 action-DSL framing is archived in
-[archive/](archive/DESIGN-v0.1.md).
+**Status:** v0.1 implemented — the full toolchain runs:
+`curt parse | check | fmt | expand | tokens | run` (126 tests; the entire
+[corpus/](corpus/) executes with golden stdout). Grammar machine-validated
+20/20 (PEG + Lark vs the Rust oracle); constrained-decoding artifacts shipped
+with **0 mid-stream violations across 200 grammar-masked generations**
+([tools/grammar/DEMO.md](tools/grammar/DEMO.md)); cost table reproducible via
+`tools/tokens/count.py` — corpus medians **1.19× vs Python** (n=20),
+2.34×/2.69× vs Go/Rust. The build plan lives in the native think-and-ship
+roadmap; [ROADMAP.md](ROADMAP.md) is its generated view. The retired v0.1
+action-DSL framing is archived in [archive/](archive/DESIGN-v0.1.md).
+
+## Development
+
+One command runs every gate — locally and in CI (same script):
+
+```sh
+ci/check.sh
+```
+
+cargo tests, clippy `-D warnings`, both grammar divergence gates (PEG and
+Lark vs the Rust oracle), GBNF determinism, and the token cost table. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for the doctrine.
+
+## License
+
+Dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at
+your option.

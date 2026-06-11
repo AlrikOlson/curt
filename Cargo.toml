@@ -2,6 +2,11 @@
 name = "curt"
 version = "0.1.0"
 edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "A machine-first programming language for AI agents - output-token cost is the prime design directive"
+homepage = "https://curtlang.com"
+keywords = ["language", "ai-agents", "tokens", "interpreter"]
+categories = ["compilers", "parser-implementations"]
 description = "curt — a machine-first programming language measured in tokens"
 license = "MIT"
 
