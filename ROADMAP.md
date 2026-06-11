@@ -1,6 +1,6 @@
 <!-- GENERATED VIEW — do not hand-edit. Source of truth is the native think-and-ship
      roadmap (roadmap_* tools / `think-and-ship export`). Regenerated 2026-06-10
-     after naming resolved: the language is curt (commit 0a75460). -->
+     after oss-foundation: launch-grade repo (license, single-source CI gate). -->
 
 # Roadmap — cmm-d31a18
 
@@ -8,11 +8,6 @@
 
 - [ ] **grammar-decode B/OpenAI — custom-tools CFG conformance run** *(BLOCKED: needs OPENAI_API_KEY, probed absent 2026-06-10)* — Submit the real curt Lark grammar to OpenAI custom tools; measure conformance over >=100 generations; document size/complexity limits.
   - deps: gd-a
-- [ ] **OSS foundation — dual license, CI running every gate, contributor hygiene (AAA repo baseline)** *(added 2026-06-11, think:29)* — Repo has NO LICENSE/CI/CONTRIBUTING. MIT OR Apache-2.0 dual; GitHub Actions running ALL gates (cargo, PEG, lark+negatives, count regression, GBNF determinism); CONTRIBUTING.md encoding the doctrine; release binaries.
-  - deps: interp-d
-  - acceptance: CI green on fresh checkout, every gate, none weakened
-- [ ] **Hugging Face publish — org, dataset repo, GitHub mirror, launch** *(added 2026-06-11, think:29)* — AFTER token-bench (launch carries measured numbers) and naming (gates public identifiers). Dataset repo: corpus + grammars + task suites + results; measured-claims-only launch.
-  - deps: token-bench, oss-foundation, naming
 - [ ] **The ≤2500-token cheat sheet — measured teachability AND model-legibility** — Compress the GP language into a system-prompt cheat sheet (budget raised to <=2500 tokens for the larger surface; Anthropic tokenizer primary) + few-shot pack. Measure TWO things on >=2 models, honestly reported: (a) teachability — fresh sessions write correct programs for 10 held-out tasks (syntax-validity + semantic-correctness rates); (b) model-legibility — comprehension QA over dense curt code the model did NOT write (can it answer behavior questions as accurately as over equivalent Python? — this guards the machine-first surface against the naming/structure comprehension findings). Iterate sheet wording (not the language) up to 3 rounds.
   - deps: interp-d
   - acceptance: Cheat sheet measured <=2500 tokens on both tokenizers
@@ -29,6 +24,7 @@
 
 ## Done
 
+- [x] **OSS foundation — dual license, single-source CI gate, contributor hygiene** — Shipped 2026-06-11 (commits b26c978 + 5495310; proof: task:verify-oss). MIT OR Apache-2.0; ci/check.sh is the single source of gate truth (local == GitHub Actions by construction); release.yml (macOS/Linux on tags); CONTRIBUTING.md encodes the doctrine; honest README status, no fake badges. The gate caught a real Cargo.toml duplicate-key bug ON ITS FIRST FRESH-CLONE RUN. Actions execution itself pends a GitHub remote (hf-publish).
 - [x] **Naming + identity decision — the language is curt** — Shipped 2026-06-11 (commit 0a75460; proof: task:decide-execute). User decision over two measured rounds (10 candidates, 4 axes: token cost, registries, domains, collisions). curt: 1 token mid-prompt; bare crates.io FREE (only candidate); GitHub org free; HF likely free; .curt extension. Lineage preserved: began as cmm (intentional C-- homage), renamed to leave GHC's Cmm its namespace — C, abbreviated. Sweep: 37 files + 22 renames; FNV golden recomputed (16_bitops now hashes "curt"); all gates green; medians unchanged.
 - [x] **grammar-decode B/OSS — llama.cpp constrained-decoding demo (local 8B)** — Shipped 2026-06-11 (commit ea6db8e; proof: task:verify-gdb). MASK SOUNDNESS: 0 mid-stream violations / 200 constrained generations (all 31 failures valid prefixes — non-termination only) vs 55 real mid-stream errors in 100 unconstrained. Haiku: naive 7/10; self-taught from repo artifacts 10/10. Four findings: 30% keyword-widening leak → exact prefix-trie NAME in GBNF; llama.cpp grammar-state perf cliff; the termination problem + measured EOS-escape; a real arg-position grammar divergence (if/match as args) fixed across PEG+Lark+GBNF (negatives 12/12).
 - [x] **interp D — evaluator + corpus stdlib + capability IO; curt run executes the corpus** — Shipped 2026-06-10 (commit 7729652; proof: task:verify-d). 126/126 tests; all 20 corpus programs execute with golden stdout incl. a live TCP smoke test; run-startup 2.06ms; clippy clean. New shared elaboration rule: rescue captures like pipes (`print m["k"] ? 8080` ≡ `print (m["k"] ? 8080)`). Golden-caught bugs: quote-polluted string lexemes (FNV hashed quote bytes), list numeric fields, UInt operand order. Honest limit: `go` is sequential in v0.1 (Rc⇏Send; threads deferred §13). THE INTERPRETER IS COMPLETE: parse | check | fmt | expand | tokens | run.
