@@ -1,4 +1,4 @@
-//! Tree-walk evaluator (interp-d) — `cmm run`.
+//! Tree-walk evaluator (interp-d) — `curt run`.
 //!
 //! Mirrors the checker's elaboration rules exactly (SPEC §2.3): flat
 //! applications re-nest surplus args under the k-th argument; pipelines

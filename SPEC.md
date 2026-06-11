@@ -1,4 +1,4 @@
-# cmm language specification v0.1
+# curt language specification v0.1
 
 **Status:** 2026-06-10 · implements [DESIGN.md](DESIGN.md) v0.2 · grammar
 machine-validated against [corpus/](corpus/) (20/20, `tools/tokens/validate.py`)
@@ -39,7 +39,7 @@ measurements; the canonical numbers are §11 of this spec.
   (spaced: rescue); and `Pt{…}` / `f(…)` / `xs[…]` (glued: record literal /
   call sugar / index-slice) vs their spaced forms (juxtaposition arguments).
   Tooling MUST preserve gluedness in these families — a whitespace
-  normalizer that ignores adjacency changes program meaning. `cmm fmt`
+  normalizer that ignores adjacency changes program meaning. `curt fmt`
   therefore preserves input adjacency by default and normalizes only
   spellings, separators, and layout.
 - **No imports.** Whole-program compilation; the stdlib and host capabilities
@@ -219,7 +219,7 @@ Rationale: language-confusion drift toward Python/Rust is measured behavior
 
 `tools/tokens/count.py` over `corpus/` — o200k_base, 2026-06-10:
 
-| snippet | cmm | Py | Go | Rust |
+| snippet | curt | Py | Go | Rust |
 |---|---|---|---|---|
 | 01 hello | 6 | 6 (1.00×) | — | — |
 | 02 hyp | 20 | 27 (1.35×) | — | — |
@@ -243,7 +243,7 @@ Rationale: language-confusion drift toward Python/Rust is measured behavior
 | 20 server | 32 | 55 (1.72×) | 94 (2.94×) | 123 (3.84×) |
 
 **Medians: 1.19× vs Python (n=20) · 2.34× vs Go (n=6) · 2.69× vs Rust (n=6;
-compiled subsets are small-n and flagged as such).** Honest distribution: cmm
+compiled subsets are small-n and flagged as such).** Honest distribution: curt
 beats Python on 13/20, ties 2, loses 5 — the losses are pure-algorithm
 snippets (0.91–0.94×) and `17_export` (0.69×: Python has no export ceremony
 at all). This is consistent with DESIGN.md's parity finding and sits inside

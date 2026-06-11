@@ -1,11 +1,19 @@
-# cmm
+# curt
 
 A **general-purpose, machine-first programming language** for AI agents:
 statically typed, compiled (wasm-first), with **output-token cost as the prime
-design directive** — human readability is a derived view (`cmm expand`), not a
+design directive** — human readability is a derived view (`curt expand`), not a
 property of source.
 
-```cmm
+> **Why "curt"?** Brief to the point of bluntness — a language too
+> token-thrifty for pleasantries. The name keeps a quiet C lineage (*C,
+> abbreviated*): the project began as `cmm`, an intentional C-- homage, and
+> was renamed to leave GHC's `Cmm` IR its namespace. Every claim about curt
+> is measured, never estimated; the name was chosen the same way (1 token
+> mid-prompt under o200k; bare `crates.io/curt` free — availability verified
+> 2026-06-11).
+
+```curt
 handle c = for ln in c.lines { c.write (ln.upper + "\n") }
 for c in net.listen 8080 { go handle c }
 ```

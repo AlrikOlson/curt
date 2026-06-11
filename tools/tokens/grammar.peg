@@ -1,5 +1,5 @@
-# cmm v0.1 PEG grammar (parsimonious syntax).
-# Validation gate: this grammar must parse corpus/*.cmm 20/20 (validate.py).
+# curt v0.1 PEG grammar (parsimonious syntax).
+# Validation gate: this grammar must parse corpus/*.curt 20/20 (validate.py).
 # Design constraints encoded here:
 #   - no required indentation; NEWLINE or ';' separate statements
 #   - juxtaposition application (flat; arity resolved by inference, not grammar)

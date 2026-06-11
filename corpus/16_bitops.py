@@ -3,4 +3,4 @@ def hash(s):
     for b in s.encode():
         h = ((h ^ b) * 1099511628211) & 0xFFFFFFFFFFFFFFFF
     return h
-print(hash("cmm"))
+print(hash("curt"))

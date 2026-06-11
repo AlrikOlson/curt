@@ -1,4 +1,4 @@
-//! `cmm expand` v1 — the readability-as-view projection (DESIGN P10).
+//! `curt expand` v1 — the readability-as-view projection (DESIGN P10).
 //!
 //! Renders the parse tree with sugar spelled out and grouping explicit:
 //! projection atoms become lambdas, applications/operators are fully

@@ -1,6 +1,6 @@
-# cmm — project instructions
+# curt — project instructions
 
-cmm is a general-purpose, machine-first programming language for AI agents,
+curt is a general-purpose, machine-first programming language for AI agents,
 optimized for **output-token cost** (the tokenizer is the ISA). Human
 readability is a derived view, not a source property. Read DESIGN.md first;
 v0.1 in archive/ is the retired action-DSL framing — do not resurrect it.
@@ -14,7 +14,7 @@ v0.1 in archive/ is the retired action-DSL framing — do not resurrect it.
   against alternatives on the corpus; the loser is recorded, not deleted.
 - **Honest negatives are deliverables.** Round-1 of v0.2 lost to Python and
   the doc says so. Keep that standard.
-- **Kill criterion is live** (token-bench chunk): model-written cmm within
+- **Kill criterion is live** (token-bench chunk): model-written curt within
   ~10pp of Python success rate after one revision cycle, or document the
   negative result and re-scope.
 - Identifiers: semantic-but-single-token (`buf`, `idx`, `acc`). Never
@@ -29,19 +29,20 @@ v0.1 in archive/ is the retired action-DSL framing — do not resurrect it.
 - Drive work with `/roadmap` (one chunk per invocation); reshape with
   `/roadmap-refresh`. serpapi MCP for research; ministr MCP for code
   exploration when available.
-- Token measurement harness currently at `/tmp/cmm-tok/` (venv with
+- Token measurement harness currently at `/tmp/curt-tok/` (venv with
   tiktoken); becomes `tools/tokens` + committed corpus in lang-spec-v01.
 
 ## Verification gates
 
 - Docs chunks: claims reproduce via script; files exist; views regenerated.
 - Rust chunks (interp-mvp onward): `cargo test && cargo clippy --all-targets
-  -- -D warnings`; golden corpus must execute; `cmm tokens` must reproduce
+  -- -D warnings`; golden corpus must execute; `curt tokens` must reproduce
   the spec cost table. Never mask an exit code.
 
 ## Repo conventions
 
 - Commit on `main`, imperative subject, body explains the *measured why*.
   End commit messages with: `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`
-- `cmm` collides with GHC's C-- (`Cmm`) IR — naming decision is a backlog
-  chunk; don't churn the name ad hoc.
+- Name RESOLVED 2026-06-11: **curt** (formerly `cmm`, an intentional C--
+  homage; renamed to leave GHC's `Cmm` IR its namespace). Extension `.curt`.
+  Don't churn the name.

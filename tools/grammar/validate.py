@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""gd-a divergence gate: cmm.lark must (1) parse the golden corpus 20/20 and
+"""gd-a divergence gate: curt.lark must (1) parse the golden corpus 20/20 and
 (2) AGREE WITH THE RUST PARSER in the reject direction on a negative sample
 set. Exit 0 only when both hold.
 
@@ -7,7 +7,7 @@ The Lark twin is kept honest the same way grammar.peg is — by this gate, not
 by mechanical derivation (PEG ordered choice is not a CFG transform).
 
 Usage: tools/grammar/validate.py   (run from the repo root; needs `lark` and
-a release build of the Rust parser at target/release/cmm)
+a release build of the Rust parser at target/release/curt)
 """
 
 import pathlib
@@ -17,8 +17,8 @@ import sys
 import lark
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-GRAMMAR = pathlib.Path(__file__).resolve().parent / "cmm.lark"
-CMM_BIN = ROOT / "target" / "release" / "cmm"
+GRAMMAR = pathlib.Path(__file__).resolve().parent / "curt.lark"
+CMM_BIN = ROOT / "target" / "release" / "curt"
 
 # Invalid snippets: every one must be rejected by BOTH parsers. Chosen to
 # probe structure, not lexing trivia.
@@ -57,7 +57,7 @@ def rust_accepts(src: str) -> bool:
 def main() -> int:
     parser = lark.Lark(GRAMMAR.read_text(), parser="earley", start="start")
 
-    corpus = sorted((ROOT / "corpus").glob("*.cmm"))
+    corpus = sorted((ROOT / "corpus").glob("*.curt"))
     ok = 0
     for path in corpus:
         src = path.read_text()

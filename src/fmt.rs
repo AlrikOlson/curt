@@ -1,4 +1,4 @@
-//! `cmm fmt` — token-level canonical formatter (SPEC §1).
+//! `curt fmt` — token-level canonical formatter (SPEC §1).
 //!
 //! Scope (v1, interp-b): a spelling + layout normalizer, not a re-spacer.
 //! - Postel spellings canonicalize (the lexer already mapped them): `&&`→and,
@@ -94,7 +94,7 @@ pub fn format(src: &str) -> Result<String, Diag> {
 }
 
 /// Should a space separate `prev` from `cur`? Default: preserve input
-/// adjacency — gluedness is semantic in cmm (SPEC §1). Overrides only where
+/// adjacency — gluedness is semantic in curt (SPEC §1). Overrides only where
 /// spacing can never change meaning (bracket edges, separators, colon-left).
 fn separator(prev: &Token, cur: &Token) -> bool {
     use Tok::*;

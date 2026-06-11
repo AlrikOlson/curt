@@ -1,7 +1,7 @@
-//! cmm CLI. Subcommands in v0.1-a: parse, tokens. fmt/expand/run land in
+//! curt CLI. Subcommands in v0.1-a: parse, tokens. fmt/expand/run land in
 //! interp-b/c/d and exit 2 until then. No clap: startup <10ms is a gate.
 
-use cmm::{lexer, parser};
+use curt::{lexer, parser};
 use std::process::ExitCode;
 
 fn read_input(path: &str) -> Result<String, String> {
@@ -21,7 +21,7 @@ fn main() -> ExitCode {
     match cmd {
         "parse" => {
             let Some(path) = args.get(2) else {
-                eprintln!("usage: cmm parse <file|->");
+                eprintln!("usage: curt parse <file|->");
                 return ExitCode::from(2);
             };
             let src = match read_input(path) {
@@ -44,7 +44,7 @@ fn main() -> ExitCode {
         }
         "tokens" => {
             let Some(path) = args.get(2) else {
-                eprintln!("usage: cmm tokens <file|->");
+                eprintln!("usage: curt tokens <file|->");
                 return ExitCode::from(2);
             };
             let src = match read_input(path) {
@@ -68,7 +68,7 @@ fn main() -> ExitCode {
         }
         "fmt" => {
             let Some(path) = args.get(2) else {
-                eprintln!("usage: cmm fmt <file|->");
+                eprintln!("usage: curt fmt <file|->");
                 return ExitCode::from(2);
             };
             let src = match read_input(path) {
@@ -78,7 +78,7 @@ fn main() -> ExitCode {
                     return ExitCode::FAILURE;
                 }
             };
-            match cmm::fmt::format(&src) {
+            match curt::fmt::format(&src) {
                 Ok(s) => {
                     print!("{s}");
                     ExitCode::SUCCESS
@@ -91,7 +91,7 @@ fn main() -> ExitCode {
         }
         "expand" => {
             let Some(path) = args.get(2) else {
-                eprintln!("usage: cmm expand <file|->");
+                eprintln!("usage: curt expand <file|->");
                 return ExitCode::from(2);
             };
             let src = match read_input(path) {
@@ -101,13 +101,13 @@ fn main() -> ExitCode {
                     return ExitCode::FAILURE;
                 }
             };
-            match cmm::parse_source(&src) {
+            match curt::parse_source(&src) {
                 Ok(ast) => {
                     // type-reveal when the program checks; untyped view otherwise
-                    let sigs = cmm::infer::check(&ast)
+                    let sigs = curt::infer::check(&ast)
                         .map(|(sigs, _)| sigs.into_iter().collect())
                         .unwrap_or_default();
-                    print!("{}", cmm::expand::expand(&ast, &sigs));
+                    print!("{}", curt::expand::expand(&ast, &sigs));
                     ExitCode::SUCCESS
                 }
                 Err(d) => {
@@ -118,7 +118,7 @@ fn main() -> ExitCode {
         }
         "check" => {
             let Some(path) = args.get(2) else {
-                eprintln!("usage: cmm check <file|->");
+                eprintln!("usage: curt check <file|->");
                 return ExitCode::from(2);
             };
             let src = match read_input(path) {
@@ -128,7 +128,7 @@ fn main() -> ExitCode {
                     return ExitCode::FAILURE;
                 }
             };
-            match cmm::parse_source(&src).and_then(|ast| cmm::infer::check(&ast)) {
+            match curt::parse_source(&src).and_then(|ast| curt::infer::check(&ast)) {
                 Ok((sigs, warnings)) => {
                     for (name, ty) in sigs {
                         println!("{name} :: {ty}");
@@ -145,11 +145,11 @@ fn main() -> ExitCode {
             }
         }
         "run" => {
-            // cmm run [--fs] [--net] <file|-> [program args...]
-            let mut caps = cmm::eval::Caps { fs: false, net: false };
+            // curt run [--fs] [--net] <file|-> [program args...]
+            let mut caps = curt::eval::Caps { fs: false, net: false };
             let mut rest = args[2..].iter();
             let mut path: Option<String> = None;
-            let mut prog_args: Vec<String> = vec![String::from("cmm")];
+            let mut prog_args: Vec<String> = vec![String::from("curt")];
             for a in rest.by_ref() {
                 match a.as_str() {
                     "--fs" => caps.fs = true,
@@ -162,7 +162,7 @@ fn main() -> ExitCode {
             }
             prog_args.extend(rest.cloned());
             let Some(path) = path else {
-                eprintln!("usage: cmm run [--fs] [--net] <file|-> [args...]");
+                eprintln!("usage: curt run [--fs] [--net] <file|-> [args...]");
                 return ExitCode::from(2);
             };
             let src = match read_input(&path) {
@@ -172,8 +172,8 @@ fn main() -> ExitCode {
                     return ExitCode::FAILURE;
                 }
             };
-            match cmm::parse_source(&src) {
-                Ok(ast) => match cmm::eval::Interp::run(&ast, caps, prog_args) {
+            match curt::parse_source(&src) {
+                Ok(ast) => match curt::eval::Interp::run(&ast, caps, prog_args) {
                     Ok(()) => ExitCode::SUCCESS,
                     Err(m) => {
                         eprintln!("{{\"err\":\"runtime\",\"msg\":\"{m}\"}}");
@@ -187,11 +187,11 @@ fn main() -> ExitCode {
             }
         }
         "--version" | "version" => {
-            println!("cmm {}", env!("CARGO_PKG_VERSION"));
+            println!("curt {}", env!("CARGO_PKG_VERSION"));
             ExitCode::SUCCESS
         }
         _ => {
-            eprintln!("usage: cmm <parse|check|tokens|fmt|expand|run> <file|->");
+            eprintln!("usage: curt <parse|check|tokens|fmt|expand|run> <file|->");
             ExitCode::from(2)
         }
     }

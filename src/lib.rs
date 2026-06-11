@@ -1,4 +1,4 @@
-//! cmm reference implementation library (front-end as of interp-a).
+//! curt reference implementation library (front-end as of interp-a).
 
 pub mod ast;
 pub mod diag;

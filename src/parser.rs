@@ -1,4 +1,4 @@
-//! Recursive-descent parser for cmm v0.1, mirroring tools/tokens/grammar.peg.
+//! Recursive-descent parser for curt v0.1, mirroring tools/tokens/grammar.peg.
 //!
 //! Contracts carried over from the machine-validated PEG:
 //! - flat juxtaposition application (grouping is the elaborator's job, SPEC §2.3)

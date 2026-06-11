@@ -1,8 +1,8 @@
 [package]
-name = "cmm"
+name = "curt"
 version = "0.1.0"
 edition = "2021"
-description = "cmm — a machine-first programming language measured in tokens"
+description = "curt — a machine-first programming language measured in tokens"
 license = "MIT"
 
 [dependencies]

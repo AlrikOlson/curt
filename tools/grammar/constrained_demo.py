@@ -2,11 +2,11 @@
 """gd-b-oss: the OSS constrained-decoding demo.
 
 Two arms against a local llama-server:
-  constrained   — cmm.gbnf (runtime variant: root ::= stmt nl, so the grammar
+  constrained   — curt.gbnf (runtime variant: root ::= stmt nl, so the grammar
                   completes and generation terminates) — EVERY sample must
-                  parse via the Rust oracle (`cmm parse -`). Gate: 0 errors.
+                  parse via the Rust oracle (`curt parse -`). Gate: 0 errors.
   unconstrained — same prompts, no grammar. Parse rate measured for contrast
-                  (the model has zero cmm in its weights; this is the
+                  (the model has zero curt in its weights; this is the
                   Python-drift number the mask exists to eliminate).
 
 Usage:
@@ -26,24 +26,24 @@ import urllib.request
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
-CMM = ROOT / "target" / "release" / "cmm"
+CMM = ROOT / "target" / "release" / "curt"
 
 PROMPTS = [
-    "Write one statement in the cmm programming language that prints a greeting.",
-    "Write one cmm statement that binds a list of numbers to a name.",
-    "Write one cmm statement that defines a function adding two numbers.",
-    "Write one cmm statement that prints the sum of a list.",
-    "Write one cmm statement using a pipeline to filter a list.",
-    "Write one cmm statement that defines a record type for a 2D point.",
-    "Write one cmm statement with a while loop counting down.",
-    "Write one cmm statement that prints the length of a string.",
-    "Write one cmm statement that maps a lambda over a list.",
-    "Write one cmm statement matching on a value.",
+    "Write one statement in the curt programming language that prints a greeting.",
+    "Write one curt statement that binds a list of numbers to a name.",
+    "Write one curt statement that defines a function adding two numbers.",
+    "Write one curt statement that prints the sum of a list.",
+    "Write one curt statement using a pipeline to filter a list.",
+    "Write one curt statement that defines a record type for a 2D point.",
+    "Write one curt statement with a while loop counting down.",
+    "Write one curt statement that prints the length of a string.",
+    "Write one curt statement that maps a lambda over a list.",
+    "Write one curt statement matching on a value.",
 ]
 
 
 def runtime_grammar() -> str:
-    g = (HERE / "cmm.gbnf").read_text()
+    g = (HERE / "curt.gbnf").read_text()
     # demo variant: one statement per generation so the grammar COMPLETES,
     # and whitespace pruned to single spaces / a bare newline — without
     # this, masked sampling wanders in legal-but-degenerate ws/identifier
@@ -68,9 +68,9 @@ def newline_ids(url: str) -> list:
 
 def chatml(p: str) -> str:
     return (
-        "<|im_start|>system\nYou write code in cmm, a terse programming "
+        "<|im_start|>system\nYou write code in curt, a terse programming "
         "language similar to a pipeline-flavored Python with `=` equations. "
-        "Reply with exactly one short line of cmm code and nothing else."
+        "Reply with exactly one short line of curt code and nothing else."
         "<|im_end|>\n<|im_start|>user\n" + p + "<|im_end|>\n<|im_start|>assistant\n"
     )
 

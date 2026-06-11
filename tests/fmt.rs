@@ -1,7 +1,7 @@
 //! fmt + expand gates: corpus byte-identity, idempotence, parse-equality,
 //! Postel→canonical goldens, adjacency round-trips (SPEC §1).
 
-use cmm::fmt::format;
+use curt::fmt::format;
 use std::path::PathBuf;
 
 fn corpus_files() -> Vec<(String, String)> {
@@ -11,7 +11,7 @@ fn corpus_files() -> Vec<(String, String)> {
         .unwrap()
         .filter_map(|e| e.ok())
         .map(|e| e.file_name().to_string_lossy().into_owned())
-        .filter(|n| n.ends_with(".cmm"))
+        .filter(|n| n.ends_with(".curt"))
         .collect();
     names.sort();
     for n in names {
@@ -42,8 +42,8 @@ fn corpus_fmt_is_idempotent() {
 #[test]
 fn corpus_fmt_preserves_parse() {
     for (name, src) in corpus_files() {
-        let before = cmm::parse_source(&src).unwrap();
-        let after = cmm::parse_source(&format(&src).unwrap()).unwrap();
+        let before = curt::parse_source(&src).unwrap();
+        let after = curt::parse_source(&format(&src).unwrap()).unwrap();
         assert_eq!(before, after, "{name}: fmt changed the AST");
     }
 }
@@ -113,7 +113,7 @@ fn adjacency_question_forms_preserved() {
     let src = "f s = { v = parse s?; v }\ncfg = load p ? {}\n";
     let out = fmt1(src);
     assert_eq!(out, src);
-    assert_eq!(cmm::parse_source(&out).unwrap(), cmm::parse_source(src).unwrap());
+    assert_eq!(curt::parse_source(&out).unwrap(), curt::parse_source(src).unwrap());
 }
 
 #[test]
@@ -121,7 +121,7 @@ fn adjacency_dot_forms_preserved() {
     let src = "a = m.pairs\nb = top 3 .score\n";
     let out = fmt1(src);
     assert_eq!(out, src);
-    assert_eq!(cmm::parse_source(&out).unwrap(), cmm::parse_source(src).unwrap());
+    assert_eq!(curt::parse_source(&out).unwrap(), curt::parse_source(src).unwrap());
 }
 
 #[test]
@@ -129,7 +129,7 @@ fn adjacency_call_and_record_glue_preserved() {
     let src = "v = f(x, y)\nw = f (x, y)\np = Pt{x:0, y:0}\nq = bs [1,3] 7\n";
     let out = fmt1(src);
     assert_eq!(out, src);
-    assert_eq!(cmm::parse_source(&out).unwrap(), cmm::parse_source(src).unwrap());
+    assert_eq!(curt::parse_source(&out).unwrap(), curt::parse_source(src).unwrap());
 }
 
 #[test]
@@ -143,22 +143,22 @@ fn adjacency_tight_operators_preserved() {
 
 #[test]
 fn expand_projection_lambda() {
-    let ast = cmm::parse_source("best = top 3 .score\n").unwrap();
-    let out = cmm::expand::expand(&ast, &Default::default());
+    let ast = curt::parse_source("best = top 3 .score\n").unwrap();
+    let out = curt::expand::expand(&ast, &Default::default());
     assert_eq!(out, "best = (top 3 (x -> x.score))\n");
 }
 
 #[test]
 fn expand_flat_application_grouping_visible() {
-    let ast = cmm::parse_source("print hyp 3 4\n").unwrap();
-    let out = cmm::expand::expand(&ast, &Default::default());
+    let ast = curt::parse_source("print hyp 3 4\n").unwrap();
+    let out = curt::expand::expand(&ast, &Default::default());
     assert_eq!(out, "(print hyp 3 4)\n");
 }
 
 #[test]
 fn expand_pipeline_and_rescue_parenthesized() {
-    let ast = cmm::parse_source("v = xs | keep .active ? {}\n").unwrap();
-    let out = cmm::expand::expand(&ast, &Default::default());
+    let ast = curt::parse_source("v = xs | keep .active ? {}\n").unwrap();
+    let out = curt::expand::expand(&ast, &Default::default());
     assert!(out.contains("(x -> x.active)"), "projection expanded: {out}");
     assert!(out.starts_with("v = ("), "explicit grouping: {out}");
 }

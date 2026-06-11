@@ -1,4 +1,4 @@
-//! Gradual HM-lite type inference for cmm v0.1 (SPEC §3) — `cmm check`.
+//! Gradual HM-lite type inference for curt v0.1 (SPEC §3) — `curt check`.
 //!
 //! Two elaboration rules live here (both SPEC-bound):
 //! 1. ARITY RESOLUTION (§2.3): applications parse flat; when a head of arity
@@ -701,7 +701,7 @@ impl Checker {
                     Err(err(
                         "arity",
                         &format!("function expects {k} argument(s), got {}", args.len()),
-                        "cmm v0.1 has no partial application — pass all arguments",
+                        "curt v0.1 has no partial application — pass all arguments",
                     ))
                 }
             }

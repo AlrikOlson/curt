@@ -3,4 +3,4 @@ hash s = {
   for b in s.bytes { h = (h ^ b) * 1099511628211 }
   h
 }
-print hash "cmm"
+print hash "curt"

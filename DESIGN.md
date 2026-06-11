@@ -1,20 +1,20 @@
-# cmm — a programming language measured in tokens
+# curt — a programming language measured in tokens
 
-**Status:** design v0.2 (2026-06-10) · supersedes [v0.1](archive/DESIGN-v0.1.md) (action-DSL framing, retired by user direction) · **Working title:** `cmm` ("comm"; collides with GHC's C-- IR — naming chunk pending, though "less than C" now fits)
+**Status:** design v0.2 (2026-06-10) · supersedes [v0.1](archive/DESIGN-v0.1.md) (action-DSL framing, retired by user direction) · **Working title:** `curt` ("comm"; collides with GHC's C-- IR — naming chunk pending, though "less than C" now fits)
 
-> `cmm` is a **general-purpose, machine-first programming language**: statically
+> `curt` is a **general-purpose, machine-first programming language**: statically
 > typed, compiled (wasm-first), capable of real software — designed for AI agents
 > to write, with **output-token cost as the prime design directive** and human
 > readability demoted to a derived view. The BPE tokenizer is the ISA: every
 > construct is selected by measured cost, the spec ships a cost table, and CI
 > fails any change that regresses it.
 
-```cmm
+```curt
 handle c = for ln in c.lines { c.write (ln.upper + "\n") }
 for c in net.listen 8080 { go handle c }
 ```
 
-A concurrent TCP uppercase-echo server. **32 tokens** (o200k_base; 31 before a precedence bug — `c.write x + y` groups as `(c.write x) + y` — was caught by `cmm check` in interp-c). Python: 55.
+A concurrent TCP uppercase-echo server. **32 tokens** (o200k_base; 31 before a precedence bug — `c.write x + y` groups as `(c.write x) + y` — was caught by `curt check` in interp-c). Python: 55.
 Go: 94. Rust: 123. Same behavior, statically typed, compiles to wasm.
 
 ## 1. What the measurements actually say (read this first)
@@ -23,9 +23,9 @@ This document practices what it preaches: every number below is measured
 (tiktoken, o200k_base, 2026-06-10), including the round where our own first
 draft **lost**. Three real programs — word-frequency top-10, a recursive-descent
 expression parser/evaluator, the concurrent echo server — written idiomatically
-in cmm, Python, Go, and Rust:
+in curt, Python, Go, and Rust:
 
-| program | cmm | Python | Go | Rust |
+| program | curt | Python | Go | Rust |
 |---|---|---|---|---|
 | wordfreq | **31** | 39 (1.26×) | 155 (5.00×) | 157 (5.06×) |
 | parser | **258** | 234 (**0.91×**) | 416 (1.61×) | 439 (1.70×) |
@@ -34,14 +34,14 @@ in cmm, Python, Go, and Rust:
 
 The honest reading:
 
-1. **Versus the compiled incumbents (Go, Rust), cmm is ~2.1–2.3× cheaper to
+1. **Versus the compiled incumbents (Go, Rust), curt is ~2.1–2.3× cheaper to
    emit overall, and 3–5× cheaper on I/O- and structure-heavy code.** This claim
    is strong and survives scrutiny: Go/Rust ceremony (imports, signatures,
    error-handling boilerplate, types-at-every-binding) is exactly what the
    machine-first surface deletes.
-2. **Versus Python, cmm reaches parity (1.02× total), not superiority.** Python
+2. **Versus Python, curt reaches parity (1.02× total), not superiority.** Python
    is the empirical token floor for algorithm-shaped code: decades of
-   golf-honed idioms, a hyper-dense stdlib, and no type ceremony at all. cmm
+   golf-honed idioms, a hyper-dense stdlib, and no type ceremony at all. curt
    beats it where structure dominates (1.26×–1.77×) and loses slightly where
    pure algorithm logic dominates (0.91× on the parser).
 3. **The value proposition therefore is:** *Python-cost emission, plus
@@ -58,7 +58,7 @@ autopsy produced two design discoveries, both now load-bearing:
 
 - **The stdlib is the densest place to spend design effort.** Python's
   `Counter(words).most_common(10)` performs count+sort+top in ~8 tokens. No
-  syntax beats a missing-by-design library call. Fix: cmm ships deliberately
+  syntax beats a missing-by-design library call. Fix: curt ships deliberately
   dense single-token verbs (`counts`, `top`); wordfreq went 55 → 31 tokens.
 - **The ADT tax.** Type inference already deleted annotation costs, but
   *constructor ceremony* remained: `Sym "+"` cost ~4 tokens at every
@@ -82,14 +82,14 @@ cost driver in production deployments."
 codebase: every session loads files into context; naive loops "rebill prior
 context on every call." Density discounts every future read of every file.
 Even on our 3-program mini-codebase, each full re-read costs **+345 tokens in
-Go and +399 in Rust** versus cmm; over a 30-session engagement that's ~10–12k
+Go and +399 in Rust** versus curt; over a 30-session engagement that's ~10–12k
 input tokens on ~100 lines of code — scale to a real repository and the re-read
 savings dominate the emission savings. Versus Python the input sides are equal
 (328 vs 320); the win there is on the *capability* axis, not the token axis.
 
 **KV-cache friendliness (adopted from MoonBit's LLM4Code 2024 analysis).**
 Flat, linear code — toplevel definitions, minimal nesting — preserves KV-cache
-prefixes across edits and lets models generate without back-navigation. cmm's
+prefixes across edits and lets models generate without back-navigation. curt's
 equation-based flat surface is aligned with this by construction.
 
 ## 3. Design pillars (v0.2)
@@ -134,7 +134,7 @@ cheaper than try/except blocks in v0.1.
 unambiguous: obfuscation measurably degrades LLM accuracy ("descriptive naming
 achieving better accuracy than obfuscated"; "removing naming harms
 intent-oriented tasks"), while a full word like `buf`, `idx`, `acc`, `req`
-costs *exactly the same one token* as `b`. So cmm's canonical style is
+costs *exactly the same one token* as `b`. So curt's canonical style is
 meaningful single-token words; the compiler lints identifiers that tokenize
 above 1. Density is spent on structure, never on gratuitous obfuscation —
 that would cost accuracy and buy nothing.
@@ -150,16 +150,16 @@ masking makes that drift physically impossible.
 `and/or/not`, `True/None`, trailing commas, stray `return`); the canonical
 formatter normalizes. Habit slips are never errors.
 
-**P10 — Readability is a view, not a property of source.** `cmm expand`
+**P10 — Readability is a view, not a property of source.** `curt expand`
 renders dense source into an annotated projection — inferred types shown,
 sugar expanded, structure prettified — for the humans who occasionally must
 look. The source itself owes humans nothing; the toolchain owes them a
-lens. (This is the precise sense in which cmm is "not human readable": never
+lens. (This is the precise sense in which curt is "not human readable": never
 *hostile*, just never *spending tokens on* readability.)
 
 ## 4. Surface tour (v0.2 draft — lang-spec-v01 finalizes)
 
-```cmm
+```curt
 # equations; juxtaposition application; inference everywhere
 area w h = w * h
 hyp a b = (a*a + b*b).sqrt
@@ -198,21 +198,21 @@ instructed never to emit them.
 
 ## 5. The worked examples (measured, both rounds)
 
-Harness: `/tmp/cmm-tok/measure_v02*.py` this session; becomes `tools/tokens`
-with committed corpus in the spec chunk. **Caveat stated plainly: no cmm
-compiler exists yet — the cmm programs are validated by inspection only.**
+Harness: `/tmp/curt-tok/measure_v02*.py` this session; becomes `tools/tokens`
+with committed corpus in the spec chunk. **Caveat stated plainly: no curt
+compiler exists yet — the curt programs are validated by inspection only.**
 Python/Go/Rust baselines are idiomatic-concise, not strawmen (Counter,
 socketserver, gofmt-shaped Go, std-only Rust).
 
 ### wordfreq — count words, print top 10 *(31 tokens; Py 39, Go 155, Rust 157)*
 
-```cmm
+```curt
 for p in (fs.read args.1).lower.words.counts | top 10 .v { say "{p.k} {p.v}" }
 ```
 
 ### parser — recursive-descent arithmetic evaluator *(258; Py 234, Go 416, Rust 439)*
 
-```cmm
+```curt
 lex s = ((s.replace "(" " ( ").replace ")" " ) ").words | map w -> if w[0].digit { w.flt } else { w }
 
 expr ts = {
@@ -245,7 +245,7 @@ say (expr (lex args.1)).0
 
 ### server — concurrent TCP uppercase echo *(31; Py 55, Go 94, Rust 123)*
 
-```cmm
+```curt
 handle c = for ln in c.lines { c.write (ln.upper + "\n") }
 for c in net.listen 8080 { go handle c }
 ```
@@ -256,7 +256,7 @@ commits them as the canonical corpus.
 ## 6. Execution model
 
 - **Compilation:** wasm-first (sandboxed agent execution is the native
-  habitat), native via a later backend; `cmm run` JITs/interprets for
+  habitat), native via a later backend; `curt run` JITs/interprets for
   iteration speed. Single static artifact, startup <10 ms.
 - **Memory:** reference counting + cycle collector (deterministic pauses, zero
   token cost in source — no lifetimes, no `free`; NanoLang independently
@@ -270,20 +270,20 @@ commits them as the canonical corpus.
   capabilities (fs, net, LLM access) at startup; tool/agent affordances are a
   *library* over the host interface (`host-ffi` chunk), not grammar.
 
-## 7. Prior art: everyone else spends tokens; cmm saves them
+## 7. Prior art: everyone else spends tokens; curt saves them
 
 | project | machine-first via | token posture |
 |---|---|---|
 | **Vera** (Allan, 2026) | SMT-proved mandatory contracts, typed effect rows, *no names* (`@Int.0` structural refs) | **Spends heavily** — contracts + effect rows + multi-token refs at every use. "The model doesn't need to be right, it needs to be checkable." |
 | **NanoLang** (Hubbard, 2026) | mandatory shadow-tests per function, Coq-proved core, unambiguous dual notation | **Spends heavily** — required test blocks ≈ double emission; explicitly keeps "humans to read" |
 | **MoonBit** (2022–) | toolchain-assisted decoding, mandatory toplevel signatures, flat structure | **Spends moderately** — readable Rust-like surface; KV-cache flatness insight (we adopt it) |
-| **cmm** | measured token economy + constrained decoding | **Saves** — the token is the scarce resource; verification is the host's job (tests, sandboxes), not the grammar's |
+| **curt** | measured token economy + constrained decoding | **Saves** — the token is the scarce resource; verification is the host's job (tests, sandboxes), not the grammar's |
 
 That table is the differentiation: the machine-first lane exists (Vera and
 NanoLang prove it), but every occupant converts tokens *into* machine trust.
-cmm bets the other way — agents already live inside verification loops
+curt bets the other way — agents already live inside verification loops
 (compilers, tests, sandboxes, reviewers), so the language should make each
-loop iteration as cheap as possible. Vera's bet and cmm's bet are competing
+loop iteration as cheap as possible. Vera's bet and curt's bet are competing
 hypotheses about what actually limits agent coding (coherence vs cost); the
 benchmark chunk is our falsifier. Also adjacent: CodeAct (agents should emit
 code — but Python), TOON (token-efficiency for *data*, input side), Ronacher's
@@ -302,28 +302,28 @@ Write Terse Q/Kdb Code"; variable-naming accuracy studies, 2025–26).
   simulate stack state mentally, and control structures are non-standard.
 - **Name elimination (Vera's `@Int.N`):** the naming literature shows names
   carry comprehension; structural refs also cost *more* tokens than 1-token
-  names. cmm keeps names and caps their price instead.
+  names. curt keeps names and caps their price instead.
 - **Significant whitespace (Python):** +1 token per indented line and the #1
   thing models corrupt during edits.
 - **Mandatory verification artifacts (contracts/tests in grammar):** valuable,
-  but they belong to the host loop; cmm keeps them out of the token budget.
+  but they belong to the host loop; curt keeps them out of the token budget.
 
 ## 9. Risks and the kill criterion
 
-1. **Weights gap, now with a sharper edge:** cmm has zero training presence
-   AND a Python-shaped rival at token parity. Why would an agent emit cmm
+1. **Weights gap, now with a sharper edge:** curt has zero training presence
+   AND a Python-shaped rival at token parity. Why would an agent emit curt
    instead of Python? Answer under test: static checking catches errors
    pre-execution, wasm sandbox + capability model beats `exec(python)` for
    safety, constrained decoding guarantees parseability, and vs Go/Rust (the
-   honest alternative for those properties) cmm is 2× cheaper. **Kill
-   criterion (unchanged, owned by token-bench):** if model-written cmm can't
+   honest alternative for those properties) curt is 2× cheaper. **Kill
+   criterion (unchanged, owned by token-bench):** if model-written curt can't
    reach success-rate within ~10pp of model-written Python after one
    language-revision cycle, we document the negative result and re-scope.
 2. **Recalibrated targets** (this chunk's measurements supersede the refresh's
    provisional ≥1.3× vs Python): **parity-to-1.2× vs Python** (task-mix
    dependent, full distribution reported), **≥1.8× vs Go** (measured 2.08×
    here). The roadmap's benchmark chunk is updated accordingly.
-3. **Hand-validated examples:** until interp-mvp exists, cmm programs are
+3. **Hand-validated examples:** until interp-mvp exists, curt programs are
    correct by inspection only. The corpus becomes executable goldens then.
 4. **Comprehension risk of the dense surface:** guarded by the cheatsheet
    chunk's model-legibility QA gate (comprehension parity with Python within

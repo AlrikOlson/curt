@@ -1,20 +1,20 @@
-# cmm — a language for agents, measured in tokens
+# curt — a language for agents, measured in tokens
 
-> **⚠ SUPERSEDED (2026-06-10):** this v0.1 framed cmm as an *action/orchestration DSL*.
-> Per user direction, cmm is being redesigned as a **general-purpose, machine-first
+> **⚠ SUPERSEDED (2026-06-10):** this v0.1 framed curt as an *action/orchestration DSL*.
+> Per user direction, curt is being redesigned as a **general-purpose, machine-first
 > programming language** (real programs, not glue; human readability deprioritized).
 > The measured methodology, tokenizer findings, and kill-criterion discipline below
 > carry forward; the wedge (§2) and agent-verbs-in-grammar (§3 P5) do not.
 > See roadmap chunk `redesign-v02` for the v0.2 rewrite.
 
-**Status:** design v0.1 (2026-06-10) · **Working title:** `cmm` (pronounced *"comm"*; see [Open questions](#open-questions) for the naming collision)
+**Status:** design v0.1 (2026-06-10) · **Working title:** `curt` (pronounced *"comm"*; see [Open questions](#open-questions) for the naming collision)
 
-> `cmm` is an executable action language for AI agents whose **express design goal is
+> `curt` is an executable action language for AI agents whose **express design goal is
 > minimizing output tokens**. The BPE tokenizer is treated as the instruction-set
 > architecture: every keyword, operator, and grammar rule is chosen against its
 > measured token cost, and the spec ships with a token-cost table enforced in CI.
 
-```cmm
+```curt
 get "https://api.shop.io/users" | json
 | keep .active & .role = "admin"
 | top 5 by .age | map .email
@@ -50,7 +50,7 @@ The gap: **TOON** fixed the *data* side (30–60% fewer tokens than JSON for str
 input). **Nobody has built the *code* side** — an executable language designed against
 a measured token budget. Existing general-purpose languages span a 2.6× token-efficiency
 spread on identical tasks (RosettaCode study, Jan 2026), and none of them were
-*designed* for this axis. That spread is the proof that the axis is real; `cmm` is the
+*designed* for this axis. That spread is the proof that the axis is real; `curt` is the
 attempt to win it on purpose.
 
 ## 2. The wedge: code-as-action, not code-as-artifact
@@ -62,7 +62,7 @@ not software: it is a **disposable action** — fetch, filter, call a tool, extr
 emit — executed once in a sandbox and discarded like a tool-call payload. Nobody
 reviews it. Its only readers are the interpreter and (as history) the model itself.
 
-For that layer the optimization flips: every token is pure cost. `cmm` claims exactly
+For that layer the optimization flips: every token is pure cost. `curt` claims exactly
 that layer and concedes the durable-software layer to Python/TypeScript:
 
 | | code-as-artifact | code-as-action |
@@ -70,16 +70,16 @@ that layer and concedes the durable-software layer to Python/TypeScript:
 | lifetime | years | one execution |
 | reader | humans + agents | interpreter only |
 | optimization | clarity, reviewability | tokens, reliability |
-| right language | Python, TS, Rust… | **cmm** |
+| right language | Python, TS, Rust… | **curt** |
 
 When a task outgrows glue (real algorithms, data structures), the agent should write
-Python. `cmm` is the default for the ~80% of agent steps that are orchestration.
+Python. `curt` is the default for the ~80% of agent steps that are orchestration.
 
 ## 3. Design pillars
 
 **P1 — The tokenizer is the ISA.** Constructs are selected by *measured* cost under
 o200k_base and the Anthropic tokenizer, not by character count. Character density is
-not token density: APL's `⌽⍳5` is 3 characters but **6 tokens**; cmm's `top 5 by .age`
+not token density: APL's `⌽⍳5` is 3 characters but **6 tokens**; curt's `top 5 by .age`
 is 13 characters but also 6 tokens — and the model has seen English words a trillion
 times. All 25 core keywords (`map keep sort top by ask par fn if else join get post
 json out retry not and or in first last flat group pick`) and every operator
@@ -127,7 +127,7 @@ Structured data is first-class because agent glue is 90% reshaping JSON.
 **P6 — Designed for constrained decoding.** The grammar is PEG, LL(1)-friendly, ASCII
 only, and ships as GBNF / llguidance / XGrammar artifacts. Runtimes that support
 grammar-constrained sampling (vLLM, llama.cpp, SGLang — commodity infrastructure in
-2026) can make cmm syntax errors **physically impossible to emit**. JSON Schema
+2026) can make curt syntax errors **physically impossible to emit**. JSON Schema
 constrained decoding made malformed JSON extinct; a small regular language can get the
 same guarantee for whole programs. Python can never have this — its grammar (and the
 arbitrary stdlib surface behind it) is too large to mask meaningfully.
@@ -146,7 +146,7 @@ an agent in a loop.
 
 ## 4. Syntax tour (the whole language fits here)
 
-```cmm
+```curt
 # comments with # (agents are told not to emit them)
 x: get "https://a.io/data" | json     # binding: name + colon (statement position)
 x | keep .score >= 7 & .lang = "en"   # predicates: = != < <= > >= & or not, in
@@ -182,12 +182,12 @@ print([u["email"] for u in top5])
 ```
 **Python: 72 tokens**
 
-```cmm
+```curt
 get "https://api.shop.io/users" | json
 | keep .active & .role = "admin"
 | top 5 by .age | map .email
 ```
-**cmm: 34 tokens**
+**curt: 34 tokens**
 
 ### Ex2 — multi-tool: search → extract (LLM) → mail, with retry *(1.84×)*
 
@@ -208,12 +208,12 @@ send_email(to="me@x.com", subject=f"CEO of {company}", body=json.dumps(data))
 ```
 **Python: 118 tokens**
 
-```cmm
+```curt
 web.search "{company} CEO 2026" | .results[:5] | map .snippet | join "\n"
 | ask {name, year:int} "CEO of {company}?" ? retry 2
 | mail.send to:"me@x.com" subject:"CEO of {company}" body:.
 ```
-**cmm: 64 tokens**
+**curt: 64 tokens**
 
 ### Ex3 — parallel batch: summarize every doc, write an index *(1.73×)*
 
@@ -229,16 +229,16 @@ open("docs/INDEX.md", "w").write("\n".join(lines))
 ```
 **Python: 88 tokens**
 
-```cmm
+```curt
 fs.list "docs/*.md"
 | par 4 map {f:., s: fs.read . | ask "one-line summary"}
 | map "- {.f}: {.s}" | join "\n" | fs.write "docs/INDEX.md"
 ```
-**cmm: 51 tokens**
+**curt: 51 tokens**
 
 ### Construct-level costs (where the leverage lives)
 
-| construct | cmm | Python equivalent | factor |
+| construct | curt | Python equivalent | factor |
 |---|---|---|---|
 | bounded retry w/ fallback | ` ? retry 2` — **4** | try/except/range loop — **24** | 6.0× |
 | LLM extract + validate | `ask {name, year:int} "…"` — **10** | llm + json.loads + asserts — **27** | 2.7× |
@@ -253,11 +253,11 @@ effects (§1.2–1.3) multiply whatever per-program factor survives measurement.
 
 ## 6. Execution model
 
-- **Runtime:** a small Rust interpreter (`cmm run`, `cmm fmt`, `cmm tokens`), startup
+- **Runtime:** a small Rust interpreter (`curt run`, `curt fmt`, `curt tokens`), startup
   <10 ms, embeddable; `wasm32-wasi` build so any sandbox (browser, edge, Workers,
   microVM) can execute it. No packages, no imports — capability comes from the
   **host tool registry** (JSON-Schema/MCP tool definitions injected at startup), which
-  is also the security boundary: a cmm program can only do what its registry exposes.
+  is also the security boundary: a curt program can only do what its registry exposes.
 - **Determinism:** evaluation is deterministic given tool results; `par` preserves
   output order (results ordered by input index, not completion).
 - **Budgets:** the host can cap wall-time, tool calls, and `ask` spend per run;
@@ -265,9 +265,9 @@ effects (§1.2–1.3) multiply whatever per-program factor survives measurement.
 
 ## 7. Distribution: the language is a tool call away
 
-Languages die on adoption. `cmm` ships as an **MCP server** exposing one tool —
+Languages die on adoption. `curt` ships as an **MCP server** exposing one tool —
 `run_cmm(program, args?)` — whose tool description *is* the cheat sheet: a ≤1,500-token
-compressed spec with few-shot examples. Any MCP-capable agent can start emitting cmm
+compressed spec with few-shot examples. Any MCP-capable agent can start emitting curt
 the moment the server is registered; with prompt caching, the cheat sheet is paid
 once and amortizes across every step of every session (the TOON paper's
 "instructional overhead" critique, answered by caching + the wedge being *output*
@@ -277,13 +277,13 @@ tokens). No installs, no training, no buy-in beyond a config line.
 
 | project | what it is | relation |
 |---|---|---|
-| CodeAct / OpenHands / smolagents | agents emit Python as actions | the incumbent; cmm targets its emission cost |
-| TOON / TRON | token-efficient *data* formats (input side) | complementary; cmm is the code side |
+| CodeAct / OpenHands / smolagents | agents emit Python as actions | the incumbent; curt targets its emission cost |
+| TOON / TRON | token-efficient *data* formats (input side) | complementary; curt is the code side |
 | jq | dense pipeline data language | closest syntactic cousin; data-only, no tools/LLM/effects, cryptic corners |
 | K/Q/APL | maximal *character* density | tokenizer-hostile (measured), near-zero weights presence |
-| LMQL / Guidance / DSPy | host-side DSLs constraining LLM output | different layer; their constrained-decoding infra is cmm's substrate |
+| LMQL / Guidance / DSPy | host-side DSLs constraining LLM output | different layer; their constrained-decoding infra is curt's substrate |
 | SudoLang & pseudocode prompting | informal "languages" for prompts | not executable, no measured guarantees |
-| Ronacher's *A Language For Agents* | manifesto for durable agent-era languages | the artifact layer; cmm takes the action layer |
+| Ronacher's *A Language For Agents* | manifesto for durable agent-era languages | the artifact layer; curt takes the action layer |
 
 Novel synthesis (no existing project does any of these, let alone all):
 **(a)** tokenizer-cost-audited grammar with regression CI, **(b)** executable
@@ -294,10 +294,10 @@ shipped as a constrained-decoding artifact making emission errors impossible,
 ## 9. Risks, honestly
 
 1. **The weights gap (the big one).** Python enjoys trillions of training tokens;
-   cmm has zero. Mitigations: jq/shell-adjacent syntax (high weights overlap),
+   curt has zero. Mitigations: jq/shell-adjacent syntax (high weights overlap),
    Postel parsing, ≤1.5k-token cached cheat sheet, constrained decoding as a
    floor. **Kill criterion:** if, after one language-revision cycle, model-generated
-   cmm cannot reach success-rate within ~10 points of model-generated Python on the
+   curt cannot reach success-rate within ~10 points of model-generated Python on the
    benchmark suite, this project documents the negative result and re-scopes (e.g.
    to constrained-decoding-only deployments, or to a Python-subset transpiler).
 2. **Payload dominance.** Tasks dominated by string payload see ratios → 1×. The
@@ -307,22 +307,22 @@ shipped as a constrained-decoding artifact making emission errors impossible,
    design decisions require winning on both, betting on the stable property
    (common English words + ASCII ops are cheap everywhere).
 4. **Cheat-sheet overhead on short sessions.** One-shot tasks may not amortize 1.5k
-   input tokens. cmm's economics need loops ≥ a few steps — exactly where agents
+   input tokens. curt's economics need loops ≥ a few steps — exactly where agents
    already are. (And cached input is an order of magnitude cheaper than output.)
-5. **Expressiveness cliff.** Real algorithms in cmm would be miserable. Non-goal by
+5. **Expressiveness cliff.** Real algorithms in curt would be miserable. Non-goal by
    design (§2); the cheat sheet tells the model when to fall back to Python.
 
 ## 10. Non-goals
 
 - Not a general-purpose language; no classes, no modules, no package manager.
 - Not for humans to write (pleasant to *read* is enough — debugging happens).
-- Not a prompting DSL; cmm executes, it does not template prompts.
+- Not a prompting DSL; curt executes, it does not template prompts.
 - Not chasing maximum theoretical density (that's APL's grave); chasing *measured
   cost under real tokenizers at acceptable reliability*.
 
 ## 11. Open questions
 
-1. **Name.** `cmm` collides with C-- ("Cmm"), GHC's intermediate language (`.cmm`
+1. **Name.** `curt` collides with C-- ("Cmm"), GHC's intermediate language (`.curt`
    files). Candidates if rebranding: `pith`, `terse`, `lac` (laconic). The pun
    (*comm* = communication; visually "less than C") may be worth the collision —
    user decision, tracked as a backlog chunk.

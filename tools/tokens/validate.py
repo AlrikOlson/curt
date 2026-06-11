@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Grammar validation gate: grammar.peg must parse every corpus/*.cmm file.
+"""Grammar validation gate: grammar.peg must parse every corpus/*.curt file.
 
 Exit 0 only on 20/20 (or N/N). This is the 'grammar passes a PEG validity
 check' acceptance gate for lang-spec-v01 and a permanent CI gate after.
@@ -16,7 +16,7 @@ ROOT = HERE.parents[1]
 
 def main():
     grammar = Grammar((HERE / "grammar.peg").read_text())
-    corpus = sorted((ROOT / "corpus").glob("*.cmm"))
+    corpus = sorted((ROOT / "corpus").glob("*.curt"))
     ok, bad = 0, []
     for f in corpus:
         text = f.read_text()

@@ -4,15 +4,15 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-fn check_src(src: &str) -> Result<cmm::infer::CheckReport, cmm::diag::Diag> {
-    cmm::infer::check(&cmm::parse_source(src).unwrap())
+fn check_src(src: &str) -> Result<curt::infer::CheckReport, curt::diag::Diag> {
+    curt::infer::check(&curt::parse_source(src).unwrap())
 }
 
 fn sigs(src: &str) -> HashMap<String, String> {
     check_src(src).unwrap_or_else(|d| panic!("should check: {src:?} -> {d}")).0.into_iter().collect()
 }
 
-fn check_err(src: &str) -> cmm::diag::Diag {
+fn check_err(src: &str) -> curt::diag::Diag {
     check_src(src).expect_err(&format!("should NOT check: {src:?}"))
 }
 
@@ -25,7 +25,7 @@ fn corpus_checks_clean_20_of_20() {
         .unwrap()
         .filter_map(|e| e.ok())
         .map(|e| e.file_name().to_string_lossy().into_owned())
-        .filter(|n| n.ends_with(".cmm"))
+        .filter(|n| n.ends_with(".curt"))
         .collect();
     names.sort();
     assert_eq!(names.len(), 20);
@@ -200,26 +200,26 @@ fn single_token_identifier_no_warning() {
 #[test]
 fn expand_reveals_equation_signature() {
     let src = "hyp a b = (a*a + b*b).sqrt\nprint hyp 3.0 4.0\n";
-    let ast = cmm::parse_source(src).unwrap();
-    let sigs: HashMap<String, String> = cmm::infer::check(&ast).unwrap().0.into_iter().collect();
-    let out = cmm::expand::expand(&ast, &sigs);
+    let ast = curt::parse_source(src).unwrap();
+    let sigs: HashMap<String, String> = curt::infer::check(&ast).unwrap().0.into_iter().collect();
+    let out = curt::expand::expand(&ast, &sigs);
     assert!(out.contains("hyp :: (float float -> float)"), "{out}");
 }
 
 #[test]
 fn expand_reveals_recursive_signature() {
     let src = "fib n = if n < 2 { n } else { fib (n-1) + fib (n-2) }\nprint fib 30\n";
-    let ast = cmm::parse_source(src).unwrap();
-    let sigs: HashMap<String, String> = cmm::infer::check(&ast).unwrap().0.into_iter().collect();
-    let out = cmm::expand::expand(&ast, &sigs);
+    let ast = curt::parse_source(src).unwrap();
+    let sigs: HashMap<String, String> = curt::infer::check(&ast).unwrap().0.into_iter().collect();
+    let out = curt::expand::expand(&ast, &sigs);
     assert!(out.contains("fib :: (int -> int)"), "{out}");
 }
 
 #[test]
 fn expand_reveals_union_signature() {
     let src = "show :: float | str -> str\nshow v = match v { float x -> \"n\", str s -> s }\nprint show 2.5\n";
-    let ast = cmm::parse_source(src).unwrap();
-    let sigs: HashMap<String, String> = cmm::infer::check(&ast).unwrap().0.into_iter().collect();
-    let out = cmm::expand::expand(&ast, &sigs);
+    let ast = curt::parse_source(src).unwrap();
+    let sigs: HashMap<String, String> = curt::infer::check(&ast).unwrap().0.into_iter().collect();
+    let out = curt::expand::expand(&ast, &sigs);
     assert!(out.contains("show :: (float | str -> str)"), "{out}");
 }

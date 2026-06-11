@@ -1,10 +1,10 @@
 //! Lexer + parser unit tests for the SPEC rules the corpus exercises implicitly.
 
-use cmm::ast::{Body, Expr, Pattern, Stmt, TypeExpr};
-use cmm::lexer::{lex, Tok};
+use curt::ast::{Body, Expr, Pattern, Stmt, TypeExpr};
+use curt::lexer::{lex, Tok};
 
 fn ok(src: &str) -> Vec<Stmt> {
-    cmm::parse_source(src).unwrap_or_else(|d| panic!("should parse: {src:?} -> {d}"))
+    curt::parse_source(src).unwrap_or_else(|d| panic!("should parse: {src:?} -> {d}"))
 }
 
 // ---- lexer ----
@@ -198,7 +198,7 @@ fn compound_assign_on_index_target() {
 
 #[test]
 fn parse_error_is_fix_suggesting_json() {
-    let d = cmm::parse_source("type lower = {x float}").unwrap_err();
+    let d = curt::parse_source("type lower = {x float}").unwrap_err();
     let s = d.to_string();
     assert!(s.starts_with("{\"err\":"), "diagnostic is single-line JSON: {s}");
     assert!(s.contains("\"fix\":"));

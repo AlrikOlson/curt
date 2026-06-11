@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""tools/tokens — the cmm cost-table CLI.
+"""tools/tokens — the curt cost-table CLI.
 
 Counts corpus token costs (o200k_base offline; Anthropic count-tokens when
 ANTHROPIC_API_KEY is set) and reports per-snippet ratios + per-baseline
@@ -58,8 +58,8 @@ def anthropic_count(text: str):
         return None
 
 
-LANGS = ["cmm", "py", "go", "rs"]
-EXT = {"cmm": ".cmm", "py": ".py", "go": ".go", "rs": ".rs"}
+LANGS = ["curt", "py", "go", "rs"]
+EXT = {"curt": ".curt", "py": ".py", "go": ".go", "rs": ".rs"}
 
 # The construct cost table: every v0.1 grammar construct, priced in context.
 CONSTRUCTS = [
@@ -101,7 +101,7 @@ CONSTRUCTS = [
 
 
 def table(corpus: Path, use_api: bool):
-    names = sorted({f.stem for f in corpus.glob("*.cmm")})
+    names = sorted({f.stem for f in corpus.glob("*.curt")})
     ratios = {"py": [], "go": [], "rs": []}
     rows = []
     api_note = "on" if (use_api and os.environ.get("ANTHROPIC_API_KEY")) else "off (no ANTHROPIC_API_KEY)"
@@ -112,8 +112,8 @@ def table(corpus: Path, use_api: bool):
             f = corpus / (name + EXT[lang])
             if f.exists():
                 counts[lang] = o200k(f.read_text())
-        c = counts["cmm"]
-        cells = [f"cmm={c:4d}"]
+        c = counts["curt"]
+        cells = [f"curt={c:4d}"]
         for lang in ["py", "go", "rs"]:
             if lang in counts:
                 r = counts[lang] / c

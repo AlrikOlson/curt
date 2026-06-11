@@ -1,7 +1,7 @@
-// cmm v0.1 — Lark CFG twin of tools/tokens/grammar.peg (constrained decoding).
+// curt v0.1 — Lark CFG twin of tools/tokens/grammar.peg (constrained decoding).
 //
 // PRIMARY artifact (think:15): one grammar feeds llguidance AND OpenAI
-// custom tools; cmm.gbnf is generated from THIS file by lark2gbnf.py.
+// custom tools; curt.gbnf is generated from THIS file by lark2gbnf.py.
 //
 // Design constraints carried over from the PEG:
 //   - EXPLICIT whitespace (no %ignore): SPEC §1 adjacency is semantic

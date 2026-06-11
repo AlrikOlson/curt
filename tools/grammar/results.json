@@ -326,7 +326,7 @@
       },
       {
         "i": 15,
-        "out": "```cmm",
+        "out": "```curt",
         "stop_type": "eos",
         "truncated": true
       },
@@ -362,13 +362,13 @@
       },
       {
         "i": 25,
-        "out": "```cmm",
+        "out": "```curt",
         "stop_type": "eos",
         "truncated": true
       },
       {
         "i": 26,
-        "out": "```cmm",
+        "out": "```curt",
         "stop_type": "eos",
         "truncated": true
       },
@@ -422,7 +422,7 @@
       },
       {
         "i": 41,
-        "out": "```cmm",
+        "out": "```curt",
         "stop_type": "eos",
         "truncated": true
       },
@@ -542,13 +542,13 @@
       },
       {
         "i": 75,
-        "out": "```cmm",
+        "out": "```curt",
         "stop_type": "eos",
         "truncated": true
       },
       {
         "i": 76,
-        "out": "```cmm",
+        "out": "```curt",
         "stop_type": "eos",
         "truncated": true
       },

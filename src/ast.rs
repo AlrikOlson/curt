@@ -1,4 +1,4 @@
-//! AST for cmm v0.1. `cmm parse` prints this via {:#?}; later phases
+//! AST for curt v0.1. `curt parse` prints this via {:#?}; later phases
 //! (fmt/expand/infer/eval) consume it.
 
 #[derive(Debug, Clone, PartialEq)]

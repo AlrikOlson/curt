@@ -1,9 +1,9 @@
 //! Postel set (SPEC §10): predictable slips parse; they are never errors.
 
-use cmm::ast::{Expr, Stmt};
+use curt::ast::{Expr, Stmt};
 
 fn ok(src: &str) -> Vec<Stmt> {
-    cmm::parse_source(src).unwrap_or_else(|d| panic!("should parse: {src:?} -> {d}"))
+    curt::parse_source(src).unwrap_or_else(|d| panic!("should parse: {src:?} -> {d}"))
 }
 
 #[test]
@@ -48,7 +48,7 @@ fn python_bool_and_none_literals() {
 fn return_maps_to_ret() {
     let ast = ok("f x = { return x }");
     let Stmt::Equation { body, .. } = &ast[0] else { panic!() };
-    let cmm::ast::Body::Block(stmts) = body else { panic!() };
+    let curt::ast::Body::Block(stmts) = body else { panic!() };
     assert!(matches!(&stmts[0], Stmt::Ret(Some(_))));
 }
 
@@ -56,7 +56,7 @@ fn return_maps_to_ret() {
 fn elif_chain() {
     let ast = ok("sign x = if x < 0 { -1 } elif x > 0 { 1 } else { 0 }");
     let Stmt::Equation { body, .. } = &ast[0] else { panic!() };
-    let cmm::ast::Body::Expr(Expr::If { els, .. }) = body else { panic!("want if body") };
+    let curt::ast::Body::Expr(Expr::If { els, .. }) = body else { panic!("want if body") };
     assert!(matches!(els.as_deref(), Some(Expr::If { .. })), "elif becomes nested if");
 }
 

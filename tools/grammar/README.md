@@ -1,6 +1,6 @@
 # tools/grammar — constrained-decoding artifacts (gd-a)
 
-Grammar-masked generation is cmm's reliability floor: a zero-weights language
+Grammar-masked generation is curt's reliability floor: a zero-weights language
 gets zero parse errors by construction (models drift toward Python syntax;
 the mask makes that impossible). Refreshed landscape (2026-06-10, think:15):
 OpenAI's custom tools accept arbitrary CFGs in **Lark** syntax, and
@@ -9,23 +9,23 @@ consumes Lark — so one artifact feeds both. llama.cpp uses **GBNF**.
 
 ## Artifacts
 
-- **`cmm.lark`** — the PRIMARY artifact: a CFG twin of
+- **`curt.lark`** — the PRIMARY artifact: a CFG twin of
   `tools/tokens/grammar.peg` with **explicit whitespace** (no `%ignore`).
   Explicit ws is load-bearing: SPEC §1 adjacency is semantic (`x.f` vs
   `x .f`, `x?` vs `x ? y`, glued `Pt{`/`f(`/`xs[`), and only an explicit-ws
   grammar preserves it. Earley-parsed for validation; membership is what
   constrained decoding needs.
-- **`cmm.gbnf`** — GENERATED from `cmm.lark` by `lark2gbnf.py`. Never
+- **`curt.gbnf`** — GENERATED from `curt.lark` by `lark2gbnf.py`. Never
   hand-edit. `NAME` excludes keywords EXACTLY via a generated prefix-trie
   complement (no lookahead in GBNF). The first version widened `NAME` to
   include keywords; the gd-b-oss demo measured that leaking 30% of
   constrained generations as keyword-shaped Python drift — measurement
   forced the exact encoding.
 - **`lark2gbnf.py`** — mechanical, deterministic converter. Terminal regexes
-  are pinned in `TERMINAL_MAP`; if `cmm.lark` changes a terminal, conversion
+  are pinned in `TERMINAL_MAP`; if `curt.lark` changes a terminal, conversion
   fails loudly instead of drifting.
-- **`validate.py`** — the divergence gate (CI): `cmm.lark` must parse the
-  golden corpus **20/20** AND agree with the Rust parser (`cmm parse`) on a
+- **`validate.py`** — the divergence gate (CI): `curt.lark` must parse the
+  golden corpus **20/20** AND agree with the Rust parser (`curt parse`) on a
   negative sample set (**10/10** invalid snippets rejected by both). Exit 0
   only when both hold.
 
@@ -34,19 +34,19 @@ consumes Lark — so one artifact feeds both. llama.cpp uses **GBNF**.
 PEG ordered choice is not mechanically transformable to a CFG. The Lark twin
 is kept honest the same way `grammar.peg` itself is — by the machine gate,
 not by generation. The chain of trust: Rust parser (oracle) ⇄ grammar.peg
-(PEG gate) ⇄ cmm.lark (this gate) → cmm.gbnf (generated, pinned terminals).
+(PEG gate) ⇄ curt.lark (this gate) → curt.gbnf (generated, pinned terminals).
 
 ## Running
 
 ```sh
 cargo build --release            # the oracle
 python3 tools/grammar/validate.py    # needs `lark` (pip install lark)
-python3 tools/grammar/lark2gbnf.py   # regenerate cmm.gbnf
+python3 tools/grammar/lark2gbnf.py   # regenerate curt.gbnf
 ```
 
 ## Next (gd-b)
 
-OSS-runtime zero-error demo (llama.cpp + `cmm.gbnf`, ≥200 generations),
+OSS-runtime zero-error demo (llama.cpp + `curt.gbnf`, ≥200 generations),
 OpenAI custom-tools conformance run (≥100 generations, measured — community
 reports conformance is not guaranteed), capability-matrix re-check, and the
 constrained-vs-unconstrained quality comparison. Needs a local model and

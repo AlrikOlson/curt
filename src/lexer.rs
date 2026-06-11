@@ -1,4 +1,4 @@
-//! Lexer for cmm v0.1 (SPEC.md §1).
+//! Lexer for curt v0.1 (SPEC.md §1).
 //!
 //! Spans drive two SPEC rules the parser needs:
 //! - `glued`: token starts exactly where the previous one ended (no
@@ -311,7 +311,7 @@ pub fn lex_raw(src: &str) -> Result<Vec<Token>, Diag> {
                                 "unexpected_char",
                                 line,
                                 col,
-                                &format!("character {:?} is not part of cmm", c as char),
+                                &format!("character {:?} is not part of curt", c as char),
                                 "remove it or check the SPEC lexical rules",
                             ))
                         }
