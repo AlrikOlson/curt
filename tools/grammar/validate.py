@@ -33,6 +33,8 @@ NEGATIVE = [
     'type = {x int}',             # type decl without a name
     'f x = }',                    # stray closing brace
     'pub :: int -> int',          # pub signature without a name
+    'print if c { 1 } else { 2 }',  # if-expr as application ARG (head-only)
+    'f x match y { _ -> 1 }',       # match-expr as application ARG
 ]
 
 

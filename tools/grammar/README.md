@@ -16,10 +16,11 @@ consumes Lark — so one artifact feeds both. llama.cpp uses **GBNF**.
   grammar preserves it. Earley-parsed for validation; membership is what
   constrained decoding needs.
 - **`cmm.gbnf`** — GENERATED from `cmm.lark` by `lark2gbnf.py`. Never
-  hand-edit. Known, documented widening: GBNF has no lookahead, so `NAME`
-  cannot exclude keywords there (over-acceptance only — a mask that
-  over-accepts never blocks a valid program; the Rust parser stays the
-  oracle).
+  hand-edit. `NAME` excludes keywords EXACTLY via a generated prefix-trie
+  complement (no lookahead in GBNF). The first version widened `NAME` to
+  include keywords; the gd-b-oss demo measured that leaking 30% of
+  constrained generations as keyword-shaped Python drift — measurement
+  forced the exact encoding.
 - **`lark2gbnf.py`** — mechanical, deterministic converter. Terminal regexes
   are pinned in `TERMINAL_MAP`; if `cmm.lark` changes a terminal, conversion
   fails loudly instead of drifting.

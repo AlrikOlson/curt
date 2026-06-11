@@ -1,0 +1,629 @@
+{
+  "date": "2026-06-10",
+  "constrained": {
+    "n": 200,
+    "parse_ok": 169,
+    "rate": 0.845,
+    "completed": 162,
+    "parse_ok_completed": 161,
+    "cap_retries": 38,
+    "samples": [
+      {
+        "prompt_ix": 0,
+        "out": "print \"Hello, World!\"",
+        "parses": true
+      },
+      {
+        "prompt_ix": 1,
+        "out": "name = [1 2 3 4 5 6 7 8 9 10]",
+        "parses": true
+      },
+      {
+        "prompt_ix": 2,
+        "out": "def add_two_numbers (a, b)",
+        "parses": true
+      },
+      {
+        "prompt_ix": 3,
+        "out": "sum_list",
+        "parses": true
+      },
+      {
+        "prompt_ix": 4,
+        "out": "my_list = 1 2 3 4 5",
+        "parses": true
+      },
+      {
+        "prompt_ix": 5,
+        "out": "record 2-point",
+        "parses": true
+      },
+      {
+        "prompt_ix": 6,
+        "out": "i = 10",
+        "parses": true
+      },
+      {
+        "prompt_ix": 7,
+        "out": "len s",
+        "parses": true
+      }
+    ],
+    "failures": [
+      {
+        "i": 9,
+        "out": "if 5 == 5 then 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 16,
+        "out": "while 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 19,
+        "out": "match 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 26,
+        "out": "while 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 36,
+        "out": "while 5 > 0 do 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 0 5 4 3 2 1 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 39,
+        "out": "if 5 == 5 then 1 elsef 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 46,
+        "out": "while 5>0 do 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5== 0 5==",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 49,
+        "out": "match 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 56,
+        "out": "while 1 2 3 4 5 6 7 8 9 10 8 7 6 5 4 3 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 66,
+        "out": "while 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 69,
+        "out": "if 5 == 5 then 1 else_ 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 76,
+        "out": "while 10 > 0 do 10 == 10 - 1 end 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 == 0 10 ==",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 79,
+        "out": "if 42 == 42 then 1 endif 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 89,
+        "out": "if 5 == 5 then 1 else_ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 96,
+        "out": "while 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 99,
+        "out": "match 100 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 8",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 105,
+        "out": "record 2-point == {",
+        "stop_type": "eos",
+        "truncated": false
+      },
+      {
+        "i": 106,
+        "out": "while 10 >= 0 do 10 == 10 - 1 end 10 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 109,
+        "out": "match 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 119,
+        "out": "if 5 == 5 then 1 elsef 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 129,
+        "out": "match 10 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 139,
+        "out": "if 5 == 5 then 1 0 1 1 0 1 0 1 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 146,
+        "out": "while 5 > 0 do 5 == 5 - 1 end 5 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 149,
+        "out": "if 1 == 1 then 1 elsef 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 159,
+        "out": "if 5 == 5 then 1 else_ 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 166,
+        "out": "while 1 2 3 4 5 6 7 8 9 10 8 7 6 5 4 3 2 1 0 1 2 3 4 5 6 7 8 9 10 9 8 7 6 5 4 3 2 1 0 1 2 3 4 5 6 7 8 9 10 9 8 7 6 5 4 3 2 1 0 1 2 3 4 5 6 7 8 9 10 9 8 7 6 5 4 3 2 1 0 1 2 3 4 5 6 7 8 9 10 9 8 7 6 5 4 3 2 1 0 1 2 3 4 5 6 7 8 9 10 9 8 7 6 5 4 3 2 1 0 1 2 3 4 5 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 169,
+        "out": "if 10 == 10 then 1 else0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 186,
+        "out": "while 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 189,
+        "out": "if 3 == 3 then 1 else_ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 196,
+        "out": "while 5 > 0 do 5 == 5 end 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5",
+        "stop_type": "limit",
+        "truncated": true
+      },
+      {
+        "i": 199,
+        "out": "match 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 8",
+        "stop_type": "limit",
+        "truncated": true
+      }
+    ]
+  },
+  "unconstrained": {
+    "n": 100,
+    "parse_ok": 44,
+    "rate": 0.44,
+    "completed": 0,
+    "parse_ok_completed": 0,
+    "cap_retries": 0,
+    "samples": [
+      {
+        "prompt_ix": 0,
+        "out": "print(\"Hello, World!\")",
+        "parses": true
+      },
+      {
+        "prompt_ix": 1,
+        "out": "name = [1, 2, 3, 4]",
+        "parses": true
+      },
+      {
+        "prompt_ix": 2,
+        "out": "def add(a, b):",
+        "parses": false
+      },
+      {
+        "prompt_ix": 3,
+        "out": "sum(list)",
+        "parses": true
+      },
+      {
+        "prompt_ix": 4,
+        "out": "my_list = [1, 2, 3, 4, 5] | filter(lambda x: x % 2 == 0)",
+        "parses": false
+      },
+      {
+        "prompt_ix": 5,
+        "out": "record point = x: float, y: float",
+        "parses": false
+      },
+      {
+        "prompt_ix": 6,
+        "out": "i = 10; while(i > 0) { i = i - 1; }",
+        "parses": true
+      },
+      {
+        "prompt_ix": 7,
+        "out": "len(str)",
+        "parses": true
+      }
+    ],
+    "failures": [
+      {
+        "i": 2,
+        "out": "def add(a, b):",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 4,
+        "out": "my_list = [1, 2, 3, 4, 5] | filter(lambda x: x % 2 == 0)",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 5,
+        "out": "record point = x: float, y: float",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 8,
+        "out": "map(lambda x: x*x, [1, 2, 3, 4, 5])",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 12,
+        "out": "def add(x, y):",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 14,
+        "out": "my_list | filter(lambda x: x > 5)",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 15,
+        "out": "```cmm",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 16,
+        "out": "while i > 0: i -= 1",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 18,
+        "out": "map(lambda x: x*x, [1, 2, 3, 4, 5])",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 19,
+        "out": "match(value) {",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 22,
+        "out": "def add(x, y):",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 24,
+        "out": "[x for x in my_list if x > 5]",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 25,
+        "out": "```cmm",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 26,
+        "out": "```cmm",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 28,
+        "out": "map(lambda x: x*x, [1, 2, 3, 4, 5])",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 29,
+        "out": "x = y if y == 1 else 0",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 32,
+        "out": "def add(x, y):",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 34,
+        "out": "[x for x in lst if x > 5]",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 35,
+        "out": "record point = (x, y) = 0, 0",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 36,
+        "out": "while i > 0: i -= 1",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 38,
+        "out": "[x*x for x in [1,2,3]]",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 39,
+        "out": "if value == 5:",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 41,
+        "out": "```cmm",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 42,
+        "out": "def add(x, y):",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 44,
+        "out": "[x for x in lst if x % 2 == 0]",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 45,
+        "out": "record point = x, y;",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 46,
+        "out": "while i > 0: i -= 1",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 48,
+        "out": "map(lambda x: x*x, [1, 2, 3, 4, 5])",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 49,
+        "out": "match x == 5:",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 52,
+        "out": "def add(x, y): return x + y",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 54,
+        "out": "[x | x in lst if x > 5]",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 55,
+        "out": "```",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 56,
+        "out": "while x > 0: x -= 1",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 58,
+        "out": "list(map(lambda x: x * 2, [1, 2, 3, 4, 5]))",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 59,
+        "out": "x = y if y == 5 else 0",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 62,
+        "out": "def add(x, y):",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 64,
+        "out": "list = [1, 2, 3, 4, 5] | filter(lambda x: x > 3) | print",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 65,
+        "out": "type Point = record x, y end",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 66,
+        "out": "while i > 0: i -= 1",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 68,
+        "out": "map(lambda x: x*x, [1, 2, 3, 4, 5])",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 72,
+        "out": "add = lambda x, y: x + y",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 74,
+        "out": "[i for i in [1,2,3,4,5] if i % 2 == 0]",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 75,
+        "out": "```cmm",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 76,
+        "out": "```cmm",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 78,
+        "out": "[x for x in [1,2,3,4,5]]",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 79,
+        "out": "if x == 5: print(\"x is equal to 5\")",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 82,
+        "out": "def add(x, y):",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 84,
+        "out": "filtered_list = [x for x in original_list if condition(x)]",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 85,
+        "out": "type Point = (x: int, y: int)",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 86,
+        "out": "i = 10; while i > 0: print(i); i -= 1",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 88,
+        "out": "map(lambda x: x*x, [1, 2, 3, 4])",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 89,
+        "out": "if (x == 5): print(\"x is 5\")",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 92,
+        "out": "def add(a, b):= a + b",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 96,
+        "out": "while x > 0: x -= 1",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 98,
+        "out": "map(lambda x: x*x, [1, 2, 3, 4, 5])",
+        "stop_type": "eos",
+        "truncated": true
+      },
+      {
+        "i": 99,
+        "out": "match x when 10: print(\"Ten\")",
+        "stop_type": "eos",
+        "truncated": true
+      }
+    ]
+  }
+}
