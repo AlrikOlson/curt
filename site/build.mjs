@@ -18,8 +18,8 @@ const SITE = "https://curtlang.com";
 // ---- nav + layout ----------------------------------------------------------
 const NAV = [
   { href: "/", label: "Home", slug: "home" },
-  { href: "/language.html", label: "Language", slug: "language" },
-  { href: "/benchmarks.html", label: "Benchmarks", slug: "benchmarks" },
+  { href: "/language", label: "Language", slug: "language" },
+  { href: "/benchmarks", label: "Benchmarks", slug: "benchmarks" },
   { href: "/play/", label: "Playground", slug: "play" },
 ];
 const EXT = [
@@ -56,8 +56,8 @@ const FOOTER = `<footer class="footer" data-testid="footer">
     </div>
     <div>
       <h4>Explore</h4>
-      <a href="/language.html">Language tour</a>
-      <a href="/benchmarks.html">Benchmarks</a>
+      <a href="/language">Language tour</a>
+      <a href="/benchmarks">Benchmarks</a>
       <a href="/play/">Browser playground</a>
       <a href="https://huggingface.co/datasets/therikkening/curt-benchmarks">Benchmark dataset</a>
     </div>
@@ -100,8 +100,8 @@ ${FOOTER}
 // ---- pages manifest --------------------------------------------------------
 const PAGES = [
   { file: "index.html",      out: "index.html",      slug: "home",       og: "/",                title: "curt — a machine-first programming language for AI agents", desc: "curt is a statically-typed, compiled language where output-token cost is the prime design directive. The tokenizer is the ISA." },
-  { file: "language.html",   out: "language.html",   slug: "language",   og: "/language.html",   title: "The curt language — a tour", desc: "Equations and juxtaposition, untagged unions with full inference, a capability model, and machine-readable diagnostics. A guided tour of curt." },
-  { file: "benchmarks.html", out: "benchmarks.html", slug: "benchmarks", og: "/benchmarks.html", title: "curt benchmarks — measured, never estimated", desc: "Token cost vs Python/Go/Rust, the curt-vs-Zerolang head-to-head, the diagnostics tournament, and grammar-masked generation — every number reproduces." },
+  { file: "language.html",   out: "language.html",   slug: "language",   og: "/language",   title: "The curt language — a tour", desc: "Equations and juxtaposition, untagged unions with full inference, a capability model, and machine-readable diagnostics. A guided tour of curt." },
+  { file: "benchmarks.html", out: "benchmarks.html", slug: "benchmarks", og: "/benchmarks", title: "curt benchmarks — measured, never estimated", desc: "Token cost vs Python/Go/Rust, the curt-vs-Zerolang head-to-head, the diagnostics tournament, and grammar-masked generation — every number reproduces." },
 ];
 
 // ---- build -----------------------------------------------------------------
