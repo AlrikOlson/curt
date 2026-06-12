@@ -1,0 +1,1 @@
+print ("rosetta code".chars.rev | join "")

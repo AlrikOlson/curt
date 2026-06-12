@@ -74,6 +74,19 @@ costs **1.05×** its tokens (982 vs 1033, o200k_base). Writing it
 surfaced two checker/runtime coherence gaps, filed on the roadmap as
 `match-recordarm` and `sig-err-any`.
 
+**Positioning (June 2026):** the agent-language category now has multiple
+entrants — notably Vercel Labs' graph-native
+[Zerolang](https://github.com/vercel-labs/zerolang) (May 2026) — and
+independent analyses have converged on curt's founding premise that token
+cost shapes language choice for agents
+([Alderson 2026](https://martinalderson.com/posts/which-programming-languages-are-most-token-efficient/)).
+Under that study's methodology curt averages **37.6 cl100k tokens** across
+ten verified RosettaCode-canon tasks (its 19-language spread ran 109–283;
+task sets differ — reproduce via `tools/bench/rosetta/measure.py`). A
+pre-registered curt-vs-Zerolang comparison is underway:
+[docs/VS-ZERO.md](docs/VS-ZERO.md) records the verified recon, first
+measurements, and the frozen evaluation protocol.
+
 ## Development
 
 One command runs every gate — locally and in CI (same script):

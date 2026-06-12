@@ -1,0 +1,3 @@
+pal s = s == (s.chars.rev | join "")
+print pal "racecar"
+print pal "rosetta"

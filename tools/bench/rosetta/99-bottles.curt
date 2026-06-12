@@ -1,0 +1,11 @@
+for i in range 99 {
+  n = 99 - i
+  w = if n == 1 { "bottle" } else { "bottles" }
+  print "{n} {w} of beer on the wall"
+  print "{n} {w} of beer"
+  print "Take one down, pass it around"
+  m = n - 1
+  v = if m == 1 { "bottle" } else { "bottles" }
+  print "{m} {v} of beer on the wall"
+  print ""
+}
