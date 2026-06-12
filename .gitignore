@@ -19,3 +19,4 @@ data/external/
 .train-venv/
 data/curtcoder/*.jsonl
 data/curtcoder/adapters-*/
+tools/mcp/.venv/

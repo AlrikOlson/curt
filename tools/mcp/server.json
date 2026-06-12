@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "io.github.therikkening/curt",
+  "description": "Code-execution server for curt, the machine-first language for AI agents: run_curt executes programs in a sandboxed subprocess with deny-by-default capabilities; diagnostics return verified one-turn repair payloads.",
+  "repository": {
+    "url": "https://github.com/therikkening/curt",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "curt-mcp",
+      "version": "0.1.0",
+      "transport": { "type": "stdio" }
+    }
+  ]
+}
