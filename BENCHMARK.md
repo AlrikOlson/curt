@@ -598,3 +598,33 @@ Measured sweeps, published whole:
   mechanical rewrites — no safe AST rules mineable from them; general
   while-accumulator→pipeline equivalence needs loop-invariant analysis
   and was declined.
+
+## hx2 edit-entropy mediation: inconclusive, and the scatter says why (2026-06-12)
+
+The fourth anomaly-born hypothesis (think:139): a diagnostic's repair
+power is how far it collapses the model's plausible-edit distribution;
+arm identity should add nothing once edit diversity is controlled.
+Pre-registered design (think:168, frozen before any API call): 10
+stratified tourney errors × arms A/B/D × k=5 haiku samples ($0.48,
+frozen to `tourney/hx2_samples.jsonl`); diversity = mean pairwise
+Jaccard distance of line-edit signatures; verdict thresholds fixed.
+
+**Verdict: INCONCLUSIVE** — pearson(s,d) = −0.398 (confirm needed
+≤ −0.5, refute ≥ −0.3), ΔR²(arm|diversity) = 0.091 (confirm < 0.05,
+refute ≥ 0.15). Spearman −0.568. Per-arm means run the predicted
+direction (A d=0.43/s=0.64, B d=0.59/s=0.72, D d=0.03/s=0.98 — the
+payload arm collapses the distribution almost completely and nearly
+saturates success), but the linear mediation claim does not clear its
+own bar.
+
+The instructive structure: **zero-diversity cells split into two
+clusters** — collapsed onto the right edit (s=1.0) and collapsed onto
+the WRONG edit (two cells at d=0.00, s=0.00: the model converges
+confidently on a bad repair). Edit entropy measures dispersion, not
+where the mode points; success requires a collapsed distribution AND a
+correctly-aimed mode, which is exactly what D's verified payload
+provides and prose hints cannot guarantee. (Post-hoc observation, not
+a conclusion — it would need its own pre-registration.) Consequence:
+edit-entropy-per-token is NOT adopted as the fix-synthesis design
+objective; the verified-payload standard (fix-synthesis chunk) already
+captures the mode-aiming half that entropy misses.
