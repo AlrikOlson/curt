@@ -321,3 +321,19 @@ four lanes — task difficulty, not language.
 Reproduce: `.ci-venv/bin/python tools/bench/loop.py report`
 (deterministic over `tools/bench/loops/*.jsonl`; re-running the live
 matrix requires an API key and ~$0.33).
+
+## Head-to-head vs Zerolang (vz-headtohead, 2026-06-12)
+
+The pre-registered curt-vs-Zerolang showdown ran: nine shared
+RosettaCode tasks × {curt, Zerolang v0.3.2, Python} × 2 models × 3
+samples, own-docs protocol, ≤2 repair turns, 162 cells, $0.77, lanes
+frozen in `tools/bench/h2h/`. Mechanical verdict against the frozen
+2-of-3 condition: **split** — curt sweeps 3/3 on sonnet (7.7× cheaper
+per solved task at perfect parity, 4.8× leaner output, faster
+convergence), does not win on haiku (success parity fails: 21/27 vs
+24/27, concentrated in two tasks), and misses the pooled reading by
+0.6pp of parity. Zero's canonical teaching docs cost 14,923 o200k
+tokens to curt's 2,018 (7.4×); Python won the control on every cost
+axis (54/54 at $0.0008/solved). Full analysis, cache-field evidence,
+and the pre-registration-defect note: [docs/VS-ZERO.md](docs/VS-ZERO.md).
+Reproduce: `.ci-venv/bin/python tools/bench/headtohead.py report`.

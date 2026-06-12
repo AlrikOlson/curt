@@ -172,3 +172,70 @@ quotes (nested-diagnostic case, `main.rs`; filed as `diag-esc-runtime`)
 included. Prior-art note: we found no published measurement of typed
 vs prose diagnostic feedback for LLM repair (searched 2026-06-12); the
 frozen lanes above appear to be the first.
+
+## The head-to-head (saga stage 4, 2026-06-12)
+
+The pre-registered showdown ran exactly as frozen (pinned reasoning
+step 126): the nine shared RosettaCode tasks, each language carrying its
+own canonical teaching doc, single shot plus up to two repair turns with
+native-format failure surfaces fed back verbatim, Python control, two
+models × three samples per cell, temperature 1.0, prompt caching
+requested identically everywhere. 162 cells, $0.77, all transcripts
+frozen in `tools/bench/h2h/`. One pre-lane protocol note: Zero's
+teaching doc is `zero skills get language` **plus** `stdlib` — the
+language skill alone omits `std.fmt.i32`, and a smoke probe (discarded)
+showed the model dying in three turns guessing conversion helpers; the
+union matches the cheatsheet's syntax+stdlib coverage. The measured
+consequence is itself a result: **Zero's canonical authoring docs cost
+14,923 o200k tokens to curt's 2,018 — a 7.4× documentation tax.**
+
+| model | lang | solved | $/solved | median out-tok (solved) | turns |
+|---|---|---|---|---|---|
+| haiku | curt | 21/27 | $0.0062 | **33** | 1.24 |
+| haiku | zero | 24/27 | $0.0050 | 168 | 1.00 |
+| haiku | python | **27/27** | **$0.0005** | 37 | 1.00 |
+| sonnet | curt | **27/27** | $0.0020 | **35** | 1.00 |
+| sonnet | zero | **27/27** | $0.0156 | 168 | 1.15 |
+| sonnet | python | **27/27** | $0.0011 | 40 | 1.00 |
+
+**Mechanical verdict against the pre-registered 2-of-3 condition: a
+split decision, reported in full.**
+
+- **sonnet: curt wins 3/3** — loop dollars at perfect success parity
+  ($0.0020 vs $0.0156, 7.7× cheaper), median output tokens (35 vs 168,
+  4.8× leaner), convergence turns (1.00 vs 1.15).
+- **haiku: curt does not win (1/3)** — success parity fails (78% vs
+  89%), which voids the dollar axis by rule. curt's six failures are
+  two tasks at 0/3 each: 100-doors (the model repeatedly reached for a
+  three-argument stepped `range` curt does not have) and 99-bottles
+  (exact-format lyrics); the other seven tasks went 9/9.
+- **pooled across models: curt does not win (1/3)** — parity misses by
+  0.6pp (88.9% vs 94.4%). The pre-registration never specified
+  cross-model aggregation; that is a pre-registration defect, recorded
+  here rather than resolved post hoc in either side's favor.
+
+Findings the matrix forces, whichever side one roots for:
+
+1. **The output-token bet is decided: curt is ~5× leaner than Zero on
+   the wire** (33–35 vs 168 median tokens on solved cells) — Zero's
+   `pub fn main(world: World) -> Void raises` ceremony and per-line
+   `check world.out.write(...)` calls are priced on every generation.
+   Zero's own a-b reference is 46 o200k tokens to curt's 12.
+2. **The documentation tax decides the dollar axis as much as the
+   language does.** Frozen cache fields: haiku+curt read 109.5k input
+   tokens at full price (its 2k sheet sits under the 4,096-token cache
+   floor) while haiku+zero served 618.8k of its 15k doc as 0.1× cache
+   reads. Zero's docs cache; curt's don't — yet curt still wins
+   $/solved wherever success parity holds, and Zero's sonnet lane paid
+   $0.42 for doc re-reads even cached.
+3. **Python won the control on every cost axis** (54/54, $0.0008 per
+   solved task). On nine small well-trained tasks, neither agent
+   language beats the language the models grew up on. The agent-language
+   category's case must rest on harder ground: diagnostics-driven
+   repair, capability safety, and edit-loop economics on larger
+   programs.
+
+The saga verdict (stage 5) weighs this split; nothing here is restated
+in curt's favor. Raw lanes, tasks, oracles, and both teaching docs are
+committed and reproduce via
+`.ci-venv/bin/python tools/bench/headtohead.py report`.
