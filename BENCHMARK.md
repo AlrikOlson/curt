@@ -464,3 +464,37 @@ head-to-head protocol with the cheat sheet unchanged: **2/3 solved**
 formerly fatal form — and the residual failure being an ordinary
 off-by-one, not a language gap
 (`tools/bench/h2h/rerun_stepped_range.jsonl`, $0.02).
+
+## Sheet-cache: adding tokens to save dollars, measured (2026-06-12)
+
+The agent-loop benchmark diagnosed haiku's 3× loop-dollar deficit as a
+cache-floor artifact: the ~2.3k-token cheat sheet sits under haiku's
+4,096-token minimum cacheable prefix, so every call re-bills it at full
+price. The predicted fix is counterintuitive — make the sheet *bigger*.
+Three sheet variants ran the identical 25-task haiku loop protocol
+(`tools/bench/sheetcache.py`; baseline lane untouched):
+
+| sheet | solved | $/solved | input tokens | cache reads |
+|---|---|---|---|---|
+| baseline, 2.0k o200k | 22/25 | $0.0048 | 87,501 | 0 |
+| **extended, 4.6k o200k** | **22/25** | **$0.0017** | 4,114 | **178,228** |
+| lite, 0.4k o200k | 15/25 | $0.0041 | 36,429 | 0 |
+
+The extended sheet (the original plus twenty execution-verified worked
+examples) measures 5,242 tokens on the wire — over the floor — and the
+provider serves it at the 0.1× cache-read rate. **Lane cost falls 64%
+at identical success, and $/solved lands at $0.0017, parity with the
+Python control's $0.0016** — the loop-economics gap that refuted the
+original hypothesis on haiku is closed, almost exactly where the
+frozen-field arithmetic predicted ($0.0018). The lite ablation is the
+worst of both worlds: seven fewer tasks solved *and* a higher cost per
+solve, because failed cells burn three-turn repair cycles — teaching
+content pays for itself in avoided repairs before caching is even
+considered. A cold-start lane additionally pays one ~5.2k-token cache
+write (~$0.007); the conclusion is unchanged.
+
+The extended sheet also carried the second head-to-head gap target: its
+format-heavy worked example (a receipt printer — the class, not the
+99-bottles answer) took haiku's 99-bottles from 0/3 to **3/3** under
+the identical head-to-head protocol
+(`tools/bench/h2h/rerun_99bottles_ext.jsonl`).
