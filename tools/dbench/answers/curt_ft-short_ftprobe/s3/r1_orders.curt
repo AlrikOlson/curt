@@ -1,0 +1,5 @@
+orders = (fs.read "orders.json") ? "" | .parse_json
+paid = orders | keep (o -> o.status == "paid").get_len
+open = orders | keep (o -> o.status == "open").get_len
+print (paid)
+print open

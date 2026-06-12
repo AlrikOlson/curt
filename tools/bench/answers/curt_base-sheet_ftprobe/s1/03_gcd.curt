@@ -1,0 +1,5 @@
+gcd = 252 % 105
+while gcd != 0 { 
+    gcd = 252 % 105
+    print gcd;   
+}

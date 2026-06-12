@@ -1,0 +1,16 @@
+```java
+public class ParseNumbers {
+    public static void main(String[] args) {
+        String str = "a=1,b=22,c=333";
+        String[] pairs = str.split(",");
+        int sum = 0;
+
+        for (String pair : pairs) {
+            String[] keyValue = pair.split("=");
+            sum += Integer.parseInt(keyValue[1]);
+        }
+
+        System.out.println(sum);
+    }
+}
+```<|im_end|>

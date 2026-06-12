@@ -1,0 +1,2 @@
+s = "aaabbcccca"
+print ((s.match / ('aa' | 'bb' | 'cc')) | map (r -> r.len) | join " ")

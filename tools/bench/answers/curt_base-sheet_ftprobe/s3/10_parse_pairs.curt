@@ -1,0 +1,6 @@
+sum v = acc.0 + v
+acc = 0.0
+from Sys import args
+from Str import spl
+from math import sqrt
+match args { "key=value" -> [kv for kv in spl kv] | acc + ([as vir for k v in kv.split("=")]|int)[0] }

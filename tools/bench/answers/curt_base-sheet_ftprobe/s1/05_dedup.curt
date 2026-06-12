@@ -1,0 +1,31 @@
+distinct Arr[i] := match List.find nextArr[i] Arr[i].next
+                do          ret false
+                else         ret true
+            if Arr[i].prev = null || Arr[i].prev.next != Arr[i] do
+                Arr[i].prev.next = Arr[i].next
+                if Arr[i].next.prev = Arr[i] do
+                    Arr[i].next.prev = Arr[i].prev
+end
+nextArr := Array.cloneArr(i, nextArr)
+repeat while Arr[i].next != null
+    if nextArr[i].prev == null || nextArr[i].prev.next != nextArr[i] do
+        nextArr[i].prev.next = nextArr[i].next
+        if nextArr[i].next.prev == nextArr[i] do
+            nextArr[i].next.prev = nextArr[i].prev
+        end
+    nextArr[i] = nextArr[i].next
+end
+repeat while Arr[i].prev != null
+    if nextArr[i].prev == null || nextArr[i].prev.next != nextArr[i] do
+        nextArr[i].prev.next = nextArr[i].next
+        if nextArr[i].next.prev == nextArr[i] do
+            nextArr[i].next.prev = nextArr[i].prev
+        end
+    nextArr[i] = nextArr[i].next
+end
+ parts := []
+    for i in range 0 countArr do
+        if distinctArr[i] do
+            parts.add((i+1).toString())
+        end
+    parts.join(" ")

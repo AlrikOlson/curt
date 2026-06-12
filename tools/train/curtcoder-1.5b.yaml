@@ -1,0 +1,26 @@
+# curt-coder Route A, stage 1: QLoRA on the cached 4-bit 1.5B coder.
+# Full-pipeline proof at $0 on local Apple Silicon (M5 Max, 48 GB);
+# the 7B scale-up reuses this config with --model swapped.
+#
+# Hyperparameters per the 2026 mlx-lm known-good defaults (think:158):
+# lr 1e-5, batch 4, 16 layers; --mask-prompt trains on the assistant
+# completion only (the program, not the instruction).
+#
+# Run:  .train-venv/bin/python -m mlx_lm lora -c tools/train/curtcoder-1.5b.yaml
+
+model: mlx-community/Qwen2.5-Coder-1.5B-Instruct-4bit
+train: true
+fine_tune_type: lora
+data: data/curtcoder
+mask_prompt: true
+num_layers: 16
+batch_size: 4
+learning_rate: 1.0e-5
+iters: 3000          # one epoch over 12,004 train rows at batch 4
+steps_per_report: 50
+steps_per_eval: 500
+val_batches: 50
+save_every: 500
+adapter_path: data/curtcoder/adapters-1.5b
+max_seq_length: 2048
+seed: 42

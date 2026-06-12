@@ -1,0 +1,15 @@
+{
+  "sources": {
+    "bulk": 10538,
+    "synth": 947,
+    "synth2": 933,
+    "real": 266
+  },
+  "valid_pct": 5,
+  "system": "You write curt programs. Reply with ONLY a curt code block \u2014 no prose.",
+  "train": 12004,
+  "valid": 680,
+  "dropped_admit": 591,
+  "dropped_dup": 0,
+  "sha256": "234f9f00bb3c143f3e217aca41b62a8b4f7cef6d7b0b9ae512c7bcc32ea6ba98"
+}

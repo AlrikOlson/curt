@@ -1,0 +1,16 @@
+lines = fs.read("users.txt") ? "" | .lines
+parses = lines | map ln -> {
+  parts = ln.trim.words
+  if parts.len >= 3 {
+    parts | map (p -> p.int)
+    { id: parts[0], name: parts[1], age: parts[2] }
+  } else {
+    null
+  }
+}
+valid = parses | keep x -> x != null
+count = valid.len
+totalAge = valid.sum x -> x.age
+avg = (totalAge / count).int
+print "Valid users: {count}"
+print "Average age: {avg}"

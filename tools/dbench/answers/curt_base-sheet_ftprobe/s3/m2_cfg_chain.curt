@@ -1,0 +1,3 @@
+let c = cf.join ":" | join " " cfg
+print c | failval ""
+if c args then print c | else print "prod localhost:8080"

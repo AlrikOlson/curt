@@ -1,0 +1,7 @@
+```bash
+echo "aaabbcccca" | sed 's/./&\n/' | while read -n1 c; do
+    n=0
+    while [ $c == $(printf "%$((n+1))s" "" ) ]; do ((n++)); done
+    echo "$c$n"
+done
+```<|im_end|>

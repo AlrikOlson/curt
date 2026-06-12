@@ -1,0 +1,11 @@
+area (rect) = rect.width * rect.height
+perimeter (rect) = rect.width * 2 + rect.height * 2
+scale (rect, factor) = { ret = rc; ret.width = rect.width * factor; ret.height = rect.height * factor }
+
+print "before scale: { area: {width: 3.0, height: 4.0}, perimeter: {width: 3.0, height: 4.0}, scale: {area: {width: 3.0, height: 4.0}} }}"
+ret = area {width: 3.0, height: 4.0}
+print "area: {ret}"
+ret = perimeter {width: 3.0, height: 4.0}
+print "perimeter: {ret}"
+ret = area (scale {width: 3.0, height: 4.0}, 2.0)
+print "after scale: {area: {width: 3.0, height: 4.0}}}"

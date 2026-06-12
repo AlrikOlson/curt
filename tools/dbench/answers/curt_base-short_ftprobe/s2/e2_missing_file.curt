@@ -1,0 +1,29 @@
+```java
+import com.google.gson.JsonObject;
+
+public class JsonConfigReader {
+    public static void main(String[] args) throws Exception {
+        new JsonConfigReader().readAndPrint("missing.cfg", "name");
+        new JsonConfigReader().readAndPrint("app.cfg", "port");
+    }
+
+    private void readAndPrint(String filename, String key) throws Exception {
+        JsonObject jsonObject = readFile(filename);
+        if (jsonObject != null && jsonObject.containsKey(key)) {
+            System.out.println(jsonObject.get(key));
+        } else {
+            System.out.println(getDefault(key));
+        }
+    }
+
+    private JsonObject readFile(String filename) throws Exception {
+        // Implementation to read JSON file
+        // This is a placeholder for actual file reading
+        return null;
+    }
+
+    private String getDefault(String key) {
+        return key.equalsIgnoreCase("name") ? "default" : "default";
+    }
+}
+```<|im_end|>

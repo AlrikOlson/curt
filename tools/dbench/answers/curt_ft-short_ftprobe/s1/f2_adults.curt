@@ -1,0 +1,2 @@
+lines = fs.read("users.txt") ? "" | .lines | keep x -> x.trim.len > 0
+print (lines | map x -> x.name | sort | join " ")

@@ -1,0 +1,2 @@
+s = "the cat sat on the mat with the cat"
+print (s.split " ").top 2 | map (w -> "{w} {w.count}")

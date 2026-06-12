@@ -1,0 +1,13 @@
+```python
+def describe(x):
+    if isinstance(x, int):
+        return "int " + str(x + 1)
+    elif isinstance(x, float):
+        return "float " + str(x)
+    elif isinstance(x, str):
+        return "str " + str(len(x))
+
+print(describe(42))
+print(describe(3.5))
+print(describe("abc"))
+```<|im_end|>

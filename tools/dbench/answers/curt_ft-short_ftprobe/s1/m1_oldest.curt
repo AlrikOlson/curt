@@ -1,0 +1,11 @@
+users = fs.read "users.txt" ? "" | .lines
+highest = 0
+for user in users {
+  parts = user.split " "
+  temp = parts[1].int
+  if temp > highest {
+    highest = temp
+    print (parts[0])
+    print " {temp}"
+  }
+}

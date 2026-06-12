@@ -1,0 +1,11 @@
+cfg = fs.read "app.cfg" | parse json
+ord = fs.read "orders.json" | parse json
+
+ PAYMENT = 10
+fed = 0
+paid = 0
+amt = 0
+
+for p in cfg.k.orders { for o in p.k.orders { amt += o.k.amount let v = o.k.v if v[PAYMENT] { fed += v[PAYMENT] paid += amt } amt = 0 } }
+
+print (cfg.k.name ": " | (fmt "%d paid, total %.2f" paid fed) | join " ")

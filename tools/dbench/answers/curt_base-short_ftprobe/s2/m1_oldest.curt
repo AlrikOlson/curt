@@ -1,0 +1,5 @@
+```bash
+awk 'NR>1 && $1 ~ /^[[:upper:]]/, NR==1 || $1==NR?' name age of the oldest valid user.awk
+```
+
+This script uses `awk` to find the oldest user from the `users.txt` file. It works by first checking if the line number (`NR`) is greater than 1, and if the name starts with an uppercase letter (`$1 ~ /^[[:upper:]]/`). Then, it checks if the name is the same as the first line (`NR==1`. Otherwise, it updates the `age`. The `awk` 'END' clause outputs the oldest user's name and age.<|im_end|>

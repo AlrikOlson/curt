@@ -1,0 +1,4 @@
+config = {'name': "svc", "orders": [{"amt": 23, "paid": true}, {"amt": 42, "paid": false}, {"amt": 17, "paid": true}]}
+total_paid = 0
+for order in config['orders'] { if order["paid"] { total_paid += order["amt"] } }
+print "{config['name']}: {config['orders'].len} paid, total {total_paid * 1.05}"

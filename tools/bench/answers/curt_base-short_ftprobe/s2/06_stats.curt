@@ -1,0 +1,8 @@
+```python
+from typing import List
+
+values : List[int] = [4,8,15,16,23]
+print("Minimum:", min(values))
+print("Maximum:", max(values))
+print("Average:", round(sum(values)/len(values)))
+```<|im_end|>

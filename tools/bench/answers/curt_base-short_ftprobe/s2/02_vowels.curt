@@ -1,0 +1,13 @@
+```c
+int main() {
+  const char str[] = "the quick brown fox jumps over the lazy dog";
+  int count = 0;
+  for (const char* p = str; *p != '\0'; p++) {
+    switch(*p) {
+      case 'a': case 'e': case 'i': case 'o': case 'u': count++;
+    }
+  }
+  printf("Count of vowels: %d\n", count);
+  return 0;
+}
+```<|im_end|>

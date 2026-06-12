@@ -1,0 +1,3 @@
+s = "pack my box with five dozen liquor jugs"
+print (s.words | top 1).len
+print (s.words | top 1).len / (s.words | top 1).len

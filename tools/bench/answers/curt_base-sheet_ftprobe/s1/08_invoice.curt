@@ -1,0 +1,8 @@
+widgets = {qty: 4, unit: 2.5}
+gizmos = {qty: 2, unit: 7.25}
+bolts = {qty: 10, unit: 0.1}
+items = widgets | map (i -> i.qty * i.unit)
+best totalPrice = items.sort <| (i1, i2) -> i1 * i1.qty - i2 * i2.qty
+best = items | top 1
+total = items.sum
+print total; print best.qty * best.unit

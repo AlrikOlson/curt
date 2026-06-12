@@ -1,0 +1,12 @@
+```python
+from collections import Counter
+
+text = "the cat sat on the mat with the cat"
+words = text.split()
+
+counts = Counter(words)
+
+most_frequent = counts.most_common(2)
+for word, count in most_frequent:
+    print(f"{count} {word}")
+```<|im_end|>

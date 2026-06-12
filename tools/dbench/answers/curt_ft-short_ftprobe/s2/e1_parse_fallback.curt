@@ -1,0 +1,3 @@
+vals = ["12", "x", "7", "-", "30"]
+print (vals | keep (x -> x.int ? true : false) | map x -> x.int ? 0 : 1 | sum)
+print (vals | keep (x -> x.int ? false : true) | len)

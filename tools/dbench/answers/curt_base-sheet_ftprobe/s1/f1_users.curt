@@ -1,0 +1,6 @@
+cnt = out = 0
+for v in (fs.read "users.txt").split '\n' | top -1 do
+  ok = match v { int id " " str name " " int age -> True, _ -> False }
+  out += age if ok else 0
+  cnt += 1
+print cnt, out / cnt

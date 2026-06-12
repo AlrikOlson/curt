@@ -1,0 +1,1 @@
+max `(xs.map (f: float -> (f * 9/5) + 32))`<|im_end|>

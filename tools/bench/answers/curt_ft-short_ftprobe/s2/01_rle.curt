@@ -1,0 +1,2 @@
+s = "aaabbcccca"
+print (s.chars | keep (c -> {[c, 1]} | fold (r -> (r + c).into "", r.last (e -> e.num) == 0) | map r -> e.c + e.n | join "")

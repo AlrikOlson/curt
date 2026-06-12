@@ -1,0 +1,2 @@
+fn users = fs.read "users.txt"
+max age = users.map { x -> int x.toString().chars[.last] }

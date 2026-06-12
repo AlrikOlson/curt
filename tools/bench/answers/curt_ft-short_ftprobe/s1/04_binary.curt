@@ -1,0 +1,8 @@
+for n in [13, 64] {
+  out = ""
+  while n > 0 {
+    out = (n % 2) + out
+    n = n / 2
+  }
+  print (out)
+}

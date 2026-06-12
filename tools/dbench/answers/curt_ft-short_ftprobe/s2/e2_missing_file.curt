@@ -1,0 +1,5 @@
+config = fs.read("missing.cfg") ? json.parse(config) ? {"name": "default", "missing": 1} : {"name": "default", "missing": 1} : {"name": "default", "missing": 1}
+print config["name"]
+
+port = json.parse(fs.read("app.cfg") ? json.parse(config) ? {"port": 0} : {"port": 0} : {"port": 0} ? "default"
+print port

@@ -1,0 +1,55 @@
+```java
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.time.*;
+import java.util.ArrayList;
+import java.util.Collections;
+
+public class UsersFilter {
+    public static void main(String[] args) {
+        // Read data from "users.txt"
+        ArrayList<String> users;
+        try (BufferedReader br = new BufferedReader(new FileReader("users.txt"))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line).append(' ');
+            }
+            users = new ArrayList<>(Collections.singletonList(sb.toString()));
+        } catch (IOException e) {
+            System.err.println("Error reading users.txt: " + e);
+            return;
+        }
+
+        // Filter users with age > 25
+        ArrayList<String> filteredUsers = new ArrayList<>();
+        for (String user : users) {
+            String[] parts = user.split(": ");
+            String name = parts[1];
+            String[] ageParts = parts[2].split(" ");
+            int age = Integer.parseInt(ageParts[0]);
+            if (age > 25) {
+                filteredUsers.add(name);
+            }
+        }
+
+        // Format the output for single spaces
+        sorted(filteredUsers, true, System.out::println);
+    }
+
+    // Helper function for benchmarking (not used in the main program)
+    private static void sorted(ArrayList<String> users, boolean ascending, Consumer<String> printer) {
+        String[] array = users.toArray(new String[0]);
+        if (ascending) {
+            Arrays.sort(array);
+        } else {
+            Arrays.sort(array, String::compareToIgnoreCase);
+        }
+        for (String name : array) {
+            printer.accept(name);
+        }
+    }
+}
+```<|im_end|>

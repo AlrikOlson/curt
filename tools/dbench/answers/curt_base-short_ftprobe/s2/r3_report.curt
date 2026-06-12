@@ -1,0 +1,11 @@
+```json
+with open('etc/app.cfg', 'r') as cfg, open('data/orders.json', 'r') as orders:
+    print(f"{cfg['name']}: <Paid order count> paid, total <Total paid amt>")
+    paid_count = 0
+    total_paid = 0
+    for order in orders:
+        row = json.loads(order)
+        paid_count += row['paid']
+        total_paid += row['total']
+    print(f"{paid_count} paid, total {total_paid}")
+```<|im_end|>

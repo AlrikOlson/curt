@@ -1,0 +1,13 @@
+describe v = {
+  if v.isint {
+    ret "int {v+1}"
+  }
+  if v.isfloat {
+    ret "float {v}"
+  }
+  ret "str {v.len}"
+}
+
+print (describe 42)
+print (describe 3.5)
+print (describe "abc")

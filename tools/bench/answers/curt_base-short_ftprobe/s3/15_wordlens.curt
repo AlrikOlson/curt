@@ -1,0 +1,22 @@
+```cpp
+using namespace std;  
+int main() {  
+    string s = "pack my box with five dozen liquor jugs";  
+    int count = 0, maxLength = 0, sum = 0;  
+    for (char c : s) {  
+        if (isspace(c)) {  
+            cout << max_length << endl;  
+            max_length = 0;  
+            sum += count;  
+            count = 0;  
+        } else if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {  
+            max_length = max(max_length, count);  
+            count++;  
+        }  
+    }  
+    cout << sum / count << endl;  
+    return 0;  
+}
+```
+
+Note: The provided solution uses `char` type for input collection, not `char*` for effective memory allocation. However, this code will work for the given problem.<|im_end|>

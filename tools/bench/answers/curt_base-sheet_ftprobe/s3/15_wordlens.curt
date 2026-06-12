@@ -1,0 +1,4 @@
+w = "pack my box with five dozen liquor jugs".split()
+mx = []; av = 0
+for x in w: mx.append(len(x)); av += mx[-1]
+print(mx[-1]); print(av // len(mx))

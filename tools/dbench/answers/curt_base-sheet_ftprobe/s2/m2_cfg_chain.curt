@@ -1,0 +1,5 @@
+cfg = fs.read "app.cfg" ? ""
+host = ("localhost" | cfg | top 1).str | lower
+port = (cfg | top 2 | keep 2).int
+debug = ("false" | cfg | top 3 | keep 1)..bool ? True : False
+prt (debug ? "debug" : "prod") (host + ":" + port)

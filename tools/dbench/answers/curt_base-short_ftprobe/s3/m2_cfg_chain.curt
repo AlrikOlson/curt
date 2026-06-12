@@ -1,0 +1,36 @@
+using System;
+using System.IO;
+
+public class Program
+{
+    public static void Main()
+    {
+        string[] lines = File.ReadAllLines("app.cfg");
+
+        string mode = "prod";
+        string host = "localhost";
+
+        bool debug;
+
+        foreach (string line in lines)
+        {
+            line = line.Trim();
+            if (line.StartsWith("debug"))
+            {
+                debug = true;
+                continue;
+            }
+            if (line.StartsWith("host"))
+            {
+                host = line.Replace("host=", "");
+                continue;
+            }
+            if (line.StartsWith("port"))
+            {
+                mode = "debug";
+            }
+        }
+
+        Console.WriteLine($"<mode> {mode} <host>:<port>");
+    }
+}

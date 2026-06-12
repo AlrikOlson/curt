@@ -1,0 +1,1 @@
+obj['run_length_encoding'] = ''.join([char + str(run_count) for char, run_count in zip(string, counts)])

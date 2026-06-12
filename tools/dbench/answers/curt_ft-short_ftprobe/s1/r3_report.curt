@@ -1,0 +1,3 @@
+cfg = json.read "app.cfg" ? {}
+orders = json.read "orders.json" ? []
+print "{cfg.name}: {orders | keep (r -> r.paid) | len} paid, total {orders | keep (r -> r.paid) | sum r.amount | round 2}"

@@ -1,0 +1,8 @@
+```java
+int sum = 0;
+for(String pair: "a=1,b=22,c=333".split(",")) {
+    String[] parts = pair.split("=");
+    sum += Integer.parseInt(parts[1]);
+}
+System.out.println(sum);
+```<|im_end|>

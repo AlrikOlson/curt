@@ -1,0 +1,5 @@
+conf = JSON.load(("missing.cfg") ? {} )
+print (conf["name"] ? "default")
+
+app = JSON.load("app.cfg")
+print (app["port"] ? "0")

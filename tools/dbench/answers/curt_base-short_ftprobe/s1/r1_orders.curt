@@ -1,0 +1,10 @@
+```json
+{
+  "orders": [
+    {"id": 1, "amt": 50, "status": "paid"},
+    {"id": 2, "amt": 30, "status": "paid"},
+    {"id": 3, "amt": 25, "status": "open"},
+    {"id": 4, "amt": 10, "status": "paid"}
+  ]
+}
+```<|im_end|>

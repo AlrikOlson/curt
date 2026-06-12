@@ -1,0 +1,5 @@
+xs = ["12", "x", "7", "-", "30"]
+parsed = xs | map x -> { if x.int == x.err then x.int else 0 }
+total = parsed.sum
+print total
+print (xs | keep x -> x.err)

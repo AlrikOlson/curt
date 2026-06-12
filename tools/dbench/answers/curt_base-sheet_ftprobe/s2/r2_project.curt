@@ -1,0 +1,1 @@
+out = wires(a -> a.id | sort desc by a.amt | top 1 | map .id ? "")

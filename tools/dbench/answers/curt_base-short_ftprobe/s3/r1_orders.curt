@@ -1,0 +1,6 @@
+let orders = require('./orders.json');
+let PaidOrders = orders.filter(x => x.status === 'paid').reduce(total => total + x.amt, 0);
+let openOrders = orders.filter(x => x.status === 'open').filter(o => o.id.startsWith('OPEN')).length;
+console.log(`${PaidOrders}\n${openOrders}`);
+
+// Require the orders.json file and use the filter and reduce methods to get the total of paid orders and the count of open orders

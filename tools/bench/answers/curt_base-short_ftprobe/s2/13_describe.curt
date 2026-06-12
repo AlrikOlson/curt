@@ -1,0 +1,6 @@
+```python
+describe = lambda v: (lambda t, v: str(t) + '(' + repr(v) + ')')(v.__class__.__name__, v)
+print(describe(42))
+print(describe(3.5))
+print(describe("abc"))
+```<|im_end|>

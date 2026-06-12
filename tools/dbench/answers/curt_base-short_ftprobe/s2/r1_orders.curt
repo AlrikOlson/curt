@@ -1,0 +1,8 @@
+```js
+const fs = require('fs');
+
+let orders = JSON.parse(fs.readFileSync('orders.json'));
+let totalPaid = orders.filter(order => order.status === 'paid').reduce((a, b) => a + b.amt, 0);
+console.log(totalPaid);
+console.log_orders.filter(order => order.status === 'open').length);
+```<|im_end|>

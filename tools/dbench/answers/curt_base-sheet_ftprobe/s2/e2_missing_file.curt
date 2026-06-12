@@ -1,0 +1,1 @@
+go (fs.read "missing.cfg" ? "default" : fs.read "app.cfg") ? .name : .port

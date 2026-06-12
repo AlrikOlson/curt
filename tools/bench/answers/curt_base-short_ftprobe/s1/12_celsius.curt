@@ -1,0 +1,5 @@
+for c in [12.5, 30.0, -5.0]:
+    f = (c * 9/5) + 32
+    if f > max:
+        max = f
+print(max)

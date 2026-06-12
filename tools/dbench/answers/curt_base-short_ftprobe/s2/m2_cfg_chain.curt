@@ -1,0 +1,7 @@
+```python
+port = cfg.getint('app', 'port')
+name = cfg.get('app', 'name')
+debug = cfg.getboolean('app', 'debug', fallback=True)
+
+print(f"<mode> {'debug' if debug else 'prod'} <host}:{port}")
+```<|im_end|>

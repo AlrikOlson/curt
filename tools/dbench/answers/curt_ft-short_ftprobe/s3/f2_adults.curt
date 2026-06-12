@@ -1,0 +1,4 @@
+lines = fs.read("users.txt") ? "" | .lines
+entries = lines | keep line -> line.trim.len > 0
+oldest = entries.sort (x, y) -> x.split(" ") | x -> x[1].int > y.split(" ") | x -> x[1].int > 25
+print (oldest | map x -> x.split(" ")[0] | join " ")

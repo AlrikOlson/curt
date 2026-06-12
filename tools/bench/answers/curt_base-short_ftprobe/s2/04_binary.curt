@@ -1,0 +1,6 @@
+```java
+int r13 = 13; int r64 = 64;
+for(int i=r13; i<=r64; i++){
+    System.out.println(Integer.toBinaryString(i));
+}
+```<|im_end|>

@@ -1,0 +1,2 @@
+```json
+`cat app.cfg | jq -r '.name'` cat orders.json | jq 'sum(.[] | if (.paid == "Y") then .amount end)'`<|im_end|>

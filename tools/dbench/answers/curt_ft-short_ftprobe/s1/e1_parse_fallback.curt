@@ -1,0 +1,4 @@
+xs = ["12", "x", "7", "-", "30"]
+ints = (xs | map (x -> int (x) ? 0))
+print ints.sum
+print (xs | keep (x -> int (x) ? true : false)).len

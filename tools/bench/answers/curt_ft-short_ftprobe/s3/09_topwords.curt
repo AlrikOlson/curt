@@ -1,0 +1,16 @@
+s = "the cat sat on the mat with the cat"
+print (s.split " ")
+words = s.split " "
+counts = {}
+for w in words {
+  if (counts[w] == "") {
+    counts[w] = 1
+  } else {
+    counts[w] += 1
+  }
+}
+pairs = counts.pairs
+pairs.sort (x, y -> y.v > x.v)
+for p in pairs {
+  print "{p.k} {p.v}"
+}

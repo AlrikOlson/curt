@@ -1,0 +1,8 @@
+users = []
+for line in fs.read("users.txt") ? "" {
+  parts = line.split " "
+  if parts.len > 1 {
+    users += {name: parts[0], age: parts[1].int}
+  }
+}
+print (users | top 1).name, (users | top 1).age

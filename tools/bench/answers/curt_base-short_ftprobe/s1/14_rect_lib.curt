@@ -1,0 +1,36 @@
+```c
+#include <stdio.h>
+
+typedef struct {
+  float width, height;
+} Rectangle;
+
+Rectangle.rectangle(float width, float height) {
+  Rectangle rect;
+  rect.width = width;
+  rect.height = height;
+  return rect;
+}
+
+float rectangle_area(Rectangle rect) {
+  return rect.width * rect.height;
+}
+
+float rectangle_perimeter(Rectangle rect) {
+  return 2 * (rect.width + rect.height);
+}
+
+Rectangle rectangle_scale(Rectangle r, float factor) {
+  return rectangle(r.width * factor, r.height * factor);
+}
+
+int main() {
+  Rectangle rect = rectangle(3.0, 4.0);
+  printf("area: %.2f\n", rectangle_area(rect));
+  printf("perimeter: %.2f\n", rectangle_perimeter(rect));
+
+  Rectangle related = rectangle_scale(rect, 2.0);
+  printf("related area: %.2f\n", rectangle_area(related));
+  return 0;
+}
+```<|im_end|>

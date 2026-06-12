@@ -1,0 +1,6 @@
+``` curt
+total = [12, "x", "7", "-", "30"].map try | float -> 0 + _ | f -> _ }.sum
+unparsed = [12, "x", "7", "-", "30"].map try | float | f -> 1
+print (total)
+print (unparsed.len)
+```<|im_end|>

@@ -1,0 +1,10 @@
+```go
+txt := "a=1,b=22,c=333"
+sum := 0.0
+for _, kv := tokenize(txt) {
+	if v, ok := strconv.ParseInt(kv[1], 10, 64); ok {
+		sum += v
+	}
+}
+println(sum)
+```<|im_end|>

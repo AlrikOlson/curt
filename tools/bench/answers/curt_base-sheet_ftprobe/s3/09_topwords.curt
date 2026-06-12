@@ -1,0 +1,3 @@
+for k in word count top 2 { print "{k} {v}" }
+ Perception count: 4
+Petractuality count: 3

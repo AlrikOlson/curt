@@ -1,0 +1,4 @@
+lines = fs.read("users.txt") ? "" | .lines
+users = lines | keep line -> !line.null
+oldest = users | top 1 (user -> user[1].int)
+print (oldest[0])

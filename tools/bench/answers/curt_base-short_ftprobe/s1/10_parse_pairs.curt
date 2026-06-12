@@ -1,0 +1,12 @@
+```python
+import re
+
+E = re.compile(r'=(\d+)')
+r = r'E(\d+)=\d+'
+
+numbers = {}
+for pair in E.findall(input()):
+    numbers[pair] = int(pair[1:-1])
+    
+print(sum(numbers.values()))
+```<|im_end|>

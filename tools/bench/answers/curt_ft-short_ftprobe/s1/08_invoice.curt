@@ -1,0 +1,5 @@
+items = {"widget": {"qty": 4, "price": 2.5}, "gizmo": {"qty": 2, "price": 7.25}, "bolt": {"qty": 10, "price": 0.1}}
+total = items["widget"]["qty"] * items["widget"]["price"] + items["gizmo"]["qty"] * items["gizmo"]["price"] + items["bolt"]["qty"] * items["bolt"]["price"]
+print "grand total: {total}"
+highest = items[items | map (k -> k + " (total " + (items[k]["qty"] * items[k]["price"]) + ")") | sort (x -> x | int)]
+print highest | map k -> k | join "\n"

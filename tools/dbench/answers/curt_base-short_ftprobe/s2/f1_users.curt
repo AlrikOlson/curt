@@ -1,0 +1,35 @@
+```java
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AgeCounter {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner("users.txt");
+        List<Long> ages = new ArrayList<>();
+        int validLines = 0;
+
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            if (!line.matches("\\d+\\s\\w+\\s\\d+")) {
+                continue;
+            }
+            validLines++;
+            String[] fields = line.split(" ");
+            long age = Long.parseLong(fields[2]);
+            ages.add(age);
+        }
+
+        scanner.close();
+
+        if (!validLines > 0) {
+            System.out.println("No valid users found.");
+        } else {
+            long sum = ages.stream().mapToLong(a -> a).sum();
+            double average = sum / validLines;
+            System.out.println("Valid users: " + validLines);
+            System.out.println("Average age: " + average);
+        }
+    }
+}
+```<|im_end|>

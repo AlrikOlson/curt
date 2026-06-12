@@ -1,0 +1,14 @@
+import sys
+sumtotal = 0
+highesttotal = 0
+itemname = ''
+for line in sys.stdin:
+    items, qty, unit_price = line.strip().split()
+    qty = int(qty)
+    unit_price = float(unit_price)
+    line_total = qty * unit_price
+    sumtotal += line_total
+    if line_total > highesttotal:
+        highesttotal = line_total
+        itemname = items
+print(f"{sumtotal:.2f}\n{itemname}\n")

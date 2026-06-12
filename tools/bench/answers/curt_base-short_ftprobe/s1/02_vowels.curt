@@ -1,0 +1,2 @@
+```python
+print(sum([w in "aeiou" for w in "the quick brown fox jumps over the lazy dog"]))```<|im_end|>

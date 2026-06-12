@@ -1,0 +1,3 @@
+users = fs.read("users.txt") ? "" | .lines
+opers = users | map user -> { user.age }
+print (opers | keep x -> x > 25 | map x -> x.name | join " ")

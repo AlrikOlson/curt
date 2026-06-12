@@ -1,0 +1,4 @@
+cfg = fs.read "app.cfg" ? ""
+mode = "prod" if cfg ? in "debug" else mode
+host = cfg .get "host", "localhost"
+print (mode) space (host) plus ":" space (cfg .opt "port")

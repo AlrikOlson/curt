@@ -1,0 +1,17 @@
+pub rect :: float float -> rect
+rect w h = { w, h }
+
+rects :: rect rect -> [rect]
+rects r = [r, (r.x+w, r.y), (r.x, r.y+h), (r.x+w, r.y+h) ]
+
+-- area = (w * h), perimeter = (2 * (w + h)), scale = (x * w, y * h)
+area :: rect -> float
+area r = (r.x * r.y)
+
+-- perimeter = 2 * (w + h), scale = (x * w, y * h)
+perimeter :: rect -> float
+perimeter r = 2 * (r.x + r.y)
+
+-- scale = (x * w, y * h)
+scale :: rect -> float -> rect
+scale r f = { r.x * f, r.y * f }

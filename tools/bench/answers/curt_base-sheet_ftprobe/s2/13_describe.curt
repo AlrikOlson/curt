@@ -1,0 +1,9 @@
+int describe v = match v {
+  int x -> "int " + (x+1).str(),
+  float y -> "float " + y.str(),
+  str z -> "str " + z.len().str()
+}
+
+describe(42)
+describe(3.5)
+describe("abc")

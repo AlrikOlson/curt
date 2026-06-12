@@ -1,0 +1,8 @@
+gcd a b = {
+  if b == 0 {
+    ret a
+  } else {
+    gcd b (a % b)
+  }
+}
+print (gcd 252 105)

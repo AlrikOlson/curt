@@ -1,0 +1,25 @@
+```java
+public class RunLengthEncoder {
+    public static void main(String[] args) {
+        String input = "aaabbcccca";
+        System.out.println(runLengthEncode(input));
+    }
+
+    public static String runLengthEncode(String str) {
+        StringBuilder encoded = new StringBuilder();
+        int count = 1;
+        char prevChar = str.charAt(0);
+        for (int i = 1; i < str.length(); i++) {
+            if (str.charAt(i) == prevChar) {
+                count++;
+            } else {
+                encoded.append(prevChar).append(count);
+                prevChar = str.charAt(i);
+                count = 1;
+            }
+        }
+        encoded.append(prevChar).append(count);
+        return encoded.toString();
+    }
+}
+```<|im_end|>

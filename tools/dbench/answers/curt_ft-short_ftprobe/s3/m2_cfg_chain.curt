@@ -1,0 +1,6 @@
+config = fs.read("app.cfg") ? "" : "{{.host}}:{{.port}}"
+name = config.name ? "" : "myapp"
+port = config.port ? "" : "1234"
+debug = config.debug ? "true" : "false"
+real_host = config.host ? (config.host == "localhost" ? "127.0.0.1" : config.host) : "localhost"
+print "<mode> {real_host}:{port}</mode>"

@@ -1,0 +1,5 @@
+```python
+words = "the cat sat on the mat with a cat".split()
+counts = {w: words.count(w) for w in set(words)}
+print(f"{counts['cat']} {counts['mat']}")
+```<|im_end|>

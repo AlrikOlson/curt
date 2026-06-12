@@ -1,0 +1,9 @@
+rect = {"width": 0, "height": 0, "area": 0, "perimeter": 0, "scale": 0}
+
+rect.area = rect.width * rect.height
+rect.perimeter = 2 * (rect.width + rect.height)
+rect.scale = (rx: rect) -> rect.scale * rx
+
+print (rect.area)
+print (rect.perimeter)
+print (rect.area (rect.scale 2))

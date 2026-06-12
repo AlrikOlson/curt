@@ -1,0 +1,3 @@
+j app.cfg | parse -d ",": "{k,v}" | filter k == "name" > n
+a orders.json | parse -d "\n{t,f,b,d,p,q,s}": "{(case ...),{...}}" | count >< n
+n.ss | scan parseInt ff | map -> `${n}: ${ord}s paid, total ${ss}`

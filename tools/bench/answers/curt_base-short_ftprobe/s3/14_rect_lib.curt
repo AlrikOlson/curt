@@ -1,0 +1,25 @@
+```c 
+typedef struct {
+    float width;
+    float height;
+} rect;
+
+#define AREA(r) r->width * r->height
+#define PERIMETER(r) 2 * (r->width + r->height)
+
+rect scale_rect(rect r, float factor) {
+    rect new_rect;
+    new_rect.width = r.width * factor;
+    new_rect.height = r.height * factor;
+    return new_rect;
+}
+
+int main() {
+    rect rect1 = {3.0f, 4.0f};
+    printf("Area = %.2f\n", AREA(rect1));
+    printf("Perimeter = %.2f\n", PERIMETER(rect1));
+    rect scaled_rect = scale_rect(rect1, 2.0f);
+    printf("Scaled area = %.2f\n", AREA(scaled_rect));
+    return 0;
+}
+```<|im_end|>

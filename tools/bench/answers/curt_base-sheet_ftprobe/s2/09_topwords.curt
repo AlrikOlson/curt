@@ -1,0 +1,2 @@
+w -> trim w, sortBy (by .f)
+w | top 2 .f

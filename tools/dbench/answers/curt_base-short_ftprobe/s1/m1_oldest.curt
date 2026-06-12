@@ -1,0 +1,1 @@
+awk 'FNR==NR && age{$0=age}END{if($1>$2)print $1}' users.txt

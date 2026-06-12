@@ -1,0 +1,26 @@
+```go
+package main
+
+import "fmt"
+
+func main() {
+    numbers := []int{4, 8, 15, 16, 23}
+    min := numbers[0]
+    max := numbers[0]
+    sum := 0
+
+    for _, num := range numbers {
+        if num < min {
+            min = num
+        }
+        if num > max {
+            max = num
+        }
+        sum += num
+    }
+
+    fmt.Println("Minimum:", min)
+    fmt.Println("Maximum:", max)
+    fmt.Println("Arithmetic Mean:", float64(sum)/float64(len(numbers)))
+}
+```<|im_end|>

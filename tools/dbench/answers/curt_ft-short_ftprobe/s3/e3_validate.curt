@@ -1,0 +1,5 @@
+a = [34, -2, 19, 150, 42, 27]
+ok = a | keep (x -> 0 <= x and x <= 120)
+print (ok.len)
+print ((a.len) - (ok.len))
+print (ok.sum)

@@ -533,3 +533,38 @@ verified edits cannot express. Honest qualifiers: n=32 single-sample
 cells (the unknown_name row wobbled 2/4 vs C's 3/4 on uncovered
 cells), and the candidate generators were built while the corpus was
 visible — the coverage number is in-distribution, not held-out.
+
+## curt-coder probe: weights beat the sheet at 1.5B (2026-06-12)
+
+The familiarity gap (measured three independent ways, think:148) gets
+its first weights-based attack. Route A ran **locally at $0**: mlx-lm
+LoRA on the 4-bit `Qwen2.5-Coder-1.5B-Instruct` base, Apple M5 Max
+(48 GB) — 3,000 iters over 12,004 execution-verified pairs (assembly:
+`tools/train/make_dataset.py`, manifest sha256 in
+`data/curtcoder/MANIFEST.json`; config: `tools/train/curtcoder-1.5b.yaml`,
+seed 42, completion-masked) in **~11 minutes**, peak 10.9 GB, val loss
+1.535 → 0.028. Three single-shot arms under the frozen bench protocol
+(3 samples, temp 1.0, mechanical grading; lanes frozen in
+`answers/curt_{base-sheet,base-short,ft-short}_ftprobe/`):
+
+| arm (1.5B, local) | bench solved | parse-valid | dbench solved |
+|---|---|---|---|
+| base + CHEATSHEET system | 1/45 | 11/45 | 0/30 |
+| base + short system | 0/45 | 2/45 | 0/30 |
+| **fine-tuned + short system** | **14/45** | **38/45** | 2/30 |
+
+**A 1.5B model with curt in its weights beats the same model reading
+the 2,018-token sheet 14× on solved tasks.** At this scale the sheet
+is nearly useless (1/45) — the model can't *apply* a language it's
+only just read — while one $0 epoch lifts parse-validity from 24% to
+84%. dbench stays near-floor for every arm: domain tasks (fs
+fixtures, multi-step state) exceed 1.5B capacity regardless of curt
+knowledge.
+
+Honest qualifiers: the adapter is template-brittle — on instruction
+phrasings outside its 16 training families it can emit garbage instead
+of code (observed directly; the bench's independent phrasing is why
+the 14/45 is still meaningful); valid-split loss measures
+in-distribution fit only; n=45 cells/arm, one base model, one seed.
+The brittleness diagnosis and the 7B scale-up + gap-task measurement
+are filed (`curt-coder-7b`).

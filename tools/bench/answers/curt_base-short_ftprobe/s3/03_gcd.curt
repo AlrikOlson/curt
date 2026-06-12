@@ -1,0 +1,17 @@
+```java
+public class Euclid {
+    public static int gcd(int a, int b) {
+        while (b != 0) {
+            int t = b;
+            b = a % b;
+            a = t;
+        }
+        return a;
+    }
+
+    public static void main(String[] args) {
+        int gcdResult = gcd(252, 105);
+        System.out.println(gcdResult);
+    }
+}
+```<|im_end|>

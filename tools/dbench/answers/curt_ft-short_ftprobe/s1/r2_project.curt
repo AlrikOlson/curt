@@ -1,0 +1,3 @@
+orders = fetch "orders.json" ? {}
+res = orders | map .amount
+print (res | top 2 | map .id | join ",")

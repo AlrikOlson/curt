@@ -1,0 +1,24 @@
+```java
+public class Main {
+    public static void main(String[] args) {
+        String sentence = "pack my box with five dozen liquor jugs";
+        String[] words = sentence.split(" ");
+        int longestWordLength = words[0].length();
+        int totalCharacterCount = 0;
+        
+        for (String word : words) {
+            int length = word.length();
+            if (length > longestWordLength) {
+                longestWordLength = length;
+            }
+            totalCharacterCount += length;
+        }
+        
+        int averageLength = totalCharacterCount / words.length;
+        
+        System.out.println(longestWordLength);
+        System.out.println(averageLength);
+    }
+}
+```
+This program splits the input sentence into words, calculates the length of the longest word, and then calculates the average length of all words. Finally, it prints the length of the longest word and the average word length.<|im_end|>

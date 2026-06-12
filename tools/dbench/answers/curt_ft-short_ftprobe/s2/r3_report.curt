@@ -1,0 +1,18 @@
+cfg = JSON.file("app.cfg") ? {} : cfg
+orders = JSON.file("orders.json") ? [] : orders
+
+names = {}
+for desc in orders {
+  info = desc["info"]
+  paid = desc["paid"]
+  amount = desc["amount"]
+  name = info["name"]
+  names[name] = (names[name] ? names[name] + paid : paid)
+}
+
+for p in persons {
+  name = p["name"]
+  count = names[name] ? names[name] : 0
+  total = count * p["price"]
+  print "<name>: {count} paid, total {total}"
+}

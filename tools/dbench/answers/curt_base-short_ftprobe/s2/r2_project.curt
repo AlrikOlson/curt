@@ -1,0 +1,1 @@
+jq -e '.orders[] | select(floor(.amount) >= 25) | .id, .amount' orders.json | sorted | uniq // "-"<|im_end|>

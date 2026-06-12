@@ -1,0 +1,2 @@
+for i in range(13) { print toBin i }
+for i in range(64) { print toBin i }

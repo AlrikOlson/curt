@@ -1,0 +1,12 @@
+s = "pack my box with five dozen liquor jugs"
+words = s.split " "
+max = words[0]
+total = 0
+for w in words {
+  total = total + w.len
+  if w.len > max.len {
+    max = w
+  }
+}
+print max
+print (total / words.len)

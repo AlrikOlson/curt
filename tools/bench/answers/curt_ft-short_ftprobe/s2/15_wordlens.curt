@@ -1,0 +1,6 @@
+s = "pack my box with five dozen liquor jugs"
+words = s.split " "
+longest = words.max (w -> w.len)
+print longest
+avg = words.len / words.len.float
+print avg.int

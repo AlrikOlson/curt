@@ -1,0 +1,4 @@
+lines = fs.read "users.txt"
+users = lines | map (xs -> ({name: xs[0], age: xs[1].parseInt}))
+oldest = users.max                     # 50 tok
+print oldest.name, oldest.age            # 18 tok

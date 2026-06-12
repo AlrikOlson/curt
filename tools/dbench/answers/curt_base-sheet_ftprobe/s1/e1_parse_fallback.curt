@@ -1,0 +1,2 @@
+sum(map(int, ["12", "x", "7", "-", "30"]))  # 49
+map(int, ["12", "x", "7", "-", "30"]) |> filter(x -> !isinstance(x, int)) |> count()  # 3

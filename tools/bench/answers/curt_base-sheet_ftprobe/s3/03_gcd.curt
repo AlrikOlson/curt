@@ -1,0 +1,11 @@
+gcd (252, 105) = do
+  _ = xs := xs[1]
+  print xs
+  a = xs[1]
+  b = xs[0]
+  while b > 0 do
+    print "a = " ++ a ++ "  b = " ++ b
+    b = xs.[0] % a
+    a = xs.[1] % b
+    break
+print"a/b = " ++ (a:.str) ++ " / " ++ (b:.str) ++ "=" ++ (a:b:/gcd(a,b):.str)

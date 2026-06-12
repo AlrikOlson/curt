@@ -1,0 +1,2 @@
+sum(0, [int(x) if x.isdigit() else 0 for x in list]) + 
+count([x for x in list]})

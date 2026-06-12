@@ -1,0 +1,6 @@
+n = 54                          # 15 tok — this isn't dynamic
+sum n of (x -> x.isupper())    # 30 tok
+if n > 48 then                  # 27 tok
+  count cnt = 0                #.kotlin doesn't have counters
+  for x in "aeiou" { while (x == cnt) ; cnt = x }        # 89 tok
+  print cnt                      # 7 tok

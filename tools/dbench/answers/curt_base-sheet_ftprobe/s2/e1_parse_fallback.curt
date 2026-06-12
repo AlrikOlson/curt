@@ -1,0 +1,7 @@
+val [unparseable, parsed] = "12", "x", "7", "-", "30" iterate
+      | x ->
+        match (fromString (decode x)) { None -> 0, Some n -> n }       # 8 tok
+
+(print'debug parse {unparseable}')                                # 8 tok
+(print'debug success {parsed} from {unparseable}')                  # 8 tok
+(print parsed + " " ++ unparseable`                    # 8 tok

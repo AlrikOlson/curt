@@ -1,0 +1,16 @@
+```python
+valid_count = 0
+invalid_count = 0
+sum_valid_ages = 0
+
+for age in [34, -2, 19, 150, 42, 27]:
+    if 0 <= age <= 120:
+        valid_count += 1
+        sum_valid_ages += age
+    else:
+        invalid_count += 1
+
+print(f"Valid count: {valid_count}")
+print(f"Invalid count: {invalid_count}")
+print(f"Sum of valid ages: {sum_valid_ages}")
+```<|im_end|>

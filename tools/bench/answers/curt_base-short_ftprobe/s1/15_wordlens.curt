@@ -1,0 +1,17 @@
+```java
+public static void main(String[] args) {
+    String sentence = "pack my box with five dozen liquor jugs";
+    String[] words = sentence.split(" ");
+    int maxLen = 0;
+    int sum = 0;
+    for (String word : words) {
+        if (word.length() > maxLen) {
+            maxLen = word.length();
+        }
+        sum += word.length();
+    }
+    System.out.println(maxLen);
+    System.out.println(Math.round((double) sum / words.length));
+}
+```
+This Java program splits the input sentence into words, calculates the length of the longest word, and then prints it along with the average length of the words.<|im_end|>

@@ -1,0 +1,3 @@
+cfg = "" ? "" fs.read "missing.cfg"
+name = cfg ? fs.fromJson cfg | top .name
+port = fs.fromJson cfg | top .port ? 0

@@ -1,0 +1,2 @@
+for j in seq(reverse [13 64])
+println(decimal(j))<|im_end|>

@@ -1,0 +1,1 @@
+n = 0; max_steps = 0; max_steps_n = 0; for n in range 1 11; x = n; c = 0; while x != 1; x = x % 2 == 0 ++c ? x / 2 : 3 * x + 1; if c > max_steps { max_steps = c; max_steps_n = n; } else if c == max_steps { c = n; if (c < max_steps_n) max_steps_n = c; } ++n } print (max_steps_n + " steps")

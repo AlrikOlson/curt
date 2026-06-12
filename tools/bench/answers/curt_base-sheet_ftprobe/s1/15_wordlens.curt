@@ -1,0 +1,9 @@
+``` curt
+greet name = "hi {name}"
+pack my box with five dozen liquor jugs
+l = "pack my box with five dozen liquor jugs".split()
+max w = (w := l[0]) in map (w, len - w)
+mean t = sum .len t / t.len - 1
+print max w
+print mean t
+```<|im_end|>

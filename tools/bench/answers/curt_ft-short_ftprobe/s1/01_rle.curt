@@ -1,0 +1,9 @@
+s = "aaabbcccca"
+for p in (s + "x").range(1, s.len + 2) {
+  r = 1
+  while p < s.len and s[p] == s[p - 1] {
+    p += 1
+    r += 1
+  }
+  print ((s[p - 1]).toString) + (r.toString)
+}

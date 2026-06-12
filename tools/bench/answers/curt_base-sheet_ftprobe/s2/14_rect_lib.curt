@@ -1,0 +1,17 @@
+rect type     S filled        x float, y float
+rect new width height -> rect S private   rect.setX rect.setX rect.setY rect.setY rect.append(rect.append)
+rect area -> float public    rect.width * rect.height
+rect perimeter -> float public S
+rect scale factor -> rect     rect.x * factor rect.y * factor rect.setX rect.setY rect.append(rect.append)
+rect dims     -> tuple public rect.x rect.y
+rect getX     -> float public rect.x
+rect.setY     -> float public rect.y
+rect append x y   -> rect S
+rect toString -> str private    "{" rect.x "," rect.y "}"
+
+rect r0 = rect new 3.0 4.0
+rect r1 = rect new 5.0 6.0
+
+rect printArea = print (r0.area)
+rect printPerimeter = print (r0.perimeter)
+rect printScal2 = print (rect scale 2.0 r0)

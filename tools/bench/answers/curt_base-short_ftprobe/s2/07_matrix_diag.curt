@@ -1,0 +1,8 @@
+```Go
+for i, v := range matrix {
+    if i == v {
+        sum += i
+    }
+}
+fmt.Println(sum)
+```<|im_end|>

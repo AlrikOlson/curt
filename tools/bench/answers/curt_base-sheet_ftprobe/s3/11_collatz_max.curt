@@ -1,0 +1,1 @@
+for n in [1..10] do steps = 0; while n > 1 do ++steps; if steps > best_steps then best_steps <- steps; best_n <- n; endwhile; print "{best_n} steps" endfor

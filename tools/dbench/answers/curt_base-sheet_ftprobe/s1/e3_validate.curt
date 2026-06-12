@@ -1,0 +1,4 @@
+count = sum any C <= A <= 120 for age in ages
+valid = len [A for A in ages if 0 <= A <= 120]
+invalid = len [A for A in ages if A > 120 or A < 0]
+print (valid, invalid, sum valid)

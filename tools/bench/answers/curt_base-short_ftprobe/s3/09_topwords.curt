@@ -1,0 +1,1 @@
+for w in ("with the cat") split(): print(f"{w} {w.count():5}")<|im_end|>

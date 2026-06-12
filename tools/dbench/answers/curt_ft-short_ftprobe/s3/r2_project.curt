@@ -1,0 +1,2 @@
+orders = js.eval("r.json('orders.json')")
+print ((orders | keep (o -> o.amt > 25) | top 1 (o -> o.amt) | map (o -> o.id) | join ","))

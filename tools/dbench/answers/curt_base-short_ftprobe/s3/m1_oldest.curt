@@ -1,0 +1,11 @@
+```python
+with open('users.txt') as f:
+    max_age = float('-inf')
+    oldest_name = None
+    for line in f:
+        name, age = line.strip().split()
+        age = int(age)
+        if age > max_age:
+            max_age = age
+            oldest_name = name
+```<|im_end|>

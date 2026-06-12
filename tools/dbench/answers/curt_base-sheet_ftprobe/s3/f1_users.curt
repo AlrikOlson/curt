@@ -1,0 +1,11 @@
+total_users = 0
+sum_age = 0
+
+for line in (fs.read "users.txt") {                        # read lines
+    id, name, age = line.split()                           # split lines
+    total_users += 1                                          # count lines
+    if age.isnumeric():                                    # if age is numeric
+        sum_age += int(age)                                    # sum
+
+if total_users > 0:                                         # if any valid users
+    print ((total_users, sum_age / total_users)).map .map .float # average

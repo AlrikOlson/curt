@@ -1,0 +1,12 @@
+python
+import json
+
+with open('orders.json') as orders, open('app.cfg') as cfg:
+    data = json.load(cfg)
+    order_count = 0
+    total_paid = 0
+    for order in orders:
+        if order['paid']:
+            order_count += 1
+            total_paid += order['amt']
+    print(f"{data['name']}: {order_count} paid, total {total_paid:.2f}")

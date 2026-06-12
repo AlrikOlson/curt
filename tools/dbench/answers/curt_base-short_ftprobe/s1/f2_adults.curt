@@ -1,0 +1,1 @@
+(for r in `cut -d ' ' -f1,2 users.txt` | sort -u; do [ "${r[1]}" -gt 25 ] && echo "${r[0]}" || :; done)

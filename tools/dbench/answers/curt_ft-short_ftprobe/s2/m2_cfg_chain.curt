@@ -1,0 +1,4 @@
+cfg = fs.read "app.cfg" ? "{port: 42, name: 'myapp', debug: false}"
+print ("prod")
+if cfg.debug { print "debug " } else { print "prod" }
+print (" {host: #{cfg.host}, port: #{cfg.port}}"

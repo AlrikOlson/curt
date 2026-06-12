@@ -1,0 +1,7 @@
+total = 0
+open = 0
+
+for o in json.read "orders.json" | map { if o["status"] == "paid" { total += o["amt"] } else { if o["status"] == "open" { open += 1 } } } }
+
+print total
+print open

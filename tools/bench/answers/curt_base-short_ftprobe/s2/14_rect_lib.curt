@@ -1,0 +1,35 @@
+```cpp
+const float PI = 3.1415;
+#define PI 3.1415
+typedef struct {
+    float width;
+    float height;
+} rectangle;
+
+rectangle area(rectangle r) {
+    return (struct rectangle){.width = r.width, .height = r.height};
+}
+
+rectangle perimeter(rectangle r) {
+    return (struct rectangle){.width = r.width * 2, .height = r.height * 2};
+}
+
+rectangle scale(rectangle r, float factor) {
+    return (struct rectangle){.width = r.width * factor, .height = r.height * factor};
+}
+
+void init(rectangle *r, float w, float h) {
+    *r = (struct rectangle){.width = w, .height = h};
+}
+
+int main() {
+    rectangle r = {0, 0};
+    init(&r, 3.0, 4.0);
+    printf("%.2f\n", area(r).width * area(r).height);
+    printf("%.2f\n", perimeter(r).width + perimeter(r).height);
+    init(&r, area(r).width * 2.0, area(r).height * 2.0);
+    printf("%.2f\n", area(r).width * area(r).height);
+    return 0;
+}
+```
+This complies to your directory structure.<|im_end|>

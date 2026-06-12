@@ -1,0 +1,19 @@
+``` curt
+e = "widget (2, 2.5), gizmo (2, 7.25), bolt (10, 0.1)"
+w = e.split(",")
+total = 0
+for r in w:
+  q,u = r.split("(")
+  q,u = int(q), float(u)
+  total += q*u
+print total
+x = w[0]
+for r in w[1:]:
+  q,u = r.split("(")
+  q,u = int(q), float(u)
+  i = float(total * (q/u))
+  if i > x:
+    x = i
+    z = r.split(" ")[1]
+print z
+```<|im_end|>

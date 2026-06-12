@@ -1,0 +1,37 @@
+```java
+import org.json.JSONObject;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class ConfigReader {
+    public static void main(String[] args) {
+        String jsonName = "missing.cfg";
+        JSONObject config;
+        try {
+            config = new JSONObject(new FileReader(jsonName));
+        } catch (IOException e) {
+            System.out.println("default");
+        }
+
+        if (config.has("name")) {
+            System.out.println(config.getString("name"));
+        } else {
+            System.out.println("default");
+        }
+
+        if (config.has("port")) {
+            System.out.println(config.getInt("port"));
+        } else {
+            System.out.println("0");
+        }
+
+        jsonName = "app.cfg";
+        try {
+            config = new JSONObject(new FileReader(jsonName));
+            System.out.println(config.getInt("port"));
+        } catch (IOException e) {
+            System.out.println("default");
+        }
+    }
+}
+```<|im_end|>

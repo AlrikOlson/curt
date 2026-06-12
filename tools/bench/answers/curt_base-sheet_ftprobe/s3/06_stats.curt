@@ -1,0 +1,1 @@
+all [g=reduce min max avg $ [4, 8, 15, 16, 23]]

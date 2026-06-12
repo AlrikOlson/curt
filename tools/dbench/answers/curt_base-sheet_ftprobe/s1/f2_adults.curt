@@ -1,0 +1,4 @@
+|{
+    "in": "users.txt",
+    "cmd": "for u in users.sort .age > 25 { name u | }" 
+}/><|im_end|>

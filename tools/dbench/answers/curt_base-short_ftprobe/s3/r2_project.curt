@@ -1,0 +1,4 @@
+```json
+cd /path/to/orders.json
+awk '$3 > 25 {print $1}' | sort -nr | head -n 1
+```<|im_end|>

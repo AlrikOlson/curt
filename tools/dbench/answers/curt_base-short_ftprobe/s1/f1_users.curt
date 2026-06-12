@@ -1,0 +1,18 @@
+```java
+public static void main(String[] args) throws Exception {
+    int count = 0, sum = 0;
+    try (BufferedReader reader = new BufferedReader(new FileReader("users.txt"))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] fields = line.split("\\s+");
+            if (fields.length == 3 && fields[2].matches("\\d+")) {
+                int age = Integer.parseInt(fields[2]);
+                sum += age;
+                count++;
+            }
+        }
+    }
+    System.out.println(count);
+    System.out.println(sum > 0 ? (double) sum / count : 0);
+}
+```<|im_end|>

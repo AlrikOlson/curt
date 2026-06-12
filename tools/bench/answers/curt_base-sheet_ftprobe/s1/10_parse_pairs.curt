@@ -1,0 +1,6 @@
+sum = 0
+for k, v in "a=1,b=22,c=333".split(","):   # split keys & values
+    if k.isdigit():                            # check first if it is int
+        sum += int(v)                        # add int value to sum
+
+print sum                             # output sum

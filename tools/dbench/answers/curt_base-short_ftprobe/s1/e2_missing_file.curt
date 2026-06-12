@@ -1,0 +1,14 @@
+```python
+import json
+
+try:
+    name, port = {k: v for k, v in json.load(open("missing.cfg")).items()}['name'], 0
+except FileNotFoundError:
+    name = "default"
+
+print(name)
+try:
+    print(json.load(open("app.cfg"))['port'])
+except FileNotFoundError:
+    print("missing")
+```<|im_end|>

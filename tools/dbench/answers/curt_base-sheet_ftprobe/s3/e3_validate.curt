@@ -1,0 +1,4 @@
+let validCount = toplevel (34..27) | filter isValid | count
+let invalidCount = toplevel (34..27) | filter isValid | complement
+let sumValidAges = toplevel (34..27) | filter isValid | mapTo sum
+printf ("valid: %d invalid: %d sum: %d\n", validCount, invalidCount, sumValidAges)

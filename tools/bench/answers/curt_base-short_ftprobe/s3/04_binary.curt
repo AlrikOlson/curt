@@ -1,0 +1,6 @@
+for i in 13, 64:
+    bin_output = ""
+    while i:
+        bin_output = str(i % 2) + bin_output
+        i = i // 2
+    print(bin_output)

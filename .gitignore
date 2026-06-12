@@ -16,3 +16,6 @@ node_modules/
 .vscode/
 .ci-venv/
 data/external/
+.train-venv/
+data/curtcoder/*.jsonl
+data/curtcoder/adapters-*/

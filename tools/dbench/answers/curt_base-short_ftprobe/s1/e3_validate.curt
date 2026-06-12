@@ -1,0 +1,22 @@
+```c
+#include <stdio.h>
+
+int main(int argc, char *argv[]) {
+    int ages[] = {34, -2, 19, 150, 42, 27};
+    int validCount = 0;
+    int invalidCount = 0;
+    int sumOfValidAges = 0;
+
+    for (int i = 0; i < 6; i++) {
+        if (ages[i] >= 0 && ages[i] <= 120) {
+            validCount++;
+            sumOfValidAges += ages[i];
+        } else {
+            invalidCount++;
+        }
+    }
+
+    printf("%d\n%d\n%d\n", validCount, invalidCount, sumOfValidAges);
+    return 0;
+}
+```<|im_end|>

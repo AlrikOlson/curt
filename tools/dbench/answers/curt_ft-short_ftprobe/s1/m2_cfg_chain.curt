@@ -1,0 +1,10 @@
+try (iof s = io.from "app.cfg") {
+  if (s.err) {
+    s.err ? print "error: {s}" : print "not a config file"
+    return
+  }
+  var conf = s.text
+  var parts = conf.split " "
+  print parts.len > 0 ? "<mode> {parts[0]} <host>:{parts[1]}" : ""
+  print (parts.len > 2 ? parts[2] : "")
+}

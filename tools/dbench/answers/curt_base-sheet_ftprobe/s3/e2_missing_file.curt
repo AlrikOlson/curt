@@ -1,0 +1,9 @@
+cfg = fs.read "missing.cfg" ? "default"    # value will be "default"
+data = (fs.read cfg)?                     # may yield error
+ok = match data {
+  err e -> "default",                  # default if cfg read failed
+  str s -> s,                         # ok if conf has a string
+  _ -> "default"                    # default if conf is unknown
+}
+port = fs.read "app.cfg" ? 0             # default will be 0 if config is missing
+print (ok | top 1 "port")                           # 7 tokens

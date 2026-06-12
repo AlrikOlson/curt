@@ -1,0 +1,5 @@
+orders = JSON.parse fs.read "orders.json" ? "[]"
+paid = orders | keep .status == "paid" | map .amt | sum
+open = orders | keep .status == "open" | len
+print paid
+print open

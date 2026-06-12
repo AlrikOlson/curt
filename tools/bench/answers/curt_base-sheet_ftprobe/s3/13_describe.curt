@@ -1,0 +1,5 @@
+``` curt
+for v in [42, 3.5, "abc"] { print (v | match { float x -> "float " + show x,
+   int     x -> "int "  + show x,
+   str     x -> "str "  + show x }).ln }
+```<|im_end|>

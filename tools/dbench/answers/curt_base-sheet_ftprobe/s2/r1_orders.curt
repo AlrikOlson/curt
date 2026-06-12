@@ -1,0 +1,19 @@
+import cat
+out = ""
+total = 0
+acc seen = set
+
+fn total_seen = match (seen | append x) {.seen} /=| prod acc = acc take x | else 0 | end
+
+for o in fs.read "orders.json" {
+    o = o|.json
+    if o.status == "paid" {
+        out = out + " paid: " + o.amt + "\n"
+        total = total_seen(total + o.amt)
+    } else if o.status == "open" {
+        out = out + " open: " + o.amt + "\n"
+        acc = seen @@ new acc o
+    }
+}
+print out
+print seen.size

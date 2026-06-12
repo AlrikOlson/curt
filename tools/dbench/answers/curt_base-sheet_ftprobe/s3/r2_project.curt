@@ -1,0 +1,3 @@
+out = ""; sep = ""
+for o in orders { if o.amt > 25 { out = out + sep + o.id; sep = "," } }
+print out

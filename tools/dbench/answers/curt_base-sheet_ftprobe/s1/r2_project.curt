@@ -1,0 +1,3 @@
+vals = orders
+agg = agg(vals.promis"(amt) ", tech: (acc, ordt, amt) -> acc + ordt.amt)
+sort ... | top 1 `agg[0]`<|im_end|>

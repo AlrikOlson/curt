@@ -1,0 +1,11 @@
+type Int, Float, str
+
+describe x = match x { 
+  int n -> "int " ++ n.int + 1, 
+  float f -> "float " ++ f.float,
+  str s -> "str " ++ s.len
+}
+
+describe 42
+describe 3.5
+describe "abc"

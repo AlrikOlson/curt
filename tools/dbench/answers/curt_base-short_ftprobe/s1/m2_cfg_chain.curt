@@ -1,0 +1,2 @@
+port=8080; name=WebApp; debug=false
+<mode> prod</mode> <host>:<port>127.0.0.1:8080</host>:<port>

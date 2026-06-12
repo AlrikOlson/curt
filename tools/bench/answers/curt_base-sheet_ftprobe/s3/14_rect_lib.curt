@@ -1,0 +1,10 @@
+``` curt
+define rectangle @ bbox: { t: [0, 0], w: bbox.width, h: bbox.height }
+def area r = r.w * r.h
+def perimeter r = 2 * (r.w + r.h)
+def scale r factor = rectangle { t: r.t, w: r.w * factor, h: r.h * factor }
+
+"fmt %f %f\n" (area (rectangle { w: 3.0, h: 4.0 }))
+"fmt %f %f\n" (perimeter (rectangle { w: 3.0, h: 4.0 }))
+"fmt %f %f\n" (area (scale (rectangle { w: 3.0, h: 4.0 }) 2.0))
+```<|im_end|>

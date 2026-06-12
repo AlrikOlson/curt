@@ -1,0 +1,15 @@
+io go
+file = io.read "users.txt";
+count = 0;
+age_avg = 0.0;
+match file { lines ls ->
+    for line in ls {
+        if (line =~ /^\d+\s+\w+\s+\d+/) {
+            id, name, age = line.split " ";
+            count := count + 1;
+            age_avg := age_avg + age .float;
+        }
+    }
+    print "count: ", count;
+    print "avg: ", age_avg / count;
+}

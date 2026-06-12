@@ -1,0 +1,15 @@
+```java
+int count = 0;
+for(char c : "the quick brown fox jumps over the lazy dog".toCharArray()) {
+    switch(c) {
+        case 'a':
+        case 'e':
+        case 'i':
+        case 'o':
+        case 'u':
+            count++;
+            break;
+    }
+}
+System.out.println(count);
+```<|im_end|>

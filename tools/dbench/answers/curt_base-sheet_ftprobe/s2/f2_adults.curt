@@ -1,0 +1,1 @@
+for u in user.map(.age > 25).sort { u } { u.n }<|im_end|>

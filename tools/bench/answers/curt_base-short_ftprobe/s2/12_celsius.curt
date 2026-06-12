@@ -1,0 +1,7 @@
+CelsiusArray = [12.5, 30.0, -5.0]
+FahrenheitArray = []
+for Celsius in CelsiusArray:
+    Fahrenheit = Celsius * 9/5 + 32
+    FahrenheitArray.append(Fahrenheit)
+maxFahrenheit = max(FahrenheitArray)
+print(maxFahrenheit)

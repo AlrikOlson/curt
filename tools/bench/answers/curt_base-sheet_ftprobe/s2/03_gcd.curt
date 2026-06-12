@@ -1,0 +1,7 @@
+x = 252
+y = 105
+while y:
+    t = y
+    y = x % y
+    x = t
+print x

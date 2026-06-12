@@ -1,0 +1,1 @@
+cat orders.json | jq -r '.[] | select(.amt > 25) | .id' | sort | uniq | xargs printf '%s, '<|im_end|>

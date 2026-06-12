@@ -1,0 +1,13 @@
+cfg = fs.read "app.cfg" ? ""    # None if file not found
+orders = fs.read "orders.json"
+
+paidCount = 0
+total paid = 0.0
+for o in orders :                 # over each order
+  paidCount += c "is_paid" o      # count paid orders
+  total paid += c "paid" o       # total paid amount
+
+print c("<{cfg.name}>") $ # print app name
+c("<paid {paidCount} paid,") $ # print paid count
+c("total {total paid | fmt .2f}")  # print total amount
+c("dollars>")                 # print unit

@@ -1,0 +1,5 @@
+words = "the cat sat on the mat with the cat".split " ";
+Freqs = {};
+maxocs = 0;
+for w in words { if w in Freqs then Freqs[w] = Freqs[w] + 1 else Freqs[w] = 1; maxocs = f(maxocs, Freqs[w]); }
+for w in sortBy [(...), StdLib.Fn._ > 1 make _ ...] Freqs } { print w " {" + Freqs[w] + "}" }

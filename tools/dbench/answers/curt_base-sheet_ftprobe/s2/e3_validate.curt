@@ -1,0 +1,4 @@
+for age in [34, -2, 19, 150, 42, 27] do if age>=0 && age<=120 then val+=1 else val-=1 end
+print (val,"violations","");
+for x in [34, -2, 19, 150, 42, 27] do if x>=0 && x<=120 then acc+=x end endif
+print (acc)

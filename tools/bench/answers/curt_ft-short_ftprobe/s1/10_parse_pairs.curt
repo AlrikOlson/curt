@@ -1,0 +1,8 @@
+xs = "a=1,b=22,c=333"
+parts = xs.split ","
+total = 0
+for p in parts {
+  pairs = p.split "="
+  total += (pairs[1]).int
+}
+print "total: {total}"

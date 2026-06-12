@@ -1,0 +1,4 @@
+dos = fs.read "orders.json"?  # read orders.json, optional error handling
+o = | json parse dos {} |   # read as JSON object array
+sum x -> x.amt | all filter |  # sum up amounts of 'paid' orders
+count x -> x.status == "open" | filter # count of 'open' orders

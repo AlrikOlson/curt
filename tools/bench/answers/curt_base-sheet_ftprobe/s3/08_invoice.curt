@@ -1,0 +1,1 @@
+whats (widget, gizmo, bolt) = type triang>; r = largest (s | top 1 .amt * .qty); print r.text, " pays", r.pkts;<|im_end|>

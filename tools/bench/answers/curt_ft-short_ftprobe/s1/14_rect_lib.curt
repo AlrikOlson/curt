@@ -1,0 +1,6 @@
+area rect = width * height
+perimeter rect = 2 * (width + height)
+scale rec factor = rec * (width * factor). (height * factor)
+print (area (3.0, 4.0))
+print ((perimeter (3.0, 4.0)))
+print (area (scale (3.0, 4.0, 2.0)))

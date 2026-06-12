@@ -1,0 +1,8 @@
+```python
+age_list = [34, -2, 19, 150, 42, 27]
+valid_count = sum(age >= 0 and age <= 120 for age in age_list)
+invalid_count = len(age_list) - valid_count
+sum_valid = sum(age for age in age_list if 0 <= age <= 120)
+
+print(valid_count, invalid_count, sum_valid)
+```<|im_end|>
