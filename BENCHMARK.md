@@ -337,3 +337,40 @@ tokens to curt's 2,018 (7.4×); Python won the control on every cost
 axis (54/54 at $0.0008/solved). Full analysis, cache-field evidence,
 and the pre-registration-defect note: [docs/VS-ZERO.md](docs/VS-ZERO.md).
 Reproduce: `.ci-venv/bin/python tools/bench/headtohead.py report`.
+
+## Ceremony fraction: an instrument tested against its own pre-registration (2026-06-12)
+
+Hypothesis: a language's agent output economy is predictable without
+running any model, from its **ceremony fraction** — the share of token
+occurrences whose token type appears in >50% of that language's solved
+programs across distinct tasks. Definition, prediction, and refutation
+condition were frozen before computation; everything below derives
+from committed artifacts at zero API cost
+(`tools/bench/ceremony.py`).
+
+| set | programs | ceremony fraction | measured median out-tok |
+|---|---|---|---|
+| zerolang (h2h solved) | 9 | **0.772** | 168 |
+| go (corpus) | 6 | 0.431 | — |
+| rust (corpus) | 6 | 0.411 | — |
+| curt (h2h solved) | 9 | 0.314 | 35 |
+| python (h2h solved) | 9 | 0.196 | 40 |
+
+**Verdict against the frozen prediction: partial refutation, reported
+as such.** The load-bearing claim holds — Zerolang's ceremony share is
+~4× Python's and ~2.5× curt's, a one-number static account of its 168
+vs 35–40 measured output tokens. But the predicted full ordering broke
+at the last link: curt's fraction *exceeds* Python's by 11.8 points,
+triggering the pre-registered refutation condition. Post-hoc diagnosis,
+labeled as post-hoc: the share-based metric conflates ceremony with
+brevity — curt programs are so short (~41 tokens) that shared syntax
+dominates the denominator; the metric punishes the very compression it
+meant to reward. An absolute variant (ceremony tokens per program:
+zerolang ≈131, go/rust ≈73, curt ≈13, python ≈8) matches the measured
+ranks exactly, but it was derived after seeing the data and earns no
+claim until it survives its own pre-registered test on fresh material.
+
+The instrument is therefore useful for what it was most needed for —
+screening ceremony-heavy designs before any API spend — and wrong in a
+way that teaches: for dense languages, measure absolute ceremony cost,
+not ceremony share.
