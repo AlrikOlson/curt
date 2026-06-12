@@ -1,15 +1,5 @@
 # Roadmap — cmm-d31a18
 
-## In progress
-
-- [~] **corpus-synth — toolchain-verified LLM synthesis for the curt-native domains the transpiler can't reach** — Route #2 of the corpus-scaling directive (think:86, pinned). The Python-derived corpus structurally UNDERREPRESENTS curt's distinctive features — fs/net capability code, match/err narrowing, `?` rescue chains, raw strings, map field access — because they have no transpilable Python twin. Recipe: OSS-Instruct-style seeded synthesis (Magicoder, ICML 2024, arXiv 2312.02120: 75K pairs seeded from real code snippets to 'mitigate inherent LLM bias... more diverse, realistic, controllable'; the ACM codegen survey 10.1145/3747588 ranks Self-/Evol-/OSS-Instruct as the proven synthetic methods). For curt: each generation request is seeded with (a) a real Python snippet to reframe as a curt task, (b) a corpus/cheatsheet program + perturbation instruction, or (c) a target-feature directive (one of the underrepresented verbs/forms) — model emits (instruction, curt program, fixture files if fs); the TOOLCHAIN is the rejection filter: check → run (with --fs fixtures where needed) → output self-consistency (run twice, byte-identical; no Python oracle exists here, so determinism + checker + a quality-sample manual audit stand in). Anti-slop: dedup by normalized AST, per-feature quotas so the set can't collapse onto easy forms, reject programs the checker flags or that are byte-identical modulo literals to an existing pair. Rejection rate is published, expected well above 0%. Generator model: claude (sonnet-tier) via API, ~10-20k attempts ≈ $20-50. Decontamination + source-held-out split same as corpus-real. Output: data/py2curt/pairs-synth.jsonl.gz + REPORT with per-feature coverage table.
-  - deps: py2cmm
-  - acceptance: Seeded generation harness committed; every pair carries provenance (seed type, model, prompt template id)
-  - acceptance: Toolchain filter enforced: check+run pass, deterministic double-run, AST dedup, per-feature quotas; rejection taxonomy published
-  - acceptance: Per-feature coverage table shows the previously-underrepresented forms (fs/net, match/err, ?, raw strings, map field access) at meaningful counts
-  - acceptance: Decontamination scan vs both eval suites passes; held-out split frozen
-  - acceptance: Manual quality audit of a random 50-pair sample recorded in the report
-
 ## Pending
 
 - [!] **grammar-decode B/OpenAI — custom-tools CFG conformance run (needs OPENAI_API_KEY)** — The closed-API leg of the refreshed grammar-decode (think:15): submit the real cmm Lark grammar to OpenAI custom tools, measure conformance over >=100 generations (community caveat: not guaranteed), document grammar-size/complexity limits. BLOCKED until the user provides OPENAI_API_KEY (probed absent 2026-06-10).
@@ -175,6 +165,13 @@
   - acceptance: pipeline_real rerun: yield strictly increases; new taxonomy published
   - acceptance: Frozen bench+dbench regrade: zero regression
   - acceptance: SPEC + CHEATSHEET updated under the 2,500-token ceiling; transpiler maps every admitted feature
+- [x] **corpus-synth — toolchain-verified LLM synthesis for the curt-native domains the transpiler can't reach** — Route #2 of the corpus-scaling directive (think:86, pinned). The Python-derived corpus structurally UNDERREPRESENTS curt's distinctive features — fs/net capability code, match/err narrowing, `?` rescue chains, raw strings, map field access — because they have no transpilable Python twin. Recipe: OSS-Instruct-style seeded synthesis (Magicoder, ICML 2024, arXiv 2312.02120: 75K pairs seeded from real code snippets to 'mitigate inherent LLM bias... more diverse, realistic, controllable'; the ACM codegen survey 10.1145/3747588 ranks Self-/Evol-/OSS-Instruct as the proven synthetic methods). For curt: each generation request is seeded with (a) a real Python snippet to reframe as a curt task, (b) a corpus/cheatsheet program + perturbation instruction, or (c) a target-feature directive (one of the underrepresented verbs/forms) — model emits (instruction, curt program, fixture files if fs); the TOOLCHAIN is the rejection filter: check → run (with --fs fixtures where needed) → output self-consistency (run twice, byte-identical; no Python oracle exists here, so determinism + checker + a quality-sample manual audit stand in). Anti-slop: dedup by normalized AST, per-feature quotas so the set can't collapse onto easy forms, reject programs the checker flags or that are byte-identical modulo literals to an existing pair. Rejection rate is published, expected well above 0%. Generator model: claude (sonnet-tier) via API, ~10-20k attempts ≈ $20-50. Decontamination + source-held-out split same as corpus-real. Output: data/py2curt/pairs-synth.jsonl.gz + REPORT with per-feature coverage table.
+  - deps: py2cmm
+  - acceptance: Seeded generation harness committed; every pair carries provenance (seed type, model, prompt template id)
+  - acceptance: Toolchain filter enforced: check+run pass, deterministic double-run, AST dedup, per-feature quotas; rejection taxonomy published
+  - acceptance: Per-feature coverage table shows the previously-underrepresented forms (fs/net, match/err, ?, raw strings, map field access) at meaningful counts
+  - acceptance: Decontamination scan vs both eval suites passes; held-out split frozen
+  - acceptance: Manual quality audit of a random 50-pair sample recorded in the report
 
 ## Backlog
 
