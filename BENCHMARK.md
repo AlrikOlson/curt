@@ -214,3 +214,29 @@ Every stdlib verb and operator is a single token in bare, dotted, and
 piped positions on o200k, cl100k, and Qwen2.5-Coder. The Anthropic
 count-tokens lane is implemented and key-gated (`ANTHROPIC_API_KEY`);
 run it before quoting Anthropic-specific numbers.
+
+## Long-form exhibit (flagship-logmill, 2026-06-11)
+
+Every program above is short (the corpus maximum was 28 lines). The
+flagship, [corpus/22_logmill.curt](corpus/22_logmill.curt), is the
+first long-form datapoint: 126 lines, a JSON-driven log-analytics
+engine exercising 18 constructs in one coherent program, with four
+golden invocations pinning every spec-resolution path.
+
+| program | curt (o200k) | python twin | py/curt |
+|---|---|---|---|
+| 22_logmill (126 lines) | 982 | 1033 | **1.05×** |
+
+The corpus median moves 1.12× → **1.10× vs Python (n=22)**. The
+flagship's own 1.05× sits *below* that median — consistent with the
+idiom-density finding above: curt's density advantage is concentrated
+in ceremony domains (errors, I/O, records), and a long program dilutes
+those with identifier-heavy report lines that cost the same in any
+language. Published as measured.
+
+Writing the flagship also surfaced two checker/runtime coherence gaps
+(record-type match arms never match at runtime; sig-declared `T | err`
+defeats match exhaustiveness), filed as roadmap chunks
+`match-recordarm` and `sig-err-any` — finding these was a goal of the
+exercise, not a footnote: nothing this large, and no program combining
+more than 3 curt-native features, had ever been written.

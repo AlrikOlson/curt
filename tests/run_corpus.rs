@@ -132,6 +132,19 @@ fn golden_21_append() {
 }
 
 #[test]
+fn golden_22_logmill() {
+    let full = "== svc health ==\nfiles 2 missing 1\nlines 16 reqs 11 errs 3 bad 2\napi: reqs 6 avg 50 med 47.5 score 4\ndb: reqs 4 avg 100 med 95.5 score 7\nauth: reqs 1 avg 40 med 40 score 0\nerrors by svc: db 2, api 1\npeak minute: 12:00 x7\nslow >=120ms: api 130, db 200\ntop 2 by traffic: api 6, db 4\nworst: db score 7\napi ######\ndb ####\nauth #\nscanned 2 files, 16 lines, 2 bad\n";
+    let dflt = "== logmill ==\nfiles 1 missing 0\nlines 8 reqs 6 errs 1 bad 1\napi: reqs 4 avg 60 med 60 score 1\ndb: reqs 2 avg 87.75 med 95.5 score 3\nerrors by svc: db 1\npeak minute: 12:00 x5\nslow >=150ms: none\ntop 1 by traffic: api 4\nworst: db score 3\napi ####\ndb ##\nscanned 1 files, 8 lines, 1 bad\n";
+    // the four spec-resolution paths, each golden:
+    // explicit job file / args rescue / malformed JSON err arm / missing file rescue
+    golden("22_logmill.curt", &["--fs"], &["logmill.json"], full);
+    golden("22_logmill.curt", &["--fs"], &[], full);
+    let noted = format!("note: bad job spec, using defaults\n{dflt}");
+    golden("22_logmill.curt", &["--fs"], &["badjob.json"], &noted);
+    golden("22_logmill.curt", &["--fs"], &["ghost.json"], dflt);
+}
+
+#[test]
 fn golden_20_server_smoke() {
     // start the server, connect, send a line, expect it uppercased
     let mut child = Command::new(env!("CARGO_BIN_EXE_curt"))

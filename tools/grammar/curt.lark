@@ -32,7 +32,8 @@ typesig: typelist (_ws "->" _ws typeexpr)?
 typelist: typeexpr (ws1 typeexpr)*
 typeexpr: tunion
 tunion: tatom (_ws "|" _ws tatom)*
-tatom: trecord | TNAME | NAME | ("(" _ws typesig _ws ")")
+tatom: trecord | tlist | TNAME | NAME | ("(" _ws typesig _ws ")")
+tlist: "[" _ws typeexpr _ws "]"
 trecord: "{" _ws tfield (_ws "," _ws tfield)* _ws "}"
 tfield: NAME ws1 typeexpr
 
@@ -103,8 +104,8 @@ hpostfix: hatom postop*
 hatom: NUMBER | STRING | list | tuple | paren | projatom | NAME
 
 atom: matchexpr | ifexpr | NUMBER | STRING | recordlit | maplit | anonrecord | list | tuple | paren | block | projatom | TNAME | NAME
-projatom: "." NAME
-recordlit: TNAME "{" _ws field (_ws "," _ws field)* _ws "}"
+projatom: "." (NAME | INT)
+recordlit: TNAME "{" _bws field ((_bws "," _bws | NL _bws) field)* _bws ("," _bws)? "}"
 anonrecord: ("{" _bws field ((_bws "," _bws | NL _bws) field)* _bws ("," _bws)? "}") | ("{" _bws "}")
 maplit: "{" _bws mapentry ((_bws "," _bws | NL _bws) mapentry)* _bws ("," _bws)? "}"
 mapentry: STRING ":" _ws expr
@@ -128,7 +129,7 @@ ws1: WS
 
 NUMBER: /[0-9]+(\.[0-9]+)?([ui](8|16|32|64))?/
 INT: /[0-9]+/
-STRING: /"(\\.|[^"\\])*"/
+STRING: /"(\\.|[^"\\])*"|'[^'\n]*'/
 TNAME: /[A-Z][A-Za-z0-9_]*/
 NAME: /(?!(?:if|else|while|for|in|match|type|ret|go|pub|and|or|not)(?![A-Za-z0-9_]))[a-z_][A-Za-z0-9_]*/
 WS: /[ \t]+/

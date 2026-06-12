@@ -1,0 +1,126 @@
+type Lat = int | float
+type Entry = {svc str, ms Lat}
+type Score = {name str, val int}
+type Sum = {files int, lines int, bad int}
+
+pub avg :: [Lat] -> float
+avg xs = xs.sum / xs.len.float
+
+classify lvl ms why = if lvl == "ERROR" { why } else { match ms.int { err _ -> ms.float, n -> n } }
+
+fetch p = ((fs.read p)?).lines
+
+med xs = {
+  s = xs.sort
+  s[s.len / 2]
+}
+
+bar n = {
+  s = ""
+  while s.len < n { s += "#" }
+  s
+}
+
+stat g sc = {
+  ms = g.v | map .ms
+  print "{g.k}: reqs {g.v.len} avg {avg ms} med {med ms} score {sc}"
+}
+
+faults fails = {
+  parts = (fails | map .0).counts.pairs | map p -> "{p.k} {p.v}"
+  print "errors by svc: {parts | join ', '}"
+}
+
+peak mins = {
+  best = (mins.counts.pairs | top 1 .v).first
+  print "peak minute: {best.k} x{best.v}"
+}
+
+lag entries slow = {
+  rows = entries | keep e -> e.ms >= slow | map e -> "{e.svc} {e.ms}"
+  msg = if rows.len == 0 { "none" } else { rows | join ', ' }
+  print "slow >={slow}ms: {msg}"
+}
+
+rank groups shown = {
+  tops = groups | top shown (g -> g.v.len) | map g -> "{g.k} {g.v.len}"
+  print "top {shown} by traffic: {tops | join ', '}"
+}
+
+worst scored = {
+  w = (scored | top 1 .val).first
+  print "worst: {w.name} score {w.val}"
+}
+
+hist groups = for g in groups { print "{g.k} {bar g.v.len}" }
+
+footer t = print "scanned {t.files} files, {t.lines} lines, {t.bad} bad"
+
+base = '{"title": "logmill", "sources": ["west.log"]}'
+spec = fs.read (args.1 ? "logmill.json") ? base
+job = match json spec { err e -> { print "note: bad job spec, using defaults"; json base }, j -> j }
+title = job["title"] ? "logmill"
+slow = job["slow_ms"] ? 150
+shown = job["top"] ? 1
+src = job["sources"] ? []
+
+sev = {
+  "ERROR": 3
+  "WARN": 1
+}
+
+entries = []
+fails = []
+tags = []
+mins = []
+bad: int = 0
+missing = 0
+seen = 0
+
+for p in src {
+  match fetch p {
+    err e -> { missing += 1 }
+    ls -> {
+      for ln in ls {
+        seen += 1
+        f = ln.split ","
+        if f.len == 5 {
+          mins += [f[0][0:5]]
+          v = classify f[1] f[3] f[4]
+          match v {
+            err x -> { bad += 1 }
+            str why -> { fails += [(f[2], why)]; tags += [(f[2], f[1])] }
+            int n -> { entries += [Entry{svc: f[2], ms: n}]; tags += [(f[2], f[1])] }
+            float x -> { entries += [Entry{svc: f[2], ms: x}]; tags += [(f[2], f[1])] }
+          }
+        } else { bad += 1 }
+      }
+    }
+  }
+}
+
+print "== {title} =="
+print "files {src.len - missing} missing {missing}"
+print "lines {seen} reqs {entries.len} errs {fails.len} bad {bad}"
+
+groups = entries.group .svc
+scored = []
+for g in groups {
+  sc = tags | keep t -> t.0 == g.k | fold 0 acc t -> acc + (sev[t.1] ? 0)
+  scored += [Score{name: g.k, val: sc}]
+  stat g sc
+}
+
+faults fails
+peak mins
+go lag entries slow
+go rank groups shown
+go worst scored
+go hist groups
+
+total = Sum{
+  files: src.len - missing
+  lines: seen
+  bad: bad
+}
+footer total

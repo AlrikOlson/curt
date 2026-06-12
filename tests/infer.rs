@@ -19,7 +19,7 @@ fn check_err(src: &str) -> curt::diag::Diag {
 // ---- the corpus gate ----
 
 #[test]
-fn corpus_checks_clean_21_of_21() {
+fn corpus_checks_clean_22_of_22() {
     let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("corpus");
     let mut names: Vec<_> = std::fs::read_dir(&dir)
         .unwrap()
@@ -28,7 +28,7 @@ fn corpus_checks_clean_21_of_21() {
         .filter(|n| n.ends_with(".curt"))
         .collect();
     names.sort();
-    assert_eq!(names.len(), 21);
+    assert_eq!(names.len(), 22);
     for n in names {
         let src = std::fs::read_to_string(dir.join(&n)).unwrap();
         if let Err(d) = check_src(&src) {

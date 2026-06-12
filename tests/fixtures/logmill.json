@@ -1,0 +1,1 @@
+{"title": "svc health", "slow_ms": 120, "top": 2, "sources": ["west.log", "ghost.log", "east.log"]}

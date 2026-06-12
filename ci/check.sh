@@ -28,10 +28,10 @@ cargo clippy --all-targets -- -D warnings
 say "release build (oracle for the grammar gates)"
 cargo build --release
 
-say "PEG grammar gate: corpus 20/20"
+say "PEG grammar gate: corpus (all .curt files)"
 "$VENV/bin/python" tools/tokens/validate.py
 
-say "Lark grammar gate: corpus 20/20 + negative agreement"
+say "Lark grammar gate: corpus (all .curt files) + negative agreement"
 "$VENV/bin/python" tools/grammar/validate.py
 
 say "GBNF determinism: regeneration is byte-identical"

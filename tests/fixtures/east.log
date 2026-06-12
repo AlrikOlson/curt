@@ -1,0 +1,8 @@
+12:00:08,INFO,api,12.5,GET /ping
+12:00:09,ERROR,api,-,rate limited
+12:01:10,INFO,db,200,full scan
+12:01:11,WARN,db,24.5,lock retry
+12:02:12,INFO,api,47.5,GET /users
+12:02:13,INFO,db,fast,query
+12:02:14,ERROR,db,-,deadlock
+12:03:15,INFO,auth,40,token check
