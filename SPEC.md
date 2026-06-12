@@ -214,7 +214,13 @@ arena/region annotations (§13), never required.
 ## 7. Errors
 
 - Failable operations return `T | err` (an `err` value carries code, message,
-  and origin). The union composes with §3.
+  and origin). The union composes with §3. `err` is a first-class type: a
+  declared `pub f :: A -> T | err` works with a narrowing `match` — `err e`
+  covers the err member, the `T` arms cover the rest, no wildcard needed —
+  and inference produces the same member set for the same body (sig-err-any,
+  2026-06-12; declared and inferred exhaustiveness previously disagreed).
+  Rescue `a ? b` removes the err member from `a`'s union type; a bind arm
+  after an `err e` arm holds the non-err part (flow narrowing).
 - **Postfix `x?`** (touching, 1 token): if `err`, return it from the
   enclosing equation; else unwrap. **Spaced `a ? b`** (1 token): if `a` is
   `err` (or a missing-key/None-like absence), evaluate and yield `b`.

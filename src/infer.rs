@@ -31,6 +31,9 @@ pub enum Ty {
     Union(Vec<Ty>),
     Fn { params: Vec<Ty>, ret: Box<Ty> },
     Var(usize),
+    /// the error type — a first-class union member so `T | err` contracts
+    /// and `err e ->` arms cover each other exactly (sig-err-any)
+    Err,
     Any,
 }
 
@@ -62,6 +65,7 @@ impl fmt::Display for Ty {
                 write!(f, "({} -> {ret})", ps.join(" "))
             }
             Ty::Var(i) => write!(f, "{}", var_name(*i)),
+            Ty::Err => write!(f, "err"),
             Ty::Any => write!(f, "any"),
         }
     }
@@ -282,7 +286,7 @@ impl Checker {
             "float" => f1(vec![Ty::Any], Ty::Float),
             "str" => f1(vec![Ty::Any], Ty::Str),
             "json" => f1(vec![Ty::Str], Ty::Any),
-            "err" => f1(vec![Ty::Str], Ty::Any),
+            "err" => f1(vec![Ty::Str], Ty::Err),
             "digit" => f1(vec![Ty::Str], Ty::Bool),
             _ => return None,
         })
@@ -371,9 +375,33 @@ impl Checker {
                 "str" => Ty::Str,
                 "bool" => Ty::Bool,
                 "bytes" => Ty::List(Box::new(Ty::Int)),
+                "err" => Ty::Err,
+                "any" => Ty::Any,
                 _ => self.types.get(n).cloned().unwrap_or(Ty::Any),
             },
-            TypeExpr::Union(parts) => Ty::Union(parts.iter().map(|p| self.type_from(p)).collect()),
+            TypeExpr::Union(parts) => {
+                // flatten nested unions so `V | err` with `type V = int | str`
+                // has members [int, str, err] — arm-by-arm coverage needs the
+                // flat member list (sig-err-any)
+                let mut members: Vec<Ty> = Vec::new();
+                for p in parts {
+                    match self.type_from(p) {
+                        Ty::Union(inner) => {
+                            for t in inner {
+                                if !members.contains(&t) {
+                                    members.push(t);
+                                }
+                            }
+                        }
+                        t => {
+                            if !members.contains(&t) {
+                                members.push(t);
+                            }
+                        }
+                    }
+                }
+                Ty::Union(members)
+            }
             TypeExpr::Record(fields) => Ty::Record { name: None, fields: fields.iter().map(|(n, t)| (n.clone(), self.type_from(t))).collect() },
             TypeExpr::List(inner) => Ty::List(Box::new(self.type_from(inner))),
             TypeExpr::Fn { params, ret } => Ty::Fn { params: params.iter().map(|p| self.type_from(p)).collect(), ret: Box::new(self.type_from(ret)) },
@@ -729,6 +757,19 @@ impl Checker {
                     ));
                 }
                 let ft = self.expr(fallback)?;
+                // rescue REMOVES the err member: `(T | err) ? fb` is T-ish
+                // (expressible only now that err is a first-class type)
+                if let Ty::Union(parts) = self.resolve(&vt) {
+                    let kept: Vec<Ty> =
+                        parts.iter().map(|p| self.resolve(p)).filter(|p| *p != Ty::Err).collect();
+                    if kept.len() < parts.len() {
+                        let out = if kept.len() == 1 { kept[0].clone() } else { Ty::Union(kept) };
+                        if self.unify(&out, &ft).is_err() {
+                            return Ok(Ty::Any);
+                        }
+                        return Ok(self.resolve(&out));
+                    }
+                }
                 // fallback replaces an err/absent value; both sides flow out
                 if self.unify(&vt, &ft).is_err() {
                     return Ok(Ty::Any);
@@ -749,6 +790,28 @@ impl Checker {
                     let is_param = |t: &Ty| matches!(t, Ty::Var(i) if self.param_vars.contains(i));
                     if is_param(&rt) || is_param(&re) {
                         return Ok(Ty::Any);
+                    }
+                    // an err branch JOINS with the other branch as `T | err`
+                    // — this is exactly how `T | err` contracts arise from
+                    // bodies (sig-err-any); Any still swallows everything
+                    match (&rt, &re) {
+                        // err joined with the gradual top stays the top —
+                        // unify(Err, Any) succeeding must not pin the result
+                        // to err (the branch picked is arbitrary)
+                        (Ty::Err, Ty::Any) | (Ty::Any, Ty::Err) => return Ok(Ty::Any),
+                        (Ty::Err, other) | (other, Ty::Err)
+                            if !matches!(other, Ty::Err | Ty::Any | Ty::Var(_)) =>
+                        {
+                            let mut members = match other {
+                                Ty::Union(parts) => parts.clone(),
+                                t => vec![t.clone()],
+                            };
+                            if !members.contains(&Ty::Err) {
+                                members.push(Ty::Err);
+                            }
+                            return Ok(Ty::Union(members));
+                        }
+                        _ => {}
                     }
                     if self.unify(&rt, &re).is_err() {
                         return Ok(Ty::Any);
@@ -904,8 +967,15 @@ impl Checker {
         let st = self.expr(subject)?;
         let mut subject_ty = self.resolve(&st);
         // an unbound subject takes its type FROM the arms: the union of the
-        // matched member types (corpus 06: show v = match v { float x, str s })
-        if matches!(subject_ty, Ty::Var(_)) {
+        // matched member types (corpus 06: show v = match v { float x, str s }).
+        // EXCEPT when a catch-all arm exists — a bind/wildcard arm says "there
+        // may be more", so pinning the subject to the named members alone
+        // over-constrains it (sig-err-any: `match f x { err e -> .., ls -> .. }`
+        // must not pin f's return to plain err)
+        let has_bind_arm = arms
+            .iter()
+            .any(|(p, _)| matches!(p, Pattern::Bind(_) | Pattern::Wildcard));
+        if matches!(subject_ty, Ty::Var(_)) && !has_bind_arm {
             let mut members: Vec<Ty> = Vec::new();
             for (pat, _) in arms {
                 let m = match pat {
@@ -977,7 +1047,20 @@ impl Checker {
                     }
                     Pattern::Wildcard => has_catchall = true,
                     Pattern::Bind(n) => {
-                        c.define(n, subject_ty.clone());
+                        // flow narrowing: a bind arm sees the subject MINUS the
+                        // members earlier arms already covered (sig-err-any:
+                        // after `err e ->`, a bind arm holds the non-err part)
+                        let bound = if matches!(subject_ty, Ty::Union(_)) && !remaining.is_empty()
+                        {
+                            if remaining.len() == 1 {
+                                remaining[0].clone()
+                            } else {
+                                Ty::Union(remaining.clone())
+                            }
+                        } else {
+                            subject_ty.clone()
+                        };
+                        c.define(n, bound);
                         has_catchall = true;
                     }
                 }

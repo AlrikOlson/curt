@@ -117,8 +117,9 @@ data = (fs.read p)?             # propagate: return err to caller
 ok = match v { err e -> "failed: {e}", int n -> "got {n}" }
 ```
 
-`err e` is a match pattern binding the message. Diagnostics are
-single-line JSON with a `fix` field — apply it verbatim.
+`err e` is a match pattern binding the message; with a declared
+`pub f :: A -> T | err`, the err/T arms are exhaustive — no `_` needed.
+Diagnostics are single-line JSON with a `fix` field — apply it verbatim.
 
 ## Stdlib verbs (all 1 token; `x.f a` ≡ `f x a`)
 

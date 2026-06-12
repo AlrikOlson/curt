@@ -244,3 +244,45 @@ fn expand_reveals_union_signature() {
     let out = curt::expand::expand(&ast, &sigs);
     assert!(out.contains("show :: (float | str -> str)"), "{out}");
 }
+
+// ---- sig-err-any: declared and inferred err agree; exhaustiveness works ----
+
+#[test]
+fn sig_t_or_err_match_is_exhaustive_without_wildcard() {
+    // the minimized repro from think:116 — was "match on int | str | any
+    // does not cover: int | str"
+    let src = "type V = int | str\npub f :: str -> V | err\nf x = if x == \"\" { err \"empty\" } else { if (x.len) > 3 { x } else { x.len } }\nprint (match (f \"hey\") { err e -> \"E\", int n -> \"I\", str s -> \"S\" })\n";
+    let s = sigs(src);
+    assert_eq!(s["f"], "(str -> int | str | err)", "{s:?}");
+}
+
+#[test]
+fn inferred_err_union_matches_declared_members() {
+    // the same body, no sig: inference must produce the same member set
+    // (the paths previously disagreed — declared rejected, inferred passed
+    // by typing err as any)
+    let src = "f x = if x == \"\" { err \"empty\" } else { if (x.len) > 3 { x } else { x.len } }\nprint (match (f \"hey\") { err e -> \"E\", int n -> \"I\", str s -> \"S\" })\n";
+    let s = sigs(src);
+    let mut members: Vec<&str> = s["f"]
+        .trim_start_matches("(str -> ")
+        .trim_end_matches(')')
+        .split(" | ")
+        .collect();
+    members.sort_unstable();
+    assert_eq!(members, vec!["err", "int", "str"], "{s:?}");
+}
+
+#[test]
+fn bind_arm_after_err_arm_narrows_to_non_err() {
+    // flow narrowing: after `err e ->`, a bind arm holds the non-err part,
+    // so iterating it type-checks (the flagship's fetch/ls shape)
+    let src = "fetch p = ((fs.read p)?).lines\nmatch fetch \"x\" {\n  err e -> print \"e\"\n  ls -> { for ln in ls { print ln } }\n}\n";
+    sigs(src); // must check clean
+}
+
+#[test]
+fn sig_err_alone_still_covered_by_err_arm() {
+    let src = "pub g :: int -> int | err\ng n = if n < 0 { err \"neg\" } else { n }\nprint (match (g 3) { err e -> 0, int n -> n })\n";
+    let s = sigs(src);
+    assert_eq!(s["g"], "(int -> int | err)", "{s:?}");
+}
