@@ -528,8 +528,9 @@ impl Interp {
     fn arity(&self, f: &Value) -> Option<usize> {
         match f {
             Value::Fn(c) => Some(c.params.len()),
-            // range is 1-or-2 ary (SPEC §5); no fixed arity means no
-            // surplus re-nesting, the builtin validates its own args
+            // range is 1-to-3 ary (SPEC §5: range n / range a b /
+            // range a b step); no fixed arity means no surplus
+            // re-nesting, the builtin validates its own args
             Value::Builtin("range") => None,
             Value::Builtin(name) => builtin_arity(name),
             _ => None,
@@ -661,7 +662,19 @@ impl Interp {
                 [Value::Int(a), Value::Int(b)] => {
                     Ok(Value::List(Rc::new(RefCell::new((*a..*b).map(Value::Int).collect()))))
                 }
-                _ => Err(fail("range needs int bounds")),
+                [Value::Int(a), Value::Int(b), Value::Int(st)] => {
+                    if *st == 0 {
+                        return Err(fail("range step must be nonzero"));
+                    }
+                    let mut v = Vec::new();
+                    let mut i = *a;
+                    while if *st > 0 { i < *b } else { i > *b } {
+                        v.push(Value::Int(i));
+                        i += *st;
+                    }
+                    Ok(Value::List(Rc::new(RefCell::new(v))))
+                }
+                _ => Err(fail("range needs 1-3 int args")),
             },
             "len" => Ok(Value::Int(match &args[0] {
                 Value::List(i) => i.borrow().len() as i64,

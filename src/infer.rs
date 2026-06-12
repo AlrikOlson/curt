@@ -764,10 +764,11 @@ impl Checker {
 
     /// Elaboration rule 1: flat-application arity resolution (SPEC §2.3).
     fn app(&mut self, head: &Expr, args: &[Expr]) -> Res<Ty> {
-        // `range` is 1-or-2 ary (SPEC §5: range n / range a b) — bypass the
-        // surplus re-nesting that mis-elaborated `range 1 16` (spec-truth)
+        // `range` is 1-to-3 ary (SPEC §5: range n / range a b /
+        // range a b step) — bypass the surplus re-nesting that
+        // mis-elaborated `range 1 16` (spec-truth)
         if let Expr::Name(n) = head {
-            if n == "range" && args.len() == 2 {
+            if n == "range" && (2..=3).contains(&args.len()) {
                 for a in args {
                     let at = self.expr(a)?;
                     self.fits(&at, &Ty::Int)?;

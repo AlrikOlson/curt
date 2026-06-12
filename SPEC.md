@@ -172,7 +172,12 @@ the structural rules an implementer must honor:
   absent); `else if` chains.
 - `while c { … }`, `for pat in e { … }` — iterate lists, maps (pairs),
   strings (chars), streams (`net.listen`, `c.lines`), `range n` /
-  `range a b` (tournament: `range` beat `..` on cost and removed an operator).
+  `range a b` / `range a b step` (tournament: `range` beat `..` on cost and
+  removed an operator; the 3-arg stepped form was admitted 2026-06-12 — it is
+  the exact shape models emit from the Python prior, measured 18 vs 21-23
+  o200k tokens against `.step`/while alternatives, and rescued the haiku
+  100-doors lane). Step is a nonzero int; a negative step counts down and
+  must be parenthesized (`range 10 0 (-2)`) per juxtaposition rules.
 - `ret e` returns early from the enclosing equation (last-expression remains
   the canonical return; `ret` exists for guard-style exits — corpus 04).
 - `go e` spawns `e` on a lightweight thread; `unit`-valued. Channels/select:

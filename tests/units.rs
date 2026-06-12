@@ -245,3 +245,34 @@ fn runtime_diag_with_nested_quotes_is_valid_json() {
          \"repair\":{\"id\":\"manual-review\",\"summary\":\"inspect the diagnostic and repair manually\"}}"
     );
 }
+
+#[test]
+fn range_three_arg_stepped() {
+    // stepped-range admission (2026-06-12): range a b step, the form
+    // models emit from the Python prior. Zero step is a runtime error;
+    // negative step counts down (parenthesized per juxtaposition).
+    use std::io::Write;
+    use std::process::Command;
+    let dir = std::env::temp_dir().join("curt_stepped_range_test");
+    std::fs::create_dir_all(&dir).unwrap();
+    let f = dir.join("sr.curt");
+    let mut fh = std::fs::File::create(&f).unwrap();
+    writeln!(fh, "print (range 1 16 3)").unwrap();
+    writeln!(fh, "print (range 10 0 (0 - 2))").unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_curt"))
+        .args(["run", f.to_str().unwrap()])
+        .output()
+        .unwrap();
+    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    assert_eq!(String::from_utf8_lossy(&out.stdout),
+               "[1, 4, 7, 10, 13]\n[10, 8, 6, 4, 2]\n");
+    let g = dir.join("zero.curt");
+    let mut gh = std::fs::File::create(&g).unwrap();
+    writeln!(gh, "print (range 1 9 0)").unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_curt"))
+        .args(["run", g.to_str().unwrap()])
+        .output()
+        .unwrap();
+    assert!(!out.status.success());
+    assert!(String::from_utf8_lossy(&out.stderr).contains("step must be nonzero"));
+}

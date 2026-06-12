@@ -450,3 +450,17 @@ and carries a measured weak-model ceiling for structural reading tasks
 format-heavy generation, and more evidence that the curt-coder
 fine-tune (which attacks familiarity directly) is the binding
 investment for small-model viability.
+
+## Gap closure: stepped range (2026-06-12)
+
+The head-to-head's largest curt failure — haiku 100-doors, 0/3, every
+sample inventing a three-argument stepped `range` from the Python prior
+— is closed by admitting that exact form. Tournament (o200k, equivalent
+100-doors cores): `range a b step` 18 tokens vs a `.step` verb 21 vs a
+while-loop 23; the winner is also verbatim what the model already
+writes, so it required no teaching. Rerun under the identical
+head-to-head protocol with the cheat sheet unchanged: **2/3 solved**
+(target ≥2/3), the solved samples using `range pass 101 pass` — the
+formerly fatal form — and the residual failure being an ordinary
+off-by-one, not a language gap
+(`tools/bench/h2h/rerun_stepped_range.jsonl`, $0.02).
