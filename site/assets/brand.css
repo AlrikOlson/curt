@@ -69,7 +69,9 @@ h1, h2, h3, h4 { line-height: 1.1; letter-spacing: -0.02em; font-weight: 750; ma
 code, pre, .mono { font-family: var(--mono); }
 .dim { color: var(--dim); }
 .tiny { font-size: 12.5px; }
-.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--s-6); }
+/* horizontal gutters only — must NOT clobber the vertical padding that
+   `section` sets (the shorthand `padding: 0 …` did, zeroing section rhythm). */
+.wrap { max-width: var(--maxw); margin: 0 auto; padding-inline: var(--s-6); }
 
 /* ---- nav ---- */
 .nav {
