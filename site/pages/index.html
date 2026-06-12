@@ -1,12 +1,14 @@
 <section class="hero wrap">
-  <p class="eyebrow">machine-first programming language · for AI agents</p>
-  <h1>The tokenizer is the ISA.</h1>
-  <p class="lede">curt is statically typed and compiled, with one prime directive: <b>output-token cost</b>. Compiled-language semantics at dynamic-language emission cost — and every claim is measured, never estimated.</p>
+  <p class="eyebrow">the tokenizer is the ISA</p>
+  <h1>A coding language built for AI, not people.</h1>
+  <p class="lede">AI assistants write computer code all day — and every word they write costs time and money. curt is a programming language designed so they write far <em>less</em> of it: the same programs, a fraction of the words. Every claim on this page is measured, and you can reproduce it yourself.</p>
   <div class="cta-row">
     <a class="btn primary" href="/play/">Try it in your browser</a>
-    <a class="btn ghost" href="/language">Read the language</a>
+    <a class="btn ghost" href="#what">What is this, really?</a>
     <a class="btn ghost" href="https://github.com/AlrikOlson/curt">GitHub ↗</a>
   </div>
+
+  <p class="specimen-caption dim">Below is a small program — a web server that echoes back whatever you send it — written in curt. The big number is roughly how many "words" (tokens) an AI spends to write it; <b>fewer means cheaper and faster</b>. Don't worry if the code looks alien — it's meant for an AI to write, not for you to read.</p>
 
   <div class="specimen" id="specimen" data-testid="specimen">
     <div class="specimen-head">
@@ -29,8 +31,21 @@
     <noscript>
       <pre class="code">handle c = for ln in c.lines { c.write (ln.upper + "\n") }
 for c in net.listen 8080 { go handle c }</pre>
-      <p class="dim tiny">A concurrent TCP uppercase-echo server in 32 o200k tokens — Python 55 · Go 94 · Rust 123. Enable JavaScript to flip through specimens.</p>
+      <p class="dim tiny">A small web server in 32 tokens — the same program is 55 in Python, 94 in Go, 123 in Rust. Enable JavaScript to flip through examples.</p>
     </noscript>
+  </div>
+</section>
+
+<section class="wrap" id="what">
+  <p class="eyebrow">what this actually is</p>
+  <div class="prose">
+    <h2>An experiment, built in the open.</h2>
+    <p>I'm not a compiler engineer. curt started as a question — <em>could a programming language be designed for the way AI writes code, so it costs less to use?</em> — and I built it by directing AI agents to design it, write it, test it, and measure it. That's fitting: it's a language for AI, made largely by AI.</p>
+    <p>What I can stand behind is the evidence. Every number on this site comes from a script anyone can run, and the honest results are all here — including where curt <em>loses</em> (on small, everyday tasks, plain Python is still cheaper). Judge the results, not my résumé.</p>
+    <div class="links-row">
+      <a class="btn ghost" href="/benchmarks">See the evidence</a>
+      <a class="btn ghost" href="https://github.com/AlrikOlson/curt">Read the source ↗</a>
+    </div>
   </div>
 </section>
 
@@ -39,44 +54,44 @@ for c in net.listen 8080 { go handle c }</pre>
   <div class="proof" data-testid="proof">
     <div class="stat">
       <span class="n">1.10×</span>
-      <span class="l">token cost vs Python (corpus median, n=22)</span>
+      <span class="l">about the same token cost as Python to write — and far less than Go or Rust</span>
       <a href="/benchmarks">how ↗</a>
     </div>
     <div class="stat">
-      <span class="n">0 / 200</span>
-      <span class="l">syntax violations across grammar-masked generations</span>
+      <span class="n">0</span>
+      <span class="l">syntax errors across 200 programs an AI wrote under curt's guard rails</span>
       <a href="/benchmarks">how ↗</a>
     </div>
     <div class="stat">
       <span class="n">7.7×</span>
-      <span class="l">cheaper per solved task than Zerolang (claude-sonnet)</span>
+      <span class="l">cheaper per task than the closest comparable AI language (on one model)</span>
       <a href="/benchmarks">how ↗</a>
     </div>
     <div class="stat">
-      <span class="n">in-browser</span>
-      <span class="l">the reference interpreter runs as wasm, no server</span>
+      <span class="n">$0</span>
+      <span class="l">to try — the whole language runs in your browser, nothing to install</span>
       <a href="/play/">play ↗</a>
     </div>
   </div>
-  <p class="note">Honest by construction: on small, well-trained tasks <b>Python still wins every cost axis</b>. curt's case is verbatim machine diagnostics, capability-gated effects, and grammar-constrained generation on programs large enough for edit-loop economics to dominate. The full split-decision record is on the <a href="/benchmarks">benchmarks page</a>.</p>
+  <p class="note">Honest by construction: on small, everyday tasks, plain Python is still the cheapest — curt's edge shows up on larger programs and in catching and fixing mistakes. The full, mixed results (wins and losses) are on the <a href="/benchmarks">benchmarks page</a>.</p>
 </section>
 
 <section class="wrap">
-  <p class="eyebrow">what makes it curt</p>
+  <p class="eyebrow">why it might matter</p>
   <div class="grid2">
     <div>
-      <h2>Brevity is the architecture, not a style.</h2>
-      <p class="lead">Every construct's o200k cost is measured before it enters the language. Equations and juxtaposition remove definition and call ceremony; untagged unions with full inference remove the ADT tax; a dense single-token stdlib does the rest. Human-readable formatting is a derived view (<code>curt expand</code>), not a property of the source.</p>
+      <h2>Built for how AI writes — and measured like an experiment.</h2>
+      <p class="lead">Most programming languages are designed for people to read. curt is designed around the one thing that costs real money when an AI writes code: how many tokens it takes. Every feature had to earn its place by being measured against the alternatives — and the tidy, human-readable version is something the tool can generate for you, not something you have to write.</p>
       <div class="links-row">
         <a class="btn ghost" href="/language">The language tour</a>
         <a class="btn ghost" href="/benchmarks">The measurements</a>
       </div>
     </div>
     <div class="featurelist">
-      <div class="feat"><b>capability model</b><span><code>fs</code> and <code>net</code> are deny-by-default; an ungranted op yields a rescuable <code>err</code>, never a crash.</span></div>
-      <div class="feat"><b>machine diagnostics</b><span>Single-line JSON with a verbatim <code>fix</code> — agents repair in one turn.</span></div>
-      <div class="feat"><b>constrained decoding</b><span>The grammar ships as decoding artifacts, so syntax errors become impossible.</span></div>
-      <div class="feat"><b>embeds everywhere</b><span>Out-of-process (MCP), portable (wasm), in-process (C FFI) — the same diagnostics and capabilities across all three.</span></div>
+      <div class="feat"><b>fewer words, by design</b><span>Every part of the language was tested for how many tokens it costs an AI to write — and the cheaper option won.</span></div>
+      <div class="feat"><b>an AI can't typo</b><span>curt ships with guard rails that make it impossible for an AI to produce a syntax error in the first place.</span></div>
+      <div class="feat"><b>it explains its own mistakes</b><span>When something's wrong, curt describes the fix in a form an AI can apply on its own — usually on the first try.</span></div>
+      <div class="feat"><b>safe by default</b><span>A curt program can't touch your files or the network unless you explicitly allow it.</span></div>
     </div>
   </div>
 </section>

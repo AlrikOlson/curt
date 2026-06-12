@@ -109,6 +109,11 @@ section:last-of-type { border-bottom: none; }
 .hero h1 { font-size: clamp(2.4rem, 6vw, 4.6rem); letter-spacing: -0.04em; max-width: 16ch; }
 .hero .lede { font-size: clamp(1.05rem, 2.2vw, 1.4rem); color: var(--ink-2); max-width: 52ch; margin: var(--s-4) 0 var(--s-6); }
 .cta-row { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; }
+.specimen-caption { max-width: 72ch; margin: var(--s-6) 0 0; font-size: 14.5px; line-height: 1.65; }
+.prose { max-width: 62ch; }
+.prose p { color: var(--ink-2); margin: 0 0 var(--s-4); font-size: 1.02rem; }
+.prose .links-row { margin-top: var(--s-5); }
+em { font-style: italic; color: var(--ink); }
 .btn { display: inline-flex; align-items: center; gap: var(--s-2); padding: var(--s-3) var(--s-5); border-radius: var(--r-sm); font-weight: 650; font-size: 15px; text-decoration: none; border: 1px solid var(--line-2); color: var(--ink); background: var(--panel); }
 .btn:hover { border-color: var(--accent); }
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }

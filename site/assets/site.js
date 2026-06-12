@@ -45,10 +45,10 @@
         '  c.<a2>write</a2> (ln.<a2>upper</a2> + <s>"\\n"</s>) }\n' +
         '<a1>for</a1> c <a1>in</a1> <a3>net.listen</a3> 8080 { <a4>go</a4> handle c }',
       annot: [
-        { n: 1, meaning: "Equation defines a function — no <code>def</code>, no <code>return</code>, no parens. <code>handle c = …</code>", cost: "function header · ~3 tokens" },
-        { n: 2, meaning: "UFCS: <code>x.f a</code> ≡ <code>f x a</code>. <code>c.lines</code>, <code>ln.upper</code> are just function calls.", cost: "each projection · 1–2 tokens" },
-        { n: 3, meaning: "Capability-gated I/O: <code>net</code> is deny-by-default; ungranted it yields a rescuable <code>err</code>, never a crash.", cost: "net.listen · 3 tokens" },
-        { n: 4, meaning: "<code>go</code> spawns a lightweight thread — structured concurrency with no ceremony.", cost: "go · 1 token" },
+        { n: 1, meaning: "This whole line defines a function — no keywords like <code>def</code> or <code>return</code>, no parentheses. Less to type means fewer tokens.", cost: "the whole header · ~3 tokens" },
+        { n: 2, meaning: "<code>c.lines</code> and <code>ln.upper</code> read almost like English — common actions are single short words, so they cost almost nothing.", cost: "1–2 tokens each" },
+        { n: 3, meaning: "Reaching the network needs permission. By default a curt program can't — so it can't quietly misbehave.", cost: "net.listen · 3 tokens" },
+        { n: 4, meaning: "<code>go</code> runs something in the background — one tiny word does what's usually a page of setup.", cost: "go · 1 token" },
       ],
       compare: [{ lang: "curt", n: 32, win: true }, { lang: "python", n: 55 }, { lang: "go", n: 94 }, { lang: "rust", n: 123 }],
       repro: { label: "DESIGN.md", href: "https://github.com/AlrikOlson/curt/blob/main/DESIGN.md" },
@@ -59,9 +59,9 @@
         'sales = [{city:<s>"NY"</s>, amt:50}, {city:<s>"LA"</s>, amt:30}, {city:<s>"NY"</s>, amt:20}]\n' +
         '<a1>for</a1> g <a1>in</a1> sales.<a2>group</a2> .city { print <s>"{g.k} {<a3>g.v | map .amt | sum</a3>}"</s> }',
       annot: [
-        { n: 1, meaning: "<code>group</code> is a one-token stdlib verb; <code>.city</code> is a bare-field lambda — <code>x -&gt; x.city</code>.", cost: "group .city · 3 tokens" },
-        { n: 2, meaning: "A dense, single-token stdlib does the work loops do in other languages.", cost: "1 token per verb" },
-        { n: 3, meaning: "Pipeline <code>|</code> feeds the value as the LAST argument of each stage; reads left-to-right inside the interpolation.", cost: "g.v | map .amt | sum" },
+        { n: 1, meaning: "Grouping rows by a field is one short word (<code>group</code>) — the kind of thing that's a whole loop in most languages.", cost: "group .city · 3 tokens" },
+        { n: 2, meaning: "These short built-in verbs do the work that loops spell out line-by-line elsewhere.", cost: "1 token per verb" },
+        { n: 3, meaning: "The <code>|</code> pipes data left-to-right through each step — read it like a sentence.", cost: "totals per city" },
       ],
       compare: [{ lang: "curt", n: 53, win: true }, { lang: "python", n: 67 }, { lang: "go", n: 92 }, { lang: "rust", n: 102 }],
       repro: { label: "tools/tokens", href: "https://github.com/AlrikOlson/curt/tree/main/corpus" },
@@ -73,9 +73,9 @@
         'cfg = load <s>"app.cfg"</s> <a2>?</a2> {}\n' +
         'print (cfg[<s>"port"</s>] <a3>?</a3> 8080)',
       annot: [
-        { n: 1, meaning: "Failable ops return <code>T | err</code>; <code>fs</code> is capability-gated like <code>net</code>.", cost: "fs.read · json · typed err" },
-        { n: 2, meaning: "Rescue: spaced <code>a ? b</code> yields <code>b</code> if <code>a</code> is err or missing. (Glued <code>x?</code> propagates instead.)", cost: "? · 1 token" },
-        { n: 3, meaning: "The same rescue handles a missing map key — one error model, everywhere.", cost: "cfg[\"port\"] ? 8080" },
+        { n: 1, meaning: "Reading a file can fail, so curt hands back either the data or an error — and touching files needs permission, like the network.", cost: "read a config file" },
+        { n: 2, meaning: "<code>?</code> means \"if that failed, use this instead\" — handling an error in a single character.", cost: "? · 1 token" },
+        { n: 3, meaning: "The same <code>?</code> covers a missing setting — one simple rule for everything that can go wrong.", cost: "fall back to 8080" },
       ],
       compare: [{ lang: "curt", n: 30, win: true }, { lang: "python", n: 40 }, { lang: "go", n: 141 }, { lang: "rust", n: 100 }],
       repro: { label: "tools/tokens", href: "https://github.com/AlrikOlson/curt/tree/main/corpus" },

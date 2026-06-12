@@ -52,7 +52,7 @@ const FOOTER = `<footer class="footer" data-testid="footer">
   <div class="foot-grid">
     <div>
       <div class="brand small"><span class="brand-mark" aria-hidden="true"></span><span class="brand-word">curt</span></div>
-      <p class="dim">A machine-first programming language for AI agents. The tokenizer is the ISA.</p>
+      <p class="dim">A coding language designed for AI to write — using far fewer words. A research experiment, built in the open.</p>
       <p class="dim tiny">Measured, never estimated — every number on this site reproduces from a committed script.</p>
     </div>
     <div>
@@ -107,7 +107,7 @@ ${FOOTER}
 
 // ---- pages manifest --------------------------------------------------------
 const PAGES = [
-  { file: "index.html",      out: "index.html",      slug: "home",       og: "/",                title: "curt — a machine-first programming language for AI agents", desc: "curt is a statically-typed, compiled language where output-token cost is the prime design directive. The tokenizer is the ISA." },
+  { file: "index.html",      out: "index.html",      slug: "home",       og: "/",                title: "curt — a coding language built for AI to write", desc: "AI writes code all day, and every word costs money. curt is a language designed so it writes far less — the same programs in a fraction of the words. A research experiment; every claim measured and reproducible." },
   { file: "language.html",   out: "language.html",   slug: "language",   og: "/language",   title: "The curt language — a tour", desc: "Equations and juxtaposition, untagged unions with full inference, a capability model, and machine-readable diagnostics. A guided tour of curt." },
   { file: "benchmarks.html", out: "benchmarks.html", slug: "benchmarks", og: "/benchmarks", title: "curt benchmarks — measured, never estimated", desc: "Token cost vs Python/Go/Rust, the curt-vs-Zerolang head-to-head, the diagnostics tournament, and grammar-masked generation — every number reproduces." },
 ];
