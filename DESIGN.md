@@ -325,9 +325,15 @@ Write Terse Q/Kdb Code"; variable-naming accuracy studies, 2025–26).
    here). The roadmap's benchmark chunk is updated accordingly.
 3. **Hand-validated examples:** until interp-mvp exists, curt programs are
    correct by inspection only. The corpus becomes executable goldens then.
-4. **Comprehension risk of the dense surface:** guarded by the cheatsheet
-   chunk's model-legibility QA gate (comprehension parity with Python within
-   5pp or the surface gets revised).
+4. **Comprehension risk of the dense surface — now measured (2026-06-12):**
+   a pre-registered read-side test (40 same-algorithm curt/Python pairs, two
+   probe families, two models; `tools/bench/densread.py`) found *parity* for
+   mental execution on both models and for all reading on sonnet, and a
+   **−20pp weak-model deficit on structural reading** (bug localization,
+   haiku) — attributable to familiarity, not density, since the sampled curt
+   was not denser than its twins. The read-side bet holds for strong models;
+   small-model structural reading is a measured ceiling that the curt-coder
+   fine-tune is positioned to close.
 5. **Tokenizer drift:** dual-tokenizer cost table from the spec chunk onward;
    the bet rests on the stable property (common words + ASCII ops are cheap
    in every BPE vocabulary).

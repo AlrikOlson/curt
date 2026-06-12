@@ -408,3 +408,45 @@ table, which now has per-exposure rates instead of anecdotes. Known
 approximations stated in the script header: line-level attribution
 counts every family on a multi-family line, the rubric is single-rater,
 and failures are re-derived under the current toolchain.
+
+## Dense-read parity: refuted in one cell, and the cell is not about density (2026-06-12)
+
+Hypothesis: an agent re-reading curt (with its cheat sheet) loses no
+comprehension accuracy versus re-reading Python — the density discount
+applies to generation only. Design, prediction (curt within 5 points
+of Python on every model × probe cell), and refutation condition were
+frozen before any API call. 40 same-algorithm curt/Python pairs from
+the execution-verified transpiled corpus (both members re-verified;
+seeded one-line mutations verified non-silent), two probe families,
+two models, 320 cells, $0.59, transcripts frozen in
+`tools/bench/densread/`.
+
+| model | probe | curt | python | delta |
+|---|---|---|---|---|
+| haiku | output prediction | 0.97 | 1.00 | −0.03 |
+| haiku | bug localization | 0.50 | 0.70 | **−0.20** |
+| sonnet | output prediction | 1.00 | 1.00 | 0.00 |
+| sonnet | bug localization | 1.00 | 1.00 | 0.00 |
+
+**Verdict: refuted** — one cell breaches the frozen floor. Three of
+four cells sit at parity: mentally executing curt costs nothing on
+either model, and sonnet reads curt perfectly on both probes. The tax
+is specific: weak-model structural reasoning (locating a one-line edit)
+pays 20 points. Two constraints sharpen the interpretation. First, the
+sampled curt was *not* denser than its Python twins (67 vs 58 mean
+o200k tokens — transpiler-generated curt is mechanical, noted before
+the run), so the deficit cannot be a density tax; familiarity is the
+parsimonious explanation, and it is the same haiku-shaped weakness the
+head-to-head found on the generation side. Second, a grading audit
+before publication caught the measuring instrument over-failing both
+languages (prose answers defeated a first-number regex); grading was
+corrected and re-derived from the frozen transcripts with the
+prediction unchanged.
+
+Doctrine consequence, recorded in DESIGN.md: the read-side of the
+density bet is *confirmed for mental execution and for strong models*,
+and carries a measured weak-model ceiling for structural reading tasks
+— the third haiku-specific gap alongside stepped-range and
+format-heavy generation, and more evidence that the curt-coder
+fine-tune (which attacks familiarity directly) is the binding
+investment for small-model viability.
