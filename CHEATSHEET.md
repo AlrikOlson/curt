@@ -77,8 +77,10 @@ show v = match v { float x -> "num {x}", str s -> "sym {s}" }
 ```
 
 Arms: type patterns (`int n`), literals (`"("`, `42`), tuples, `_`, bare
-name (binds anything). `int` and `float` never mix implicitly; `/` on int
-is integer division; convert with `.float` `.int`.
+name (binds anything). Mixed int/float math joins to float (`1 + 2.5` is
+`3.5`); `/` on two ints is integer division; convert with `.float` `.int`.
+Optional: annotate bindings `x: int = 0`; declare fn contracts with
+`f :: int int -> int` — never required, enforced when present.
 
 ## Control flow (all expressions)
 

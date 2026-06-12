@@ -151,7 +151,7 @@ fn main() -> ExitCode {
                     return ExitCode::FAILURE;
                 }
             };
-            match curt::parse_source(&src).and_then(|ast| curt::infer::check(&ast)) {
+            match curt::parse_source_spanned(&src).and_then(|(ast, pos)| curt::infer::check_at(&ast, &pos)) {
                 Ok((sigs, warnings)) => {
                     for (name, ty) in sigs {
                         println!("{name} :: {ty}");

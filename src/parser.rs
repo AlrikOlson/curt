@@ -13,7 +13,16 @@ use crate::ast::*;
 use crate::diag::Diag;
 use crate::lexer::{Tok, Token};
 
+/// A toplevel statement plus its (line, col) start.
+pub type SpannedStmt = (Stmt, (u32, u32));
+
 pub fn parse(toks: Vec<Token>) -> Result<Vec<Stmt>, Diag> {
+    Ok(parse_spanned(toks)?.into_iter().map(|(s, _)| s).collect())
+}
+
+/// Like `parse`, but each toplevel statement carries its (line, col) start —
+/// the checker stamps these onto diagnostics (statement-granularity spans).
+pub fn parse_spanned(toks: Vec<Token>) -> Result<Vec<SpannedStmt>, Diag> {
     let mut p = Parser { toks, pos: 0, in_header: false };
     p.program()
 }
@@ -67,11 +76,12 @@ impl Parser {
         }
     }
 
-    fn program(&mut self) -> Result<Vec<Stmt>, Diag> {
+    fn program(&mut self) -> Result<Vec<SpannedStmt>, Diag> {
         let mut out = Vec::new();
         self.skip_newlines();
         while !matches!(self.peek(), Tok::Eof) {
-            out.push(self.stmt()?);
+            let at = self.here();
+            out.push((self.stmt()?, at));
             if !matches!(self.peek(), Tok::Eof) {
                 if matches!(self.peek(), Tok::Newline | Tok::Semi) {
                     self.bump();

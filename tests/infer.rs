@@ -137,9 +137,26 @@ fn infer_narrowed_binder_is_member_type() {
 }
 
 #[test]
-fn infer_int_float_do_not_mix() {
-    let d = check_err("v = 1 + 2.5\nprint v\n");
+fn infer_int_float_join_to_float() {
+    // v0.3 numeric unification: mixed arithmetic joins to float, matching
+    // the evaluator (which always coerced); v0.1's strict rejection rejected
+    // programs the runtime ran correctly — measured on 1,138 real programs.
+    assert!(check_src("v = 1 + 2.5\nprint v\n").is_ok());
+    assert!(check_src("x = 3\nx += 1.5\nprint x\n").is_ok());
+    assert!(check_src("print (2 == 2.0)\n").is_ok());
+    // non-numeric mixing still rejects
+    let d = check_err("v = 1 + \"s\"\nprint v\n");
     assert_eq!(d.err, "type_mismatch");
+}
+
+#[test]
+fn infer_diag_carries_stmt_span_and_fn_context() {
+    // statement-granularity spans + equation-name context (typing-v3):
+    // the agent-facing JSON must point a repair loop at the right line
+    let (ast, pos) = curt::parse_source_spanned("ok = 1\nf x = (x + 1) + \"s\"\n").unwrap();
+    let d = curt::infer::check_at(&ast, &pos).expect_err("should NOT check");
+    assert_eq!((d.line, d.col), (2, 1));
+    assert!(d.msg.starts_with("in `f`:"), "got: {}", d.msg);
 }
 
 #[test]

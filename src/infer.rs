@@ -170,6 +170,20 @@ impl Checker {
         }
     }
 
+    /// v0.3 numeric unification: mixed int/float JOINS to float wherever the
+    /// runtime already coerces (binary arithmetic, comparisons, compound
+    /// assignment) — the checker mirrors evaluator semantics instead of
+    /// rejecting programs the runtime runs correctly.
+    fn num_join(&self, a: &Ty, b: &Ty) -> Option<Ty> {
+        match (self.resolve(a), self.resolve(b)) {
+            (Ty::Int, Ty::Int) => Some(Ty::Int),
+            (Ty::Float, Ty::Float)
+            | (Ty::Int, Ty::Float)
+            | (Ty::Float, Ty::Int) => Some(Ty::Float),
+            _ => None,
+        }
+    }
+
     /// Directed check: does `actual` fit where `expected` is required?
     /// Like unify, plus int literals WIDEN to float in argument/annotation/
     /// field positions (SPEC §3 numerics). Binary operators stay strict
@@ -286,6 +300,14 @@ impl Checker {
     // ---- program checking ----
 
     pub fn check_program(&mut self, prog: &[Stmt]) -> Res<()> {
+        self.check_program_at(prog, &[])
+    }
+
+    /// Like `check_program`, with per-statement (line, col) positions from
+    /// `parser::parse_spanned`: diagnostics that would otherwise read 0:0 are
+    /// stamped with their statement's location, and errors inside an equation
+    /// body carry the function name (`in \`f\`: ...`) — both for repair loops.
+    pub fn check_program_at(&mut self, prog: &[Stmt], pos: &[(u32, u32)]) -> Res<()> {
         // pass 1: nominal types + signatures, then equation pre-declarations
         // (an explicit `::` signature is the contract — never overwritten)
         let mut signed: Vec<&str> = Vec::new();
@@ -315,8 +337,19 @@ impl Checker {
             }
         }
         // pass 2: bodies + toplevel statements
-        for s in prog {
-            self.stmt(s)?;
+        for (i, s) in prog.iter().enumerate() {
+            self.stmt(s).map_err(|mut d| {
+                if let Stmt::Equation { name, .. } = s {
+                    d.msg = format!("in `{name}`: {}", d.msg);
+                }
+                if d.line == 0 {
+                    if let Some(&(l, c)) = pos.get(i) {
+                        d.line = l;
+                        d.col = c;
+                    }
+                }
+                d
+            })?;
         }
         // collect rendered signatures for expand
         for s in prog {
@@ -423,6 +456,13 @@ impl Checker {
                     t = self.index_result(&t, &it)?;
                 }
                 let vt = self.expr(&Self::rewrite_pipes(value))?;
+                if let Some(j) = self.num_join(&t, &vt) {
+                    // numeric compound mutation may widen: n += 1.5 makes n float
+                    if target.indices.is_empty() {
+                        self.define(&target.name, j);
+                    }
+                    return Ok(());
+                }
                 self.unify(&t, &vt)
             }
             Stmt::For { pat, iter, body } => {
@@ -642,12 +682,18 @@ impl Checker {
                         Ok(Ty::Bool)
                     }
                     "==" | "!=" | "<" | "<=" | ">" | ">=" => {
-                        self.unify(&lt, &rt)?;
+                        if self.num_join(&lt, &rt).is_none() {
+                            self.unify(&lt, &rt)?;
+                        }
                         Ok(Ty::Bool)
                     }
                     "in" => Ok(Ty::Bool),
                     _ => {
-                        // numeric / string ops: operands agree; result follows
+                        // numeric ops join (int/float -> float, matching the
+                        // evaluator); other operand pairs must agree
+                        if let Some(j) = self.num_join(&lt, &rt) {
+                            return Ok(j);
+                        }
                         self.unify(&lt, &rt)?;
                         Ok(self.resolve(&lt))
                     }
@@ -751,7 +797,13 @@ impl Checker {
                 }
                 Ok(Ty::Any)
             }
-            other => Err(err("type_mismatch", &format!("{other} is not callable"), "only functions can be applied")),
+            other => {
+                let who = match head {
+                    Expr::Name(n) => format!("`{n}` is {other}, not a function"),
+                    _ => format!("{other} is not callable"),
+                };
+                Err(err("type_mismatch", &who, "only functions can be applied — define `f x = ...` before calling f"))
+            }
         }
     }
 
@@ -1008,8 +1060,13 @@ pub type CheckReport = (Vec<(String, String)>, Vec<String>);
 
 /// Check a program; returns (equation signatures, warnings).
 pub fn check(prog: &[Stmt]) -> Result<CheckReport, Diag> {
+    check_at(prog, &[])
+}
+
+/// Check with statement positions (see `Checker::check_program_at`).
+pub fn check_at(prog: &[Stmt], pos: &[(u32, u32)]) -> Result<CheckReport, Diag> {
     let mut c = Checker::new();
-    c.check_program(prog)?;
+    c.check_program_at(prog, pos)?;
     let sigs = c.sigs.iter().map(|(n, t)| (n.clone(), c.resolve(t).to_string())).collect();
     Ok((sigs, c.warnings))
 }

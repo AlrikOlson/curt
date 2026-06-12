@@ -135,8 +135,11 @@ the structural rules an implementer must honor:
 - **Generics:** inferred polymorphism only in v0.1; there is no surface
   syntax for type parameters (a signature names concrete types or unions).
   Deferred (§13).
-- **Numerics:** `int` and `float` do not implicitly mix; `/` on `int` is
-  integer division (corpus 04, 14); `.float` / `.int` convert. Sized unsigned
+- **Numerics (v0.3):** mixed `int`/`float` arithmetic and comparison JOIN to
+  `float` (`1 + 2.5` is `3.5`; `2 == 2.0` is `true`) — checker and evaluator
+  agree (measured: the v0.2 checker rejected mixed-numeric programs the
+  runtime ran correctly). `/` on two `int`s remains integer division
+  (corpus 04, 14); `.float` / `.int` convert explicitly. Sized unsigned
   types wrap on overflow (corpus 16, FNV-1a); signed overflow traps.
 
 ## 4. Bindings, mutation, equality

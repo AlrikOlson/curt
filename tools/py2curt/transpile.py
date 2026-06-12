@@ -105,6 +105,10 @@ def stmt(n, d):
             getattr(n.args, f) for f in ("kwonlyargs", "posonlyargs", "defaults", "vararg", "kwarg")
         ):
             raise Unsupported("def-shape", n.name)
+        if not n.args.args:
+            # curt application is juxtaposition; nullary defs have no
+            # faithful equivalent (a binding evaluates once, eagerly)
+            raise Unsupported("def-noargs", n.name)
         params = " ".join(a.arg for a in n.args.args)
         # single return-expression body collapses to an equation
         if len(n.body) == 1 and isinstance(n.body[0], ast.Return) and n.body[0].value is not None:

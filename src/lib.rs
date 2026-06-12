@@ -16,3 +16,13 @@ use diag::Diag;
 pub fn parse_source(src: &str) -> Result<Vec<ast::Stmt>, Diag> {
     parser::parse(lexer::lex(src)?)
 }
+
+/// A parsed program plus per-statement (line, col) starts.
+pub type SpannedProgram = (Vec<ast::Stmt>, Vec<(u32, u32)>);
+
+/// Lex + parse, keeping each toplevel statement's (line, col) start for
+/// statement-granularity diagnostics (`infer::check_at`).
+pub fn parse_source_spanned(src: &str) -> Result<SpannedProgram, Diag> {
+    let pairs = parser::parse_spanned(lexer::lex(src)?)?;
+    Ok(pairs.into_iter().unzip())
+}

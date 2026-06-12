@@ -12,14 +12,14 @@ EvalPlus MBPP+ subset (Apache-2.0).
 
 | source | verified pairs | problems | yield | split |
 |---|---|---|---|---|
-| mbpp | 215 | 974 | 22.1% | train |
+| mbpp | 220 | 974 | 22.6% | train |
 | humaneval | 41 | 164 | 25.0% | eval (held out) |
 
 ## Rejection taxonomy
 
 | tag | count |
 |---|---|
-| curt-check | 214 |
+| curt-check | 209 |
 | unsupported:stmt | 200 |
 | unsupported:builtin | 170 |
 | no-printable-tests | 103 |
