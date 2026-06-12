@@ -1,0 +1,80 @@
+<section class="hero wrap">
+  <p class="eyebrow">machine-first programming language · for AI agents</p>
+  <h1>The tokenizer is the ISA.</h1>
+  <p class="lede">curt is statically typed and compiled, with one prime directive: <b>output-token cost</b>. Compiled-language semantics at dynamic-language emission cost — and every claim is measured, never estimated.</p>
+  <div class="cta-row">
+    <a class="btn primary" href="/play/">Try it in your browser ▸</a>
+    <a class="btn ghost" href="/language.html">Read the language</a>
+    <a class="btn ghost" href="https://github.com/AlrikOlson/curt">GitHub ↗</a>
+  </div>
+
+  <div class="specimen" id="specimen" data-testid="specimen">
+    <div class="specimen-head">
+      <span class="specimen-title">specimen ▸ <b id="spec-title">tcp uppercase echo</b></span>
+      <span class="dim tiny">o200k_base · real corpus program</span>
+    </div>
+    <div class="specimen-grid">
+      <pre class="code" id="spec-code" data-testid="spec-code"></pre>
+      <div class="annotations" id="spec-annot" data-testid="spec-annot"></div>
+    </div>
+    <div class="compare" id="spec-compare" data-testid="spec-compare"></div>
+    <div class="specimen-nav">
+      <button id="spec-prev" aria-label="Previous specimen">◂ prev</button>
+      <span class="dots" id="spec-dots" aria-hidden="true"></span>
+      <button id="spec-next" aria-label="Next specimen">next ▸</button>
+      <span class="dim tiny" style="margin-left:auto">hover the code or a note — they link</span>
+    </div>
+    <noscript>
+      <pre class="code">handle c = for ln in c.lines { c.write (ln.upper + "\n") }
+for c in net.listen 8080 { go handle c }</pre>
+      <p class="dim tiny">A concurrent TCP uppercase-echo server in 32 o200k tokens — Python 55 · Go 94 · Rust 123. Enable JavaScript to flip through specimens.</p>
+    </noscript>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">measured, never estimated</p>
+  <div class="proof" data-testid="proof">
+    <div class="stat">
+      <span class="n">1.10×</span>
+      <span class="l">token cost vs Python (corpus median, n=22)</span>
+      <a href="/benchmarks.html">how ↗</a>
+    </div>
+    <div class="stat">
+      <span class="n">0 / 200</span>
+      <span class="l">syntax violations across grammar-masked generations</span>
+      <a href="/benchmarks.html">how ↗</a>
+    </div>
+    <div class="stat">
+      <span class="n">7.7×</span>
+      <span class="l">cheaper per solved task than Zerolang (claude-sonnet)</span>
+      <a href="/benchmarks.html">how ↗</a>
+    </div>
+    <div class="stat">
+      <span class="n">in-browser</span>
+      <span class="l">the reference interpreter runs as wasm, no server</span>
+      <a href="/play/">play ↗</a>
+    </div>
+  </div>
+  <p class="note">Honest by construction: on small, well-trained tasks <b>Python still wins every cost axis</b>. curt's case is verbatim machine diagnostics, capability-gated effects, and grammar-constrained generation on programs large enough for edit-loop economics to dominate. The full split-decision record is on the <a href="/benchmarks.html">benchmarks page</a>.</p>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">what makes it curt</p>
+  <div class="grid2">
+    <div>
+      <h2>Brevity is the architecture, not a style.</h2>
+      <p class="lead">Every construct's o200k cost is measured before it enters the language. Equations and juxtaposition remove definition and call ceremony; untagged unions with full inference remove the ADT tax; a dense single-token stdlib does the rest. Human-readable formatting is a derived view (<code>curt expand</code>), not a property of the source.</p>
+      <div class="links-row">
+        <a class="btn ghost" href="/language.html">The language tour ▸</a>
+        <a class="btn ghost" href="/benchmarks.html">The measurements ▸</a>
+      </div>
+    </div>
+    <div class="annotations">
+      <div class="annot lit"><span class="meaning">Capability-gated effects — <code>fs</code> and <code>net</code> are deny-by-default; ungranted ops yield a rescuable <code>err</code>, never a crash.</span></div>
+      <div class="annot"><span class="meaning">Machine diagnostics — single-line JSON with a verbatim <code>fix</code>; agents repair in one turn.</span></div>
+      <div class="annot"><span class="meaning">Grammar shipped as constrained-decoding artifacts — syntax errors become impossible.</span></div>
+      <div class="annot"><span class="meaning">Embeds everywhere — out-of-process (MCP), portable (wasm), in-process (C FFI) — same diagnostics and capabilities across all three.</span></div>
+    </div>
+  </div>
+</section>

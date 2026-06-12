@@ -1,0 +1,89 @@
+<section class="hero wrap">
+  <p class="eyebrow">the language tour</p>
+  <h1>The shape of curt.</h1>
+  <p class="lede">Whole program = top-level statements, run in order. No imports, no <code>main</code>, no significant indentation. Inference is total — you annotate nothing. Here is the whole language in six blocks.</p>
+  <div class="compare" style="margin-top:24px">
+    <div class="cell"><span class="lang">toolchain</span><span class="n" style="font-size:15px">parse · check · fmt · expand · tokens · dense · run</span></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="tour-block">
+    <h3>core shape</h3>
+    <div class="grid2">
+      <pre class="code">greet name = "hi {name}"        <span class="cm"># equation: name params = expr</span>
+total = [1,2,3].sum             <span class="cm"># binding (= rebinds; x += 1 works)</span>
+(a, b) = (1, 2)                 <span class="cm"># tuple destructuring</span>
+print greet "ana"               <span class="cm"># application is juxtaposition: f x y</span></pre>
+      <div class="annotations">
+        <div class="annot"><span class="meaning">An equation is a function: <code>name params = expr</code>. No <code>def</code>, no <code>return</code> (use <code>ret</code> to exit early).</span></div>
+        <div class="annot"><span class="meaning">Strings interpolate: <code>"{x} and {y.len}"</code>. <code>'…'</code> is a raw string.</span></div>
+        <div class="annot"><span class="meaning">Application is juxtaposition — <code>f x y</code>, no parens, no commas.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tour-block">
+    <h3>pipes &amp; projections</h3>
+    <div class="grid2">
+      <pre class="code">xs | keep .active | top 2 .score | map .name
+xs.keep(f).map(g)               <span class="cm"># glued dots chain; spaced → use |</span>
+ws | join "-"                   <span class="cm"># dense verbs over loops</span></pre>
+      <div class="annotations">
+        <div class="annot"><span class="meaning">Pipeline <code>|</code> feeds the value as the LAST argument of the next stage.</span></div>
+        <div class="annot"><span class="meaning">Bare <code>.field</code> is a lambda: <code>top 2 .score</code> ≡ <code>top 2 (x -&gt; x.score)</code>.</span></div>
+        <div class="annot"><span class="meaning">UFCS: <code>x.f a</code> ≡ <code>f x a</code> — so <code>xs.len</code>, <code>s.upper</code>, <code>xs.map g</code>.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tour-block">
+    <h3>types &amp; untagged unions</h3>
+    <div class="grid2">
+      <pre class="code">type Pt = {x float, y float}
+show v = match v { float x -&gt; "num {x}", str s -&gt; "sym {s}" }
+nums = [7, "ok"]                <span class="cm"># a [int | str] union list</span></pre>
+      <div class="annotations">
+        <div class="annot"><span class="meaning">Inference is total — annotate nothing (except <code>pub</code>/FFI). Primitives <code>int float str bool bytes</code>.</span></div>
+        <div class="annot lit"><span class="meaning">Unions are <b>untagged</b>: <code>int | str</code>, <code>T | err</code> — the measured answer to the ADT tax (no wrapper tokens).</span></div>
+        <div class="annot"><span class="meaning"><code>match</code> narrows by runtime type and is exhaustiveness-checked over union members.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tour-block">
+    <h3>errors — two one-token tools</h3>
+    <div class="grid2">
+      <pre class="code">cfg = fs.read "app.cfg" ? ""    <span class="cm"># rescue: fallback if the read errs</span>
+data = (fs.read p)?             <span class="cm"># propagate: return err to caller</span>
+ok = match v { err e -&gt; "failed: {e}", int n -&gt; "got {n}" }</pre>
+      <div class="annotations">
+        <div class="annot"><span class="meaning">Failable ops return <code>T | err</code>. Spaced <code>a ? b</code> rescues; glued <code>x?</code> propagates.</span></div>
+        <div class="annot"><span class="meaning"><code>fs</code>/<code>net</code> are capability-gated, deny-by-default — ungranted, they yield <code>err</code>, never crash.</span></div>
+        <div class="annot"><span class="meaning">Diagnostics are single-line JSON with a verbatim <code>fix</code> field — apply it as-is.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tour-block">
+    <h3>dense beats loops <span class="dim tiny">(pairs execution-verified identical)</span></h3>
+    <div class="grid2">
+      <pre class="code">best = xs[0]                              <span class="cm"># 22 tokens</span>
+for x in xs { if x &gt; best { best = x } }
+best = xs.max                             <span class="cm"># 4 tokens</span>
+
+print (ws | join "-")                     <span class="cm"># 7 vs 27 tokens</span></pre>
+      <div class="annotations">
+        <div class="annot lit"><span class="meaning">Verbs first: <code>xs.max</code> is <b>4 tokens</b> where the explicit loop is <b>22</b> — and the densifier verifies they compute the same thing.</span><span class="cost">measured o200k · curt dense</span></div>
+        <div class="annot"><span class="meaning">Loop only when state threads between iterations; otherwise reach for a verb.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="links-row">
+    <a class="btn primary" href="/play/">Run curt in your browser ▸</a>
+    <a class="btn ghost" href="https://github.com/AlrikOlson/curt/blob/main/SPEC.md">Full specification ↗</a>
+    <a class="btn ghost" href="https://github.com/AlrikOlson/curt/blob/main/CHEATSHEET.md">Cheat sheet ↗</a>
+    <a class="btn ghost" href="https://github.com/AlrikOlson/curt/blob/main/docs/llms.txt">llms.txt ↗</a>
+  </div>
+</section>

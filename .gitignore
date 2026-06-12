@@ -23,3 +23,6 @@ tools/mcp/.venv/
 
 # Playwright MCP session artifacts
 .playwright-mcp/
+
+# generated site build (rebuilt by the pages workflow)
+site/dist/
