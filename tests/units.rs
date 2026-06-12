@@ -216,3 +216,32 @@ fn go_and_range() {
     let Stmt::For { body, .. } = &ast[0] else { panic!() };
     assert!(matches!(&body[0], Stmt::Go(Expr::App { .. })));
 }
+
+#[test]
+fn runtime_diag_with_nested_quotes_is_valid_json() {
+    // diag-esc-runtime regression: main.rs hand-rolled the runtime JSON
+    // without esc(), so quote-bearing messages (nested interpolation
+    // diags) emitted invalid JSON. Exact-match the deterministic repro.
+    use std::io::Write;
+    use std::process::Command;
+    let dir = std::env::temp_dir().join("curt_diag_esc_test");
+    std::fs::create_dir_all(&dir).unwrap();
+    let f = dir.join("repro.curt");
+    let mut fh = std::fs::File::create(&f).unwrap();
+    writeln!(fh, "print \"{{\\\"num\\\": 1}}\"").unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_curt"))
+        .args(["run", f.to_str().unwrap()])
+        .output()
+        .unwrap();
+    assert!(!out.status.success());
+    let stderr = String::from_utf8(out.stderr).unwrap();
+    let line = stderr.trim().lines().last().unwrap();
+    assert_eq!(
+        line,
+        "{\"err\":\"runtime\",\"at\":\"0:0\",\"msg\":\"bad interpolation `{\\\\\\\"num\\\\\\\": 1}`: \
+         {\\\"err\\\":\\\"unexpected_char\\\",\\\"at\\\":\\\"1:1\\\",\\\"msg\\\":\\\"character '\\\\\\\\\\\\\\\\' is not part of curt\\\",\
+         \\\"fix\\\":\\\"remove it or check the SPEC lexical rules\\\",\\\"repair\\\":{\\\"id\\\":\\\"remove-char\\\",\
+         \\\"summary\\\":\\\"remove the invalid character\\\"}}\",\"fix\":\"inspect the failure and rerun\",\
+         \"repair\":{\"id\":\"manual-review\",\"summary\":\"inspect the diagnostic and repair manually\"}}"
+    );
+}

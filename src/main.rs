@@ -199,7 +199,9 @@ fn main() -> ExitCode {
                 Ok(ast) => match curt::eval::Interp::run(&ast, caps, prog_args) {
                     Ok(()) => ExitCode::SUCCESS,
                     Err(m) => {
-                        eprintln!("{{\"err\":\"runtime\",\"msg\":\"{m}\"}}");
+                        // route through Diag so escaping + the typed shape
+                        // hold for every stderr diagnostic (SPEC §7)
+                        eprintln!("{}", curt::diag::Diag::at("runtime", 0, 0, &m, "inspect the failure and rerun"));
                         ExitCode::FAILURE
                     }
                 },
