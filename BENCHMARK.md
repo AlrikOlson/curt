@@ -240,3 +240,84 @@ defeats match exhaustiveness), filed as roadmap chunks
 `match-recordarm` and `sig-err-any` — finding these was a goal of the
 exercise, not a footnote: nothing this large, and no program combining
 more than 3 curt-native features, had ever been written.
+
+## Loop dollars (agent-loop-bench, 2026-06-12)
+
+Everything above prices the *program text*. Agents do not pay for
+program text; they pay for **task loops** — generate, run, read the
+failure, repair — and most of a loop's tokens are input (context
+re-reads), not output. The pre-registered, falsifiable hypothesis:
+curt's loop cost beats Python's at generation parity, because its
+single-line diagnostics and compact source make every turn after the
+first cheaper. Published whichever way it falls.
+
+**Protocol.** 25 frozen tasks (15 compute, 10 file-driven), two models
+(claude-haiku-4-5 at $1/$5 per MTok in/out, claude-sonnet-4-6 at
+$3/$15), curt vs Python: one generation plus up to two repair turns;
+native failure surfaces fed back verbatim (curt: the single-line JSON
+diagnostic; Python: the traceback tail); wrong-output feedback shows
+the program's *own* stdout only — the expected output is never
+revealed. Temperature 1.0, one sample per cell, n=100 cells. System
+prompts: curt carries its agent cheat sheet (2,034 o200k tokens);
+Python carries an 18-token one-liner (it needs no teaching — that
+asymmetry is the honest cost of being a new language, so it is priced
+in, not excused away). Prompt caching requested identically on both
+system blocks; cache writes priced at 1.25×, reads at 0.1×. All 100
+transcripts frozen verbatim, failures included; the matrix below
+re-derives deterministically from the frozen files. Total API spend:
+$0.3282.
+
+| model | lang | solved | $ total | $/solved | turns (solved) | input tok | output tok | diag tok |
+|---|---|---|---|---|---|---|---|---|
+| haiku | curt | **22/25** | $0.1059 | $0.0048 | 1.23 | 87,501 | 3,686 | 398 |
+| haiku | py | 19/25 | $0.0298 | **$0.0016** | 1.05 | 6,366 | 4,689 | 665 |
+| sonnet | curt | **22/25** | $0.1012 | **$0.0046** | 1.05 | 76,913 | 2,920 | 238 |
+| sonnet | py | 19/25 | $0.0913 | $0.0048 | 1.05 | 6,963 | 4,691 | 766 |
+
+**What curt won, measured:**
+
+- **Success: 22/25 vs 19/25 on both models.** On haiku the mechanism
+  is isolable: first-shot success was *identical* (18/25 each); curt's
+  entire +3 came from the repair loop, which converged in 4 of 7
+  repair-entered cells vs Python's 1 of 7. The verbatim-`fix`
+  diagnostic is doing exactly the work it was designed to do.
+- **Output tokens: 21–38% fewer** (3,686/2,920 vs 4,689/4,691) — the
+  static corpus advantage survives live generation.
+- **Feedback compactness: 57.8 vs 102.2 tokens per repair cell**
+  (curt 636 over 11 cells; Python 1,431 over 14) — the single-line
+  diagnostic is ~44% smaller than a traceback tail in practice.
+
+**What curt lost, measured:** on haiku, $/solved is **3× worse**
+($0.0048 vs $0.0016). The cache fields in the frozen transcripts give
+the mechanism exactly:
+
+| lane | uncached in | cache writes | cache reads |
+|---|---|---|---|
+| haiku curt | 87,501 | **0** | **0** |
+| sonnet curt | 2,345 | 8,100 | 66,468 |
+
+The cheat sheet is ~2.3k tokens on the wire — *under* haiku's 4,096-
+token minimum cacheable prefix (so it is re-billed at full price every
+single call: 87.5k input tokens, $0.0875 of the lane's $0.1059) and
+*over* sonnet's 2,048 floor (so 86% of the same lane's input arrives
+as 0.1× cache reads, and curt narrowly wins $/solved). Python's loop
+cost is output-dominated; curt's is input-dominated — and the input is
+not the program or the diagnostics, it is the documentation.
+
+**Verdict on the hypothesis: split, and the split is the finding.**
+Refuted on haiku — the documentation tax, paid uncached, dwarfs every
+per-turn saving. Narrowly confirmed on sonnet — with the sheet cached,
+curt delivers more solved tasks at a lower price per solve. The
+decisive variable for a new language's loop economics is not
+diagnostic size (a second-order lever measured in hundreds of tokens)
+but **teaching-context cache economics** (tens of thousands): whether
+the model's cache floor swallows your cheat sheet decides the sign of
+the result. Caveats, stated plainly: one sample per cell at
+temperature 1.0, so per-task results carry sampling noise (the +3
+success margin repeating across both models is the strongest signal
+here); two file-driven tasks (`f2_adults`, `m1_oldest`) failed in all
+four lanes — task difficulty, not language.
+
+Reproduce: `.ci-venv/bin/python tools/bench/loop.py report`
+(deterministic over `tools/bench/loops/*.jsonl`; re-running the live
+matrix requires an API key and ~$0.33).
