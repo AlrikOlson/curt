@@ -78,7 +78,9 @@ print p.x
 ```
 
 Unions are untagged: `int | str`, `T | err`. `match` narrows by runtime
-type and is exhaustiveness-checked over union members:
+type — prims and declared type names (structural: `Pt q` matches any
+value fitting Pt's shape) — and is exhaustiveness-checked over union
+members:
 
 ```
 show v = match v { float x -> "num {x}", str s -> "sym {s}" }

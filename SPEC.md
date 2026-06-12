@@ -187,6 +187,13 @@ the structural rules an implementer must honor:
   tuples, `_`, or a bare name (binds anything). **Exhaustiveness over a
   union's members is checked**; non-exhaustive match on a union is a compile
   error with a fix-suggesting diagnostic.
+- **Which type patterns narrow at runtime** (match-recordarm, 2026-06-12):
+  `int`/`float`/`str`/`bool`/`err` and **declared type names**, which narrow
+  **structurally** — `Pt q` matches any value whose shape fits `Pt`'s
+  declaration (records: every declared field present and fitting,
+  recursively), mirroring the structural checker. An undeclared name in arm
+  position is rejected by `curt check` (`unknown_name`) and fails loudly at
+  runtime — there is no silent never-matching arm.
 
 ## 6. Memory model — reference counting (decided, with measurements)
 

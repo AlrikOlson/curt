@@ -938,6 +938,20 @@ impl Checker {
             self.scoped(|c| {
                 match pat {
                     Pattern::TypeBind { ty, name } => {
+                        // an undeclared arm type can never narrow at runtime —
+                        // reject it here instead of silently typing it `any`
+                        // (match-recordarm: no silent wrong-arm path)
+                        let known = matches!(
+                            ty.as_str(),
+                            "int" | "float" | "str" | "bool" | "bytes" | "err" | "any"
+                        ) || c.types.contains_key(ty);
+                        if !known {
+                            return Err(err(
+                                "unknown_name",
+                                &format!("type `{ty}` is not declared"),
+                                "declare it: type Name = {...} — match arms narrow int/float/str/bool/err and declared types",
+                            ));
+                        }
                         let nt = c.type_from(&TypeExpr::Named(ty.clone()));
                         // narrowing: binder gets the member type inside the arm
                         c.define(name, nt.clone());

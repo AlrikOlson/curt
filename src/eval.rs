@@ -109,6 +109,10 @@ pub struct Caps {
 pub struct Interp {
     pub caps: Caps,
     pub args: Vec<String>,
+    /// declared type shapes, for STRUCTURAL match narrowing
+    /// (match-recordarm: the checker is structural, so `match v { Pt q -> }`
+    /// must test the value's shape against Pt's declaration at runtime)
+    pub types: HashMap<String, TypeExpr>,
 }
 
 fn err(msg: impl Into<String>) -> Value {
@@ -121,7 +125,13 @@ fn fail(msg: impl Into<String>) -> Flow {
 
 impl Interp {
     pub fn run(prog: &[Stmt], caps: Caps, args: Vec<String>) -> Result<(), String> {
-        let it = Interp { caps, args };
+        let mut types = HashMap::new();
+        for s in prog {
+            if let Stmt::TypeDecl { name, ty } = s {
+                types.insert(name.clone(), ty.clone());
+            }
+        }
+        let it = Interp { caps, args, types };
         let env = Env::new();
         // pass 1: equations become closures (lexical, recursive via env)
         for s in prog {
@@ -466,6 +476,51 @@ impl Interp {
         }
     }
 
+    /// Does `v` fit the declared shape `t`? Structural, recursive, with a
+    /// depth cap as the cycle guard. Mirrors the checker's structural
+    /// unification at runtime granularity (match-recordarm).
+    fn value_fits(&self, t: &TypeExpr, v: &Value, depth: u32) -> bool {
+        if depth > 8 {
+            return false;
+        }
+        match t {
+            TypeExpr::Named(n) => match n.as_str() {
+                "int" => matches!(v, Value::Int(_) | Value::UInt(_)),
+                "float" => matches!(v, Value::Float(_) | Value::Int(_)),
+                "str" => matches!(v, Value::Str(_)),
+                "bool" => matches!(v, Value::Bool(_)),
+                "err" => matches!(v, Value::Err(_)),
+                "bytes" => matches!(v, Value::List(_)),
+                "any" => true,
+                _ => self
+                    .types
+                    .get(n)
+                    .map(|d| self.value_fits(d, v, depth + 1))
+                    .unwrap_or(false),
+            },
+            TypeExpr::Union(parts) => parts.iter().any(|p| self.value_fits(p, v, depth + 1)),
+            TypeExpr::Record(fields) => match v {
+                Value::Record(rf) => {
+                    let rf = rf.borrow();
+                    fields.iter().all(|(fname, ft)| {
+                        rf.iter()
+                            .find(|(n, _)| n == fname)
+                            .map(|(_, fv)| self.value_fits(ft, fv, depth + 1))
+                            .unwrap_or(false)
+                    })
+                }
+                _ => false,
+            },
+            TypeExpr::List(inner) => match v {
+                Value::List(items) => {
+                    items.borrow().iter().all(|x| self.value_fits(inner, x, depth + 1))
+                }
+                _ => false,
+            },
+            TypeExpr::Fn { .. } => matches!(v, Value::Fn(_) | Value::Builtin(_)),
+        }
+    }
+
     fn pattern_matches(&self, p: &Pattern, v: &Value, scope: &Env) -> R<bool> {
         Ok(match p {
             Pattern::TypeBind { ty, name } => {
@@ -487,8 +542,25 @@ impl Interp {
                 );
                 if hit {
                     scope.define(name, v.clone());
+                    return Ok(true);
                 }
-                hit
+                if matches!(ty.as_str(), "float" | "int" | "str" | "bool") {
+                    return Ok(false);
+                }
+                // declared type names narrow STRUCTURALLY — the checker is
+                // structural, so the runtime must agree (match-recordarm)
+                let Some(decl) = self.types.get(ty).cloned() else {
+                    return Err(fail(format!(
+                        "type `{ty}` is not declared — match arms narrow \
+                         int/float/str/bool/err and declared types"
+                    )));
+                };
+                if self.value_fits(&decl, v, 0) {
+                    scope.define(name, v.clone());
+                    true
+                } else {
+                    false
+                }
             }
             Pattern::Lit(l) => {
                 let lv = self.expr(l, scope)?;
