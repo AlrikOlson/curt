@@ -29,6 +29,10 @@ SYSTEM = SHEET + (
 
 
 def api_key():
+    import os
+    key = os.environ.get("ANTHROPIC_API_KEY")
+    if key:
+        return key
     return (ROOT / "data" / "external" / "anthropic.key").read_text().strip()
 
 
