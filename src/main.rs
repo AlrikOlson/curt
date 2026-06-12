@@ -139,6 +139,33 @@ fn main() -> ExitCode {
                 }
             }
         }
+        "lint" => {
+            let Some(path) = args.get(2) else {
+                eprintln!("usage: curt lint <file|->");
+                return ExitCode::from(2);
+            };
+            let src = match read_input(path) {
+                Ok(s) => s,
+                Err(e) => {
+                    eprintln!("{e}");
+                    return ExitCode::FAILURE;
+                }
+            };
+            match curt::lint::lint(&src) {
+                Ok(findings) => {
+                    // advisory: findings go to stdout, exit stays 0 — a lint
+                    // must never break an agent loop
+                    for d in findings {
+                        println!("{d}");
+                    }
+                    ExitCode::SUCCESS
+                }
+                Err(d) => {
+                    eprintln!("{d}");
+                    ExitCode::FAILURE
+                }
+            }
+        }
         "check" => {
             let Some(path) = args.get(2) else {
                 eprintln!("usage: curt check <file|->");
@@ -218,7 +245,7 @@ fn main() -> ExitCode {
             ExitCode::SUCCESS
         }
         _ => {
-            eprintln!("usage: curt <parse|check|tokens|fmt|expand|dense|run> <file|->");
+            eprintln!("usage: curt <parse|check|lint|tokens|fmt|expand|dense|run> <file|->");
             ExitCode::from(2)
         }
     }

@@ -57,6 +57,7 @@ fn repair_op(err: &str) -> (&'static str, &'static str) {
         "unknown_name" => ("define-or-rename", "define the name or fix its spelling"),
         "unknown_field" => ("use-existing-field", "use a field the record declares"),
         "unexpected_char" => ("remove-char", "remove the invalid character"),
+        "lint" => ("densify", "apply the cheaper equivalent form"),
         _ => ("manual-review", "inspect the diagnostic and repair manually"),
     }
 }

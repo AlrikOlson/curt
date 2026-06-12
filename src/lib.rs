@@ -8,6 +8,7 @@ pub mod fmt;
 pub mod eval;
 pub mod infer;
 pub mod lexer;
+pub mod lint;
 pub mod parser;
 pub mod repair;
 

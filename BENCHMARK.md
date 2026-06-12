@@ -568,3 +568,33 @@ the 14/45 is still meaningful); valid-split loss measures
 in-distribution fit only; n=45 cells/arm, one base model, one seed.
 The brittleness diagnosis and the 7B scale-up + gap-task measurement
 are filed (`curt-coder-7b`).
+
+## densify-lint: the cost table becomes an active feedback channel (2026-06-12)
+
+`curt lint` ships with three equivalence-verified rule classes —
+conversion-match→rescue (`match x.int { err _ -> fb, n -> n }` →
+`(x.int ? fb)`), boolean-if→condition, and additive-fold→`.sum`
+(including the flat-juxtaposition and pipe-stage forms). Findings use
+the SPEC §7 diagnostic shape; a `repair.replacement` payload is
+attached only after a triple gate (patched program re-parses and
+re-checks clean, rewritten statement strictly cheaper in o200k), so an
+applied fix is never wrong — verified by golden-preservation tests,
+including the flagship's four runtime goldens surviving a fully-linted
+rewrite byte-identically.
+
+Measured sweeps, published whole:
+- **Corpus (22 canonical programs): 2 carry dense-form misses** — the
+  flagship's proven think:119 miss (match-rescue, 32→25 o200k) and
+  12_fold's deliberate fold demo (19→14); 12 tokens recoverable total.
+  Hand-canonical code is nearly dense already.
+- **Model-written lanes (180 files: ft/base probe + haiku/sonnet v4):
+  0 findings.** At single-shot bench scale models do not write these
+  three loose forms — the motivating miss came from a LONG-FORM
+  program (the flagship), suggesting the lint's near-term value is in
+  agent-loop feedback on flagship-class programs and synth-corpus
+  densification, not single-shot repair.
+- **Rule-mining negatives** (recorded per the chunk's mandate): the 297
+  idiom-density preference pairs are naming/structure variance, not
+  mechanical rewrites — no safe AST rules mineable from them; general
+  while-accumulator→pipeline equivalence needs loop-invariant analysis
+  and was declined.
