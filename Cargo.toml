@@ -8,6 +8,9 @@ homepage = "https://curtlang.com"
 keywords = ["language", "ai-agents", "tokens", "interpreter"]
 categories = ["compilers", "parser-implementations"]
 
+[lib]
+crate-type = ["rlib", "cdylib"]
+
 [dependencies]
 tiktoken-rs = { version = "0.6", optional = true }
 

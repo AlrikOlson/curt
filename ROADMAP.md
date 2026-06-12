@@ -29,11 +29,6 @@
   - acceptance: curt-mcp 0.1.0 installable via pip from PyPI
   - acceptance: server listed on registry.modelcontextprotocol.io under io.github.therikkening/curt
   - acceptance: README install instructions updated to the published package
-- [ ] **Host interface — C FFI, wasm imports, tool/LLM access as stdlib (not grammar)** — Replaces the obsoleted agent-prims chunk under the v0.2 framing: agent capabilities (tool calls, LLM calls, retry/parallel helpers) become a host-interface LIBRARY over C FFI / wasm imports, not language grammar. The language stays a clean general-purpose core; agent affordances are its standard host bindings (MCP-compatible registry injection preserved as a library concern). Budget caps and structured rescuable errors carry over as library/runtime features.
-  - deps: interp-d
-  - acceptance: C FFI + wasm import surface specified and implemented for the reference runtime
-  - acceptance: Tool-registry library demonstrated end-to-end against a mock host
-  - acceptance: ask/llm-call helper library with shape validation works against a mock backend
 - [ ] **HF Space playground — browser-only cmm (wasm) with live token meter** — RETARGETED 2026-06-11 (think:29): ship as a STATIC Hugging Face Space — Spaces run browser-only apps with no backend (static SDK; Transformers.js precedent), so cmm.wasm (from wasm-embed) + a live o200k token meter + cmm-vs-Python side-by-side runs at zero server cost on the Hub, embedded in the org page. Include a constrained-decoding gallery tab rendering gd-b-oss samples. The launch glamour piece.
   - deps: wasm-embed, hf-publish
   - acceptance: Playground runs the canonical corpus in-browser via wasm
@@ -282,6 +277,11 @@
   - acceptance: Three artifacts emitted with provenance: pairs (tiered), DPO preference pairs, repair triples (taxonomy-classified, fixes fully re-verified)
   - acceptance: Composition quota met (~25% two-feature, ~10% three-feature); presence checks enforced
   - acceptance: Decontamination clean; held-out splits frozen per artifact; manual audit concentrated on Tier B; report reproducible
+- [x] **Host interface — C FFI, wasm imports, tool/LLM access as stdlib (not grammar)** — Replaces the obsoleted agent-prims chunk under the v0.2 framing: agent capabilities (tool calls, LLM calls, retry/parallel helpers) become a host-interface LIBRARY over C FFI / wasm imports, not language grammar. The language stays a clean general-purpose core; agent affordances are its standard host bindings (MCP-compatible registry injection preserved as a library concern). Budget caps and structured rescuable errors carry over as library/runtime features.
+  - deps: interp-d
+  - acceptance: C FFI + wasm import surface specified and implemented for the reference runtime
+  - acceptance: Tool-registry library demonstrated end-to-end against a mock host
+  - acceptance: ask/llm-call helper library with shape validation works against a mock backend
 - [x] **hf-v03-sync — tag the published v0.2 record, then bring the Hub + README to v0.3 with fresh results** — PUBLISHED-ARTIFACT DRIFT (think:98): huggingface.co/datasets/therikkening/curt-benchmarks documents the language at v0.2 — its SPEC/CHEATSHEET/grammars copies and the card's results tables predate today's v0.3 (numeric join, map literals, diagnostics). Hub datasets are git repos; the maintainer-recommended versioning is GIT TAGS (github.com/huggingface/datasets discussion #5370; revision-based access confirmed at discuss.huggingface.co/t/20853). PLAN: (1) tag the current Hub revision `v0.2` BEFORE any update — the frozen v0.2 record stays addressable forever; (2) push updated docs/SPEC/CHEATSHEET/grammars + the v03-bench lanes and results appended to the card as a v0.3 section (v0.2 tables preserved as history, consistent with the card's lane-versioning design); (3) same publication standard as launch: formal tone, zero internal-process references, leak-scan before push; (4) GitHub README claims updated in the same pass. Deps: v03-bench (publish results, not just docs — the launch doctrine was publish-after-proof, think:29).
   - deps: v03-bench
   - acceptance: Hub revision tagged v0.2 before any mutation; tag resolves
@@ -343,6 +343,11 @@
   - acceptance: the flagship's classify can return a constructed err for malformed lines (refactor demonstrates the win; golden updated only if behavior is equivalent-or-better)
   - acceptance: py2curt transpilation yield re-measured on the real-Python set; the raise-mapping delta published whatever it is
   - acceptance: SPEC §7 + cheatsheet updated; synth match_err family can generate user-constructed errors
+- [ ] **wasm-host-imports — implement the SPEC §8 host_call import for wasm embedders** — Split from host-ffi (think:177): the wasm-import variant of the host interface is SPECIFIED in SPEC §8 (single import curt_host.host_call(name_ptr,name_len,arg_ptr,arg_len)->(ptr,len), same str→str deny-by-default contract as the C ABI) but not implemented — the wasip1 CLI artifact has no import mechanism without a custom embedder. Implementation: a `host-imports` cargo feature wiring Value::Host dispatch to the extern import; wasmtime-py + node:wasi embedder examples providing the import; the mock-ask demo replicated over wasm. Useful for the playground (browser tools) and any wasm-native agent runtime.
+  - deps: host-ffi, wasm-embed
+  - acceptance: wasm build with host-imports feature calls a host-provided import for host.<name>
+  - acceptance: wasmtime-py embedder example provides ask and the mock demo passes over wasm
+  - acceptance: deny-by-default verified over the wasm boundary
 - [ ] **logmill-bench — the flagship as a long-form replication eval lane** — Exploit identified at flagship close (think:118): the 15-task bench has no long-form lane — logmill is the natural one. Task: given the logmill job-spec/report specification (a prose+fixture prompt derived from the flagship's golden behavior, NOT the source), can a model produce a working curt program passing the same 4 golden invocations? Mirrors MoonBit's 2026 SCC norm (production-grade synthesis as the showcase bar) and becomes the hardest cell in the frozen-lane protocol. Grading: existing golden() harness; partial credit by golden-path count (0-4). Also the natural eval for curt-coder/curt-coder-rl (a held-out long-form target the training corpus cannot contain — the flagship pair must be excluded from training data, enforced mechanically). Run under the standard frozen-lane protocol (cheatsheet system prompt, single shot + one repair, both models) with Python-twin lanes for the same prompt as the control.
   - acceptance: task prompt derived from behavior (spec+fixtures), source-blind; reviewed for leakage
   - acceptance: lanes generated under the frozen protocol for curt and Python control; scored 0-4 golden paths per sample; results published whatever they are

@@ -255,6 +255,20 @@ arena/region annotations (§13), never required.
   symbol). The capability model is host-granted: `fs`, `net`, `env`, and any
   registered tool namespaces exist only if the embedding grants them
   (sandbox-first; see DESIGN.md §6).
+- **Host interface (host-ffi, 2026-06-12).** Agent affordances are host
+  bindings, not grammar. The C ABI (`libcurt`, src/ffi.rs):
+  `curt_eval_tools(src, fs, net, tools[], n, &out)` evaluates with captured
+  stdout and a tool registry; result JSON is `{"ok",stdout|diag|error}`
+  (diags carry §7 repair payloads); `curt_free` releases returned strings.
+  A registered tool is callable as `host.<name> arg` — str → str, host
+  errors become rescuable `err` values, and **unregistered names yield
+  `err`** (deny-by-default carries through the embedding boundary). Tool
+  callbacks return a C string valid until the callback returns (the runtime
+  copies synchronously); reentrancy is unsupported in v1. The **wasm-import
+  variant** is the same contract as a single import
+  `curt_host.host_call(name_ptr, name_len, arg_ptr, arg_len) -> (ptr, len)`
+  — specified here, implementation tracked as roadmap chunk
+  `wasm-host-imports`.
 
 ## 9. Stdlib (v0.1 corpus surface)
 

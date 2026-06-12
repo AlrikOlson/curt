@@ -38,8 +38,10 @@ pub enum Value {
     Tuple(Rc<Vec<Value>>),
     Fn(Rc<Closure>),
     Builtin(&'static str),
-    /// a namespace object: fs, net (fields resolve to builtins)
+    /// a namespace object: fs, net, host (fields resolve to builtins)
     Ns(&'static str),
+    /// a host-registered tool (host-ffi): str -> str, callable like a builtin
+    Host(Rc<String>),
     #[cfg(feature = "net")]
     Conn(Rc<RefCell<std::net::TcpStream>>),
     #[cfg(feature = "net")]
@@ -109,9 +111,17 @@ pub struct Caps {
     pub net: bool,
 }
 
+/// A host-registered tool: JSON-ish string in, string out (host-ffi).
+/// Errors become rescuable curt err values, never crashes.
+pub type HostFn = Box<dyn Fn(&str) -> Result<String, String>>;
+
 pub struct Interp {
     pub caps: Caps,
     pub args: Vec<String>,
+    /// captured stdout (host-ffi embedding); None = inherit process stdout
+    pub out: RefCell<Option<String>>,
+    /// host tool registry — deny-by-default: unregistered names yield err
+    pub host: HashMap<String, HostFn>,
     /// declared type shapes, for STRUCTURAL match narrowing
     /// (match-recordarm: the checker is structural, so `match v { Pt q -> }`
     /// must test the value's shape against Pt's declaration at runtime)
@@ -134,7 +144,32 @@ impl Interp {
                 types.insert(name.clone(), ty.clone());
             }
         }
-        let it = Interp { caps, args, types };
+        let it = Interp { caps, args, types, out: RefCell::new(None), host: HashMap::new() };
+        it.exec(prog)
+    }
+
+    /// Embedding entry (host-ffi): run with captured stdout and a host tool
+    /// registry. Returns captured output or the runtime failure message.
+    pub fn run_hosted(
+        prog: &[Stmt],
+        caps: Caps,
+        args: Vec<String>,
+        host: HashMap<String, HostFn>,
+    ) -> Result<String, String> {
+        let mut types = HashMap::new();
+        for s in prog {
+            if let Stmt::TypeDecl { name, ty } = s {
+                types.insert(name.clone(), ty.clone());
+            }
+        }
+        let it = Interp { caps, args, types, out: RefCell::new(Some(String::new())), host };
+        it.exec(prog)?;
+        let captured = it.out.borrow_mut().take().unwrap_or_default();
+        Ok(captured)
+    }
+
+    fn exec(&self, prog: &[Stmt]) -> Result<(), String> {
+        let it = self;
         let env = Env::new();
         // pass 1: equations become closures (lexical, recursive via env)
         for s in prog {
@@ -333,6 +368,7 @@ impl Interp {
                 // `fs = ...` then `fs.max` must see the user's list)
                 "fs" if env.get(n).is_none() => Ok(Value::Ns("fs")),
                 "net" if env.get(n).is_none() => Ok(Value::Ns("net")),
+                "host" if env.get(n).is_none() => Ok(Value::Ns("host")),
                 "args" if env.get(n).is_none() => Ok(Value::List(Rc::new(RefCell::new(
                     self.args.iter().map(|a| Value::Str(Rc::new(a.clone()))).collect(),
                 )))),
@@ -616,6 +652,7 @@ impl Interp {
             // range a b step); no fixed arity means no surplus
             // re-nesting, the builtin validates its own args
             Value::Builtin("range") => None,
+            Value::Host(_) => Some(1),
             Value::Builtin(name) => builtin_arity(name),
             _ => None,
         }
@@ -647,6 +684,17 @@ impl Interp {
             }
         }
         match f {
+            Value::Host(name) => {
+                let f = self.host.get(name.as_str()).expect("host tool resolved but missing");
+                let arg = match &args[0] {
+                    Value::Str(s) => s.to_string(),
+                    other => show(other),
+                };
+                match f(&arg) {
+                    Ok(out) => Ok(Value::Str(Rc::new(out))),
+                    Err(m) => Ok(err(format!("host.{name}: {m}"))),
+                }
+            }
             Value::Fn(c) => {
                 if args.len() != c.params.len() {
                     return Err(fail(format!("function expects {} args, got {}", c.params.len(), args.len())));
@@ -682,6 +730,12 @@ impl Interp {
                 "listen" => Ok(Value::Builtin("net.listen")),
                 _ => Err(fail(format!("net has no `{name}`"))),
             },
+            // deny-by-default: an unregistered host tool is a rescuable err
+            Value::Ns("host") => Ok(if self.host.contains_key(name) {
+                Value::Host(Rc::new(name.to_string()))
+            } else {
+                err(format!("host tool `{name}` not registered"))
+            }),
             Value::Record(fields) => fields
                 .borrow()
                 .iter()
@@ -738,7 +792,14 @@ impl Interp {
     fn builtin(&self, name: &str, mut args: Vec<Value>, env: &Env) -> R<Value> {
         match name {
             "print" => {
-                println!("{}", show(&args[0]));
+                let line = show(&args[0]);
+                match self.out.borrow_mut().as_mut() {
+                    Some(buf) => {
+                        buf.push_str(&line);
+                        buf.push('\n');
+                    }
+                    None => println!("{line}"),
+                }
                 Ok(Value::Unit)
             }
             "range" => match args.as_slice() {
@@ -1488,6 +1549,7 @@ pub fn show(v: &Value) -> String {
         }
         Value::Fn(_) | Value::Builtin(_) => "<fn>".into(),
         Value::Ns(n) => format!("<{n}>"),
+        Value::Host(n) => format!("<host:{n}>"),
         #[cfg(feature = "net")]
         Value::Conn(_) => "<conn>".into(),
         #[cfg(feature = "net")]

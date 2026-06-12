@@ -18,7 +18,8 @@ if ! command -v wasmtime >/dev/null; then
 fi
 
 echo "building wasm32-wasip1 (no default features)"
-cargo build --release --target wasm32-wasip1 --no-default-features
+# --bin only: the cdylib lib target (host-ffi) would collide on curt.wasm
+cargo build --bin curt --release --target wasm32-wasip1 --no-default-features
 
 # the guest sees ONLY the preopened fixtures dir (no .. escape), so the
 # program file is copied inside it and run with a guest-relative path

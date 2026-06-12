@@ -245,6 +245,7 @@ impl Checker {
             ("print", Ty::Fn { params: vec![Ty::Any], ret: Box::new(Ty::Unit) }),
             ("range", Ty::Fn { params: vec![Ty::Int], ret: Box::new(Ty::List(Box::new(Ty::Int))) }),
             ("fs", Ty::Any),
+            ("host", Ty::Any),
             ("net", Ty::Any),
         ] {
             self.define(name, ty);

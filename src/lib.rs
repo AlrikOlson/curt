@@ -4,6 +4,7 @@ pub mod ast;
 pub mod dense;
 pub mod diag;
 pub mod expand;
+pub mod ffi;
 pub mod fmt;
 pub mod eval;
 pub mod infer;
