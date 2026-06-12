@@ -82,10 +82,15 @@ cost shapes language choice for agents
 ([Alderson 2026](https://martinalderson.com/posts/which-programming-languages-are-most-token-efficient/)).
 Under that study's methodology curt averages **37.6 cl100k tokens** across
 ten verified RosettaCode-canon tasks (its 19-language spread ran 109–283;
-task sets differ — reproduce via `tools/bench/rosetta/measure.py`). A
-pre-registered curt-vs-Zerolang comparison is underway:
-[docs/VS-ZERO.md](docs/VS-ZERO.md) records the verified recon, first
-measurements, and the frozen evaluation protocol.
+task sets differ — reproduce via `tools/bench/rosetta/measure.py`). The
+pre-registered curt-vs-Zerolang evaluation has run to completion: a
+**split decision** — curt won all three frozen axes on sonnet (7.7×
+cheaper per solved task at perfect success parity, ~5× leaner output,
+faster repair convergence) and failed success parity on haiku; the
+diagnostics tournament it included went to Zerolang's design direction,
+which curt adopted same-day with receipts; the Python control beat both
+agent languages on every cost axis. Full record, frozen lanes, and
+verdict: [docs/VS-ZERO.md](docs/VS-ZERO.md).
 
 ## Development
 

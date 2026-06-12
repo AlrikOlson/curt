@@ -239,3 +239,51 @@ The saga verdict (stage 5) weighs this split; nothing here is restated
 in curt's favor. Raw lanes, tasks, oracles, and both teaching docs are
 committed and reproduce via
 `.ci-venv/bin/python tools/bench/headtohead.py report`.
+
+## Verdict (saga close, 2026-06-12)
+
+**Against its pre-registered 2-of-3 win condition, curt beat Zerolang
+decisively on claude-sonnet-4-6 — all three axes: 7.7× cheaper per
+solved task at perfect success parity, 4.8× leaner output, faster
+repair convergence — and failed the condition on claude-haiku-4-5,
+where success parity was missed (78% vs 89%); the result is a split
+decision, and the pooled reading also fails parity, by 0.6 percentage
+points.**
+
+That is the sentence. What the campaign established beyond it, each
+claim traceable to a frozen lane in this repository or the
+[curt-benchmarks dataset](https://huggingface.co/datasets/therikkening/curt-benchmarks):
+
+1. **Output economy is decided in curt's favor.** Median 33–35 o200k
+   tokens per solved program vs Zerolang's 168, on both models —
+   ~5× — and the static corpus shows the same shape (a-b: 12 vs 46).
+   Every Zerolang generation pays its `main(world: World)`/`check
+   world.out.write` ceremony.
+2. **The diagnostics arms race ended in adoption, not denial.**
+   Zerolang's typed-repair-identifier design beat curt's prose hint on
+   curt's own repair corpus (+9.4pp turn-1 repair at 1.13× tokens,
+   n=32), so curt ships it as of this date (typed `want`/`got` fields
+   + `repair{id,summary}` at single-line economy, ~44 tokens vs the
+   114 of Zero's captured form). The same tournament's oracle bound —
+   machine-applicable replacements repaired 32/32 single-shot — sets
+   both languages' next target.
+3. **Teaching-context economics may matter more than language design.**
+   Zerolang's canonical authoring docs cost 14,923 o200k tokens to
+   curt's 2,018 (7.4×), but sit above the prompt-cache floors curt's
+   sheet misses on haiku — the frozen usage fields show the tax
+   landing in opposite places per model. For new languages, the
+   cheat-sheet's size relative to cache minimums can decide the loop
+   bill before a single token of program is generated.
+4. **The control kept everyone honest: Python won every cost axis**
+   (54/54 solved, $0.0008 per task). On small well-trained tasks,
+   neither agent language beats the incumbent. The category's case
+   rests on what these languages do that Python cannot — verbatim
+   machine diagnostics, capability-gated effects, grammar-constrained
+   generation — exercised on programs large enough for edit-loop
+   economics to dominate.
+
+curt's losses are filed as roadmap work with measured targets
+(stepped-range iteration; format-heavy string tasks on small models).
+Reproduce any number: `tools/bench/headtohead.py report`,
+`tools/bench/diag_tourney.py report`, `tools/bench/loop.py report` —
+each deterministic over committed transcripts.
