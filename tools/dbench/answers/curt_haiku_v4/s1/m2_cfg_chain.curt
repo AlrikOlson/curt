@@ -1,0 +1,6 @@
+cfg = fs.read "app.cfg" ? ""
+data = cfg.json ? {}
+port = data["port"] ? 8080
+host = data["host"] ? "localhost"
+mode = if data["debug"] ? false { "debug" } else { "prod" }
+print "{mode} {host}:{port}"

@@ -1,0 +1,4 @@
+values = ["12", "x", "7", "-", "30"]
+parsed = values | map s -> (int s) ? 0
+print (parsed | sum)
+print (values | keep s -> (int s) ? null == null | len)

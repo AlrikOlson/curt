@@ -1,0 +1,6 @@
+data = fs.read "orders.json"?
+orders = json data
+paid_total = (orders | keep .status == "paid" | map .amt | sum)
+open_count = (orders | keep .status == "open" | len)
+print paid_total
+print open_count

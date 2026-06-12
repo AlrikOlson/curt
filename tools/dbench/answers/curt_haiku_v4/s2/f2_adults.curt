@@ -1,0 +1,12 @@
+users = fs.read "users.txt"?
+lines = users.split "\n"
+for line in lines {
+  if line.len > 0 {
+    parts = line.split ","
+    name = parts[0]
+    age = parts[1].int
+    if age > 25 {
+      print name
+    }
+  }
+}

@@ -1,0 +1,5 @@
+vals = ["12", "x", "7", "-", "30"]
+total = vals | map (s -> int s ? 0) | sum
+unparseable = vals | keep (s -> (int s ? err "") | match { err _ -> true, _ -> false }) | len
+print total
+print unparseable

@@ -1,0 +1,5 @@
+users = fs.read "users.txt"?
+lines = users.split "\n"
+rows = lines | map (x -> x.split ",")
+names = rows | keep (row -> row[1].int > 25) | map (row -> row[0])
+print (names | join " ")

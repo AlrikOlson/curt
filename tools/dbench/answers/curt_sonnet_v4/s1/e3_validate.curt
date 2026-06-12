@@ -1,0 +1,6 @@
+ages = [34, -2, 19, 150, 42, 27]
+valid = ages | keep age -> age >= 0 and age <= 120
+invalid = ages | keep age -> age < 0 or age > 120
+print valid.len
+print invalid.len
+print (valid | sum)

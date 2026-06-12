@@ -123,3 +123,27 @@ no token cost paid for the fixes). The 45-task algorithmic bench shows
 NO regression (sonnet v2 45/45 unchanged; the frozen sonnet v3 lane
 IMPROVES 42→45 — its three pipe-capture failures were correct code the
 old language broke).
+
+## v4 lanes (2026-06-12): fresh API generations under the v0.3 sheet
+
+First lanes generated via the raw API (`gen_lanes.py`, committed:
+sheet-only system prompt, temperature 1.0, claude-haiku-4-5 /
+claude-sonnet-4-6, single-shot). Results: haiku 11/30, sonnet 18/30
+(bench: haiku 33/45, sonnet 42/45).
+
+**These numbers are NOT comparable to the v2 lanes.** The v2 lanes were
+generated in-session through the development harness (no API key existed
+then); v4 is raw API. The pre-registered predictions (haiku map-shape
+conversions; sonnet no-regression) were both REFUTED under this protocol
+— the deltas confound generator pathway with language version. v4 is the
+first fully reproducible baseline; future lanes compare against it.
+
+Mechanical failure classification across all 45 failing v4 cells:
+multi-line brace literals are the largest class (~10 cells, parse error
+`expected }, found Colon/Comma` — models naturally write multi-line
+maps/records; the parser accepts newlines inside `(`/`[` only), then
+pipe-stage misuse (`<fn> is not a list`, 5), the print-precedence
+footgun (`print (x) / y` → unit operand, 3 — also the dominant error in
+synthetic generation), invented verbs (`mod`, 2), and task-comprehension
+misses. Token ratios on solved v4 cells: bench 1.14x, dbench 1.12x
+py/curt (n=15/8) — denser than prior lanes' parity, small-n caveat.

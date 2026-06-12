@@ -1,0 +1,12 @@
+collatz_steps n = {
+  count = 0
+  while n > 1 {
+    n = if n % 2 == 0 { n / 2 } else { 3 * n + 1 }
+    count += 1
+  }
+  count
+}
+
+results = for i in range 1 11 { (i, collatz_steps i) }
+best = results | top 1 .1 | first
+print "{best.0} {best.1} steps"

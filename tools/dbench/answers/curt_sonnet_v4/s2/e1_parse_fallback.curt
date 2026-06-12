@@ -1,0 +1,4 @@
+words = ["12", "x", "7", "-", "30"]
+parsed = words | map w -> w.int ? 0
+print (parsed | sum)
+print (words | keep w -> (w.int ? "err") == "err" | len)

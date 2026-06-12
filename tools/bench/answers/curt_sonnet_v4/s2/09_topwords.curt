@@ -1,0 +1,2 @@
+sentence = "the cat sat on the mat with the cat"
+sentence.words.counts.pairs | top 2 .v | map w -> print "{w.k} {w.v}"

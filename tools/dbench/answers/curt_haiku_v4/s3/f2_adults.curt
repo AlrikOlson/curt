@@ -1,0 +1,8 @@
+users = (fs.read "users.txt")?
+lines = users.lines
+names = for line in lines {
+  parts = line.split " "
+  age = parts[1].int
+  if age > 25 { parts[0] }
+}
+print (names | join " ")

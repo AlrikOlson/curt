@@ -1,0 +1,4 @@
+line = "a=1,b=22,c=333"
+pairs = line.split ","
+total = pairs | map (x -> x.split "=" | last | int) | sum
+print total

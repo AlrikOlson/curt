@@ -1,0 +1,3 @@
+s = "the cat sat on the mat with the cat"
+freqs = s.lower.words.counts
+top 2 freqs.pairs .v | map x -> "{x.k} {x.v}" | print

@@ -1,0 +1,7 @@
+sentence = "the cat sat on the mat with the cat"
+words = sentence.lower.split " "
+freq = words.counts
+top_words = freq.pairs | top 2 .v
+for pair in top_words {
+  print "{pair.k} {pair.v}"
+}

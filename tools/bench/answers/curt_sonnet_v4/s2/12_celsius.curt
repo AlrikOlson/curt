@@ -1,0 +1,2 @@
+temps = [12.5, 30.0, -5.0]
+print (temps | map c -> c * 9 / 5 + 32 | max)

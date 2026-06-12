@@ -1,0 +1,17 @@
+encode s = {
+  if s.len == 0 { ret "" }
+  out = ""
+  i = 0
+  while i < s.len {
+    ch = s[i]
+    count = 1
+    while i + count < s.len and s[i + count] == ch {
+      count += 1
+    }
+    out = out + ch + count.str
+    i = i + count
+  }
+  out
+}
+
+print (encode "aaabbcccca")

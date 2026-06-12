@@ -1,0 +1,6 @@
+lines = (fs.read "users.txt")?.lines
+users = lines | keep x -> x.trim.len > 0 | map x -> {
+  name: x.split(",")[0].trim
+  age: x.split(",")[1].trim.int
+}
+print (users | keep x -> x.age > 25 | map .name | join " ")

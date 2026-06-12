@@ -1,0 +1,12 @@
+type Rect = {width float, height float}
+
+area r = r.width * r.height
+
+perimeter r = 2.0 * (r.width + r.height)
+
+scale r factor = Rect{width: r.width * factor, height: r.height * factor}
+
+rect = Rect{width: 3.0, height: 4.0}
+print (rect | area)
+print (rect | perimeter)
+print (rect | scale 2.0 | area)

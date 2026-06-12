@@ -1,0 +1,2 @@
+print ((fs.read "missing.cfg" ? "{}").json ? {} | .name ? "default")
+print ((fs.read "app.cfg" ? "{}").json ? {} | .port ? 0)

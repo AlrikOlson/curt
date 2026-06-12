@@ -1,0 +1,11 @@
+lines = fs.read("users.txt")?
+valid = []
+for line in lines.lines {
+  parts = line.split " " | keep (x -> x.len > 0)
+  if parts.len == 3 {
+    age = parts[2].int?
+    if age { valid += [age] }
+  }
+}
+print valid.len
+print (valid | sum) / valid.len

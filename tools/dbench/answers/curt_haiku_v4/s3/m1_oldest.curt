@@ -1,0 +1,7 @@
+lines = (fs.read "users.txt")?
+valid = lines | split "\n" | keep .len | map x -> {
+  parts = x.split " "
+  parts.len == 2 ? {name: parts[0], age: (parts[1].int ? -1)} : null
+} | keep x -> x != null && x.age > 0
+oldest = valid | top 1 .age | first
+print "{oldest.name} {oldest.age}"

@@ -1,0 +1,13 @@
+s = "aaabbcccca"
+runs = []
+i = 0
+while i < s.len {
+  c = s[i]
+  len = 1
+  while i + len < s.len && s[i + len] == c {
+    len += 1
+  }
+  runs += ["{c}{len}"]
+  i += len
+}
+print (runs | join "")

@@ -1,0 +1,3 @@
+temps = [12.5, 30.0, -5.0]
+fahs = temps | map c -> c * 9.0 / 5.0 + 32.0
+print fahs.max

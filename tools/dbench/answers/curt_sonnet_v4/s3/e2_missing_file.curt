@@ -1,0 +1,1 @@
+print ((fs.read "missing.cfg" ? "{}").json ? {} | .k == "name" | first ? {v: "default"}).v

@@ -1,0 +1,11 @@
+items = [
+  {name: "widget", qty: 4, price: 2.5},
+  {name: "gizmo", qty: 2, price: 7.25},
+  {name: "bolt", qty: 10, price: 0.1}
+]
+
+totals = items.map x -> {name: x.name, line: x.qty * x.price}
+grand = totals.map .line | sum
+
+print grand
+print (totals | top 1 .line | first .name)
