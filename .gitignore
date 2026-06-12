@@ -29,3 +29,6 @@ site/dist/
 
 # wrangler local cache
 .wrangler/
+
+# internal planning view (regenerated from think-and-ship state) — not published
+ROADMAP.md

@@ -54,9 +54,8 @@ results and frozen lanes are published in the
 [curt-benchmarks dataset](https://huggingface.co/datasets/therikkening/curt-benchmarks).
 Execution-verified training corpora (13k+ pairs across transpiled,
 real-source, and synthesized routes, plus density preference pairs and
-repair triples) live in [data/py2curt/](data/py2curt/). The plan of
-record is [ROADMAP.md](ROADMAP.md). The retired v0.1 action-DSL framing
-is archived in [archive/](archive/DESIGN-v0.1.md).
+repair triples) live in [data/py2curt/](data/py2curt/). The retired v0.1
+action-DSL framing is archived in [archive/](archive/DESIGN-v0.1.md).
 
 **Flagship exhibit:** [corpus/22_logmill.curt](corpus/22_logmill.curt) —
 the largest curt program written to date (126 lines, 4.5× the previous
