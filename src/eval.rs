@@ -347,6 +347,16 @@ impl Interp {
                 }
                 Ok(Value::Record(Rc::new(RefCell::new(out))))
             }
+            Expr::MapLit(entries) => {
+                let mut pairs = Vec::new();
+                for (k, v) in entries {
+                    let inner = k.strip_prefix('"').and_then(|x| x.strip_suffix('"')).unwrap_or(k);
+                    let key = self.interpolate(inner, env)?;
+                    let val = self.expr(v, env)?;
+                    pairs.push((key, val));
+                }
+                Ok(Value::Map(Rc::new(RefCell::new(pairs))))
+            }
             Expr::Block(stmts) => self.block(stmts, env),
             Expr::App { head, args } => {
                 let f = self.expr(head, env)?;

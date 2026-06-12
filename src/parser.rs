@@ -767,6 +767,13 @@ impl Parser {
                     let fields = self.record_fields()?;
                     return Ok(Expr::RecordLit { name: None, fields });
                 }
+                // {"k": v} -> string-keyed map literal (v0.3); a block can
+                // never start with Str+Colon, so the lookahead is exact
+                if matches!(self.peek_at(1), Tok::Str(_)) && matches!(self.peek_at(2), Tok::Colon) {
+                    self.bump();
+                    let entries = self.map_entries()?;
+                    return Ok(Expr::MapLit(entries));
+                }
                 Ok(Expr::Block(self.block()?))
             }
             Tok::TName(n) => {
@@ -811,6 +818,30 @@ impl Parser {
         }
         self.expect(&Tok::RBrace, "}", "close the record")?;
         Ok(fields)
+    }
+
+    fn map_entries(&mut self) -> Result<Vec<(String, Expr)>, Diag> {
+        let mut entries = Vec::new();
+        loop {
+            let key = match self.bump() {
+                Tok::Str(s) => s,
+                other => {
+                    let (l, c) = self.here();
+                    return Err(Diag::at("expected", l, c, &format!("expected string key, found {other:?}"), "map literal syntax is {\"key\": value}"));
+                }
+            };
+            self.expect(&Tok::Colon, ":", "map entry syntax is \"key\": value")?;
+            let value = self.expr()?;
+            entries.push((key, value));
+            if !self.eat(&Tok::Comma) {
+                break;
+            }
+            if matches!(self.peek(), Tok::RBrace) {
+                break; // trailing comma
+            }
+        }
+        self.expect(&Tok::RBrace, "}", "close the map literal")?;
+        Ok(entries)
     }
 
     fn if_expr(&mut self) -> Result<Expr, Diag> {

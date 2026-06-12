@@ -151,3 +151,29 @@ fn postel_plus_plus() {
 fn user_binding_shadows_fs_namespace() {
     run_ok("fs = [1.5, 2.5]\nprint fs.max\n", "2.5\n");
 }
+
+/// lang-v03-features: string-keyed map literals (tournament winner, 15 tok).
+#[test]
+fn map_literal_string_keys() {
+    run_ok(
+        "m = {\"a\": 1, \"b\": 2}\nprint m[\"a\"]\nprint m.b\nm[\"c\"] = 3\nprint m.len\n",
+        "1\n2\n3\n",
+    );
+    // missing key rescues like any err value
+    run_ok("m = {\"a\": 1}\nprint (m[\"zz\"] ? 9)\n", "9\n");
+    // interop with the pairs verb
+    run_ok("cfg = {\"x\": 1, \"y\": 2}\nprint (cfg.pairs | map .v | sum)\n", "3\n");
+    // fmt round-trips the literal unchanged
+    let (out, _, ok) = run_src("fmt", "m = {\"a\": 1}\nprint m[\"a\"]\n");
+    assert!(ok);
+    assert_eq!(out, "m = {\"a\": 1}\nprint m[\"a\"]\n");
+}
+
+/// lang-v03-features: a record literal stays a record (no silent map merge).
+#[test]
+fn record_literal_distinct_from_map_literal() {
+    run_ok("r = {a: 1}\nprint r.a\n", "1\n");
+    let (_, err, ok) = run_src("run", "r = {a: 1}\nprint r[\"a\"]\n");
+    assert!(!ok, "records must not be string-indexable");
+    assert!(err.contains("not indexable"), "got: {err}");
+}

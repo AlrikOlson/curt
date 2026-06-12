@@ -75,7 +75,7 @@ app: arg0 (ws1 arg)*
 arg0: lambda | postfix
 arg: lambda | apostfix
 apostfix: aatom postop*
-aatom: NUMBER | STRING | recordlit | anonrecord | list | tuple | paren | block | projatom | TNAME | NAME
+aatom: NUMBER | STRING | recordlit | maplit | anonrecord | list | tuple | paren | block | projatom | TNAME | NAME
 lambda: NAME (ws1 NAME)* _ws "->" _ws nopipe
 nopipe: orexp (ws1 "?" ws1 orexp)*
 postfix: atom postop*
@@ -102,10 +102,12 @@ hlambda: NAME (ws1 NAME)* _ws "->" _ws hexpr
 hpostfix: hatom postop*
 hatom: NUMBER | STRING | list | tuple | paren | projatom | NAME
 
-atom: matchexpr | ifexpr | NUMBER | STRING | recordlit | anonrecord | list | tuple | paren | block | projatom | TNAME | NAME
+atom: matchexpr | ifexpr | NUMBER | STRING | recordlit | maplit | anonrecord | list | tuple | paren | block | projatom | TNAME | NAME
 projatom: "." NAME
 recordlit: TNAME "{" _ws field (_ws "," _ws field)* _ws "}"
 anonrecord: ("{" _ws field (_ws "," _ws field)* _ws "}") | ("{" _ws "}")
+maplit: "{" _ws mapentry (_ws "," _ws mapentry)* _ws "}"
+mapentry: STRING ":" _ws expr
 field: NAME ":" _ws expr
 // brackets suspend statement separation (spec-truth): canonical multiline
 // layout allows a newline after '[' / '(', after commas, and before ']' / ')'

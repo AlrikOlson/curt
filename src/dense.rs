@@ -502,6 +502,10 @@ fn render_expr(e: &Expr) -> String {
             let fs = fields.iter().map(|(n, v)| format!("{n}:{}", render_expr(v))).collect::<Vec<_>>().join(", ");
             format!("{}{{{fs}}}", name.clone().unwrap_or_default())
         }
+        Expr::MapLit(entries) => {
+            let es = entries.iter().map(|(k, v)| format!("{k}: {}", render_expr(v))).collect::<Vec<_>>().join(", ");
+            format!("{{{es}}}")
+        }
         Expr::Block(b) => {
             let mut s = String::from("{ ");
             let parts: Vec<String> = b

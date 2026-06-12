@@ -67,7 +67,7 @@ app         = arg0 (__ arg)*
 arg0        = lambda / postfix
 arg         = lambda / apostfix
 apostfix    = aatom postop*
-aatom       = number / string / recordlit / anonrecord / list / tuple / paren
+aatom       = number / string / recordlit / maplit / anonrecord / list / tuple / paren
             / block / projatom / tname / name
 lambda      = name (__ name)* _ "->" _ nopipe
 nopipe      = orexp (__ "?" __ orexp)*
@@ -97,12 +97,14 @@ hpostfix    = hatom postop*
 hatom       = number / string / list / tuple / paren / projatom / name
 
 # ---- atoms ----
-atom        = matchexpr / ifexpr / number / string / recordlit / anonrecord
+atom        = matchexpr / ifexpr / number / string / recordlit / maplit / anonrecord
             / list / tuple / paren / block / projatom / tname / name
 projatom    = "." name
 recordlit   = tname "{" _ field (_ "," _ field)* _ "}"
 anonrecord  = ("{" _ field (_ "," _ field)* _ "}") / ("{" _ "}")
 field       = name ":" _ expr
+maplit      = "{" _ mapentry (_ "," _ mapentry)* _ "}"
+mapentry    = string ":" _ expr
 # brackets suspend statement separation (spec-truth): canonical multiline
 # layout allows a newline after '[' / '(', after commas, and before ']' / ')'
 bws         = nl / _

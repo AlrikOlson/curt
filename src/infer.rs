@@ -624,6 +624,17 @@ impl Checker {
                 }
                 Ok(lit)
             }
+            Expr::MapLit(entries) => {
+                let val = self.fresh();
+                for (_, v) in entries {
+                    let vt = self.expr(v)?;
+                    if self.unify(&vt, &val).is_err() {
+                        // heterogeneous values stay gradual
+                        return Ok(Ty::Map(Box::new(Ty::Str), Box::new(Ty::Any)));
+                    }
+                }
+                Ok(Ty::Map(Box::new(Ty::Str), Box::new(self.resolve(&val))))
+            }
             Expr::Block(stmts) => self.block(stmts),
             Expr::App { head, args } => self.app(head, args),
             Expr::Lambda { params, body } => {
@@ -1035,6 +1046,7 @@ fn map_expr(e: &Expr, f: &dyn Fn(&Expr) -> Expr) -> Expr {
         Expr::List(items) => Expr::List(items.iter().map(f).collect()),
         Expr::Tuple(items) => Expr::Tuple(items.iter().map(f).collect()),
         Expr::RecordLit { name, fields } => Expr::RecordLit { name: name.clone(), fields: fields.iter().map(|(n, v)| (n.clone(), f(v))).collect() },
+        Expr::MapLit(entries) => Expr::MapLit(entries.iter().map(|(k, v)| (k.clone(), f(v))).collect()),
         Expr::App { head, args } => Expr::App { head: Box::new(f(head)), args: args.iter().map(f).collect() },
         Expr::Lambda { params, body } => Expr::Lambda { params: params.clone(), body: Box::new(f(body)) },
         Expr::Field { recv, name } => Expr::Field { recv: Box::new(f(recv)), name: name.clone() },

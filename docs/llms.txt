@@ -62,10 +62,12 @@ float str bool bytes`. Lists `[1,2]`, tuples `(1, "a")` (fields `.0 .1`),
 records. `xs + ys` concatenates lists; `acc += [x]` appends. A mixed
 literal like `[7, "ok"]` is a `[int | str]` union list. Multiline list
 literals are fine (newlines inside `[ ]` and `( )` are plain whitespace).
-Maps have no literal in v0.1 — they arrive from `counts`, `.json`,
-`group`; index `m["k"]` or `m.k` (field syntax does key lookup), rescue
-a missing key: `m["k"] ? 0`; iterate `m.pairs` which yields records
-with fields `.k` and `.v`. Records:
+Map literal: `m = {"k": 1, "n": 2}` (string keys; `{}` is the empty
+map; build dynamic keys with `m[k] = v`); index `m["k"]` or `m.k`
+(field syntax does key lookup), rescue a missing key: `m["k"] ? 0`;
+iterate `m.pairs` which yields records with fields `.k` and `.v`.
+Maps also arrive from `counts`, `.json`, `group`. Records (ident
+keys, NOT indexable — distinct from maps):
 
 ```
 type Pt = {x float, y float}

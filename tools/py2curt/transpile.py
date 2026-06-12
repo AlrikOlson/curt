@@ -50,7 +50,7 @@ def transpile(src: str) -> str:
 IND = "  "
 
 BIN = {ast.Add: "+", ast.Sub: "-", ast.Mult: "*", ast.Div: "/", ast.Mod: "%",
-       ast.Pow: "**", ast.FloorDiv: "/"}
+       ast.Pow: "**", ast.FloorDiv: "/", ast.BitXor: "^"}
 CMP = {ast.Eq: "==", ast.NotEq: "!=", ast.Lt: "<", ast.LtE: "<=",
        ast.Gt: ">", ast.GtE: ">=", ast.In: "in"}
 
@@ -162,6 +162,17 @@ def expr(n):
         return n.id
     if isinstance(n, ast.List):
         return "[" + ", ".join(expr(e) for e in n.elts) + "]"
+    if isinstance(n, ast.Dict):
+        # string-keyed dicts map to v0.3 map literals; other keys unsupported
+        if not n.keys or any(
+            k is None or not (isinstance(k, ast.Constant) and isinstance(k.value, str))
+            for k in n.keys
+        ):
+            if not n.keys:
+                return "{}"
+            raise Unsupported("dict-key")
+        entries = ", ".join(f"{expr(k)}: {expr(v)}" for k, v in zip(n.keys, n.values))
+        return "{" + entries + "}"
     if isinstance(n, ast.Tuple):
         return "(" + ", ".join(expr(e) for e in n.elts) + ")"
     if isinstance(n, ast.BinOp):
@@ -328,6 +339,9 @@ def call(n):
             verb = METH[meth]
             args = " ".join(paren(a) for a in n.args)
             return f"{paren(recv)}.{verb} {args}".rstrip()
+        if meth == "get" and len(n.args) == 2:
+            # d.get(k, default) -> d[k] ? default
+            return f"{paren(recv)}[{expr(n.args[0])}] ? {paren(n.args[1])}"
         raise Unsupported("method", meth)
     raise Unsupported("call-shape")
 

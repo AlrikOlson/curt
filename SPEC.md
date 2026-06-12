@@ -114,10 +114,13 @@ the structural rules an implementer must honor:
   written).
 - **Composites:** lists `[T]`, maps `{K: V}`, tuples `(A, B, …)`, records
   (nominal via `type Name = {field T, …}`, or structural when anonymous),
-  functions. **Erratum (spec-truth):** maps have **no literal in v0.1** —
-  earlier drafts claimed string-keyed map literals; the toolchain never
-  implemented them and the corpus never used one. Maps arrive from
-  `counts`, `.json`, `group`; the literal is deferred (§13).
+  functions. **Map literals (v0.3):** `{"k": v, …}` with string-literal
+  keys (tournament: 15 tok vs builder 16 / assign-each 19); `{}` is the
+  empty map; dynamic keys via `m[k] = v`. Disambiguation is exact: `{`
+  followed by a string and `:` is a map literal, an identifier and `:` is
+  a record literal, anything else opens a block. (The v0.1 erratum that
+  deferred the literal is resolved by this admission.) Maps also arrive
+  from `counts`, `.json`, `group`.
 - **Mixed list literals widen to unions** *(amended in spec-truth)*:
   `[7, "ok"]` is `[int | str]` — the checker and evaluator agree (the
   checker previously rejected what the evaluator ran; measured in the

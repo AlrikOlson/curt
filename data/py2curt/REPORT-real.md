@@ -12,25 +12,24 @@ EvalPlus MBPP+ subset (Apache-2.0).
 
 | source | verified pairs | problems | yield | split |
 |---|---|---|---|---|
-| mbpp | 220 | 974 | 22.6% | train |
+| mbpp | 225 | 974 | 23.1% | train |
 | humaneval | 41 | 164 | 25.0% | eval (held out) |
 
 ## Rejection taxonomy
 
 | tag | count |
 |---|---|
-| curt-check | 209 |
+| curt-check | 215 |
 | unsupported:stmt | 200 |
-| unsupported:builtin | 170 |
+| unsupported:builtin | 171 |
 | no-printable-tests | 103 |
+| unsupported:method | 34 |
 | unsupported:expr-stmt | 33 |
-| unsupported:method | 32 |
-| unsupported:binop | 27 |
+| unsupported:binop | 20 |
 | unsupported:comp-target | 15 |
-| unsupported:const | 14 |
-| unsupported:expr | 13 |
+| unsupported:const | 15 |
 | curt-runtime | 12 |
-| unsupported:for-shape | 10 |
+| unsupported:for-shape | 11 |
 | unsupported:comp-multi | 10 |
 | oracle-error:NameError | 9 |
 | unsupported:augassign-op | 3 |
@@ -40,7 +39,9 @@ EvalPlus MBPP+ subset (Apache-2.0).
 | unsupported:cmp | 2 |
 | unsupported:cmp-chain | 2 |
 | unsupported:assign-target | 2 |
+| unsupported:expr | 2 |
 | unsupported:bare-return | 2 |
+| unsupported:dict-key | 2 |
 
 ## Triage decisions (first-contact taxonomy)
 

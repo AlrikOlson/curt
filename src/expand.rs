@@ -156,6 +156,10 @@ fn expr(e: &Expr, depth: usize) -> String {
             let inner = fields.iter().map(|(n, v)| format!("{n}: {}", expr(v, depth))).collect::<Vec<_>>().join(", ");
             format!("{}{{{inner}}}", name.clone().unwrap_or_default())
         }
+        Expr::MapLit(entries) => {
+            let inner = entries.iter().map(|(k, v)| format!("{k}: {}", expr(v, depth))).collect::<Vec<_>>().join(", ");
+            format!("{{{inner}}}")
+        }
         Expr::Block(stmts) => {
             let mut s = String::from("{\n");
             for st in stmts {

@@ -52,6 +52,10 @@ pub enum Expr {
     List(Vec<Expr>),
     Tuple(Vec<Expr>),
     RecordLit { name: Option<String>, fields: Vec<(String, Expr)> },
+    /// v0.3 string-keyed map literal `{"k": v, ...}` — keys are raw string
+    /// tokens evaluated through the normal string path (tournament: 15 tok
+    /// vs builder-verb 16 / assign-each 19)
+    MapLit(Vec<(String, Expr)>),
     Block(Vec<Stmt>),
     /// flat juxtaposition application; grouping resolved by inference (§2.3)
     App { head: Box<Expr>, args: Vec<Expr> },
