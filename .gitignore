@@ -26,3 +26,6 @@ tools/mcp/.venv/
 
 # generated site build (rebuilt by the pages workflow)
 site/dist/
+
+# wrangler local cache
+.wrangler/

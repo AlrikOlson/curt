@@ -127,10 +127,6 @@ for (const p of PAGES) {
 // assets
 copyDir(join(here, "assets"), join(dist, "assets"));
 
-// domain + Pages hygiene
-copyFileSync(join(here, "CNAME"), join(dist, "CNAME"));
-writeFileSync(join(dist, ".nojekyll"), "");
-
 // the live playground (its committed static bundle) → /play/
 const pg = join(repo, "playground");
 mkdirSync(join(dist, "play", "dist"), { recursive: true });
