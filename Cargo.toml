@@ -9,7 +9,17 @@ keywords = ["language", "ai-agents", "tokens", "interpreter"]
 categories = ["compilers", "parser-implementations"]
 
 [dependencies]
-tiktoken-rs = "0.6"
+tiktoken-rs = { version = "0.6", optional = true }
+
+[features]
+# native default = full toolchain; the wasm32-wasip1 build disables both:
+#   tokens — tiktoken-rs (the `tokens` subcommand + token-delta gates);
+#            gated code degrades to documented monotone fallbacks
+#   net    — std::net (Conn/Listener values, net.listen); without it net
+#            ops yield rescuable err values, same as the cap-denied path
+default = ["tokens", "net"]
+tokens = ["dep:tiktoken-rs"]
+net = []
 
 [profile.release]
 opt-level = 3

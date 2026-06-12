@@ -12,6 +12,7 @@ use crate::ast::*;
 use crate::diag::Diag;
 use std::io::Write as _;
 use std::process::{Command, Stdio};
+#[cfg(feature = "tokens")]
 use std::sync::OnceLock;
 
 pub fn dense(src: &str) -> Result<String, Diag> {
@@ -52,12 +53,19 @@ fn pure(src: &str) -> bool {
     !(src.contains("fs.") || src.contains("net.") || src.contains("go ") || src.contains("args"))
 }
 
+#[cfg(feature = "tokens")]
 fn tokens(s: &str) -> usize {
     static BPE: OnceLock<Option<tiktoken_rs::CoreBPE>> = OnceLock::new();
     match BPE.get_or_init(|| tiktoken_rs::o200k_base().ok()) {
         Some(bpe) => bpe.encode_ordinary(s).len(),
         None => s.len(), // degraded but monotone proxy
     }
+}
+
+/// no-tokens build: the documented degraded-but-monotone proxy, statically
+#[cfg(not(feature = "tokens"))]
+fn tokens(s: &str) -> usize {
+    s.len()
 }
 
 /// Run a program through our own binary, capturing stdout. None on failure.

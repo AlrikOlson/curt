@@ -19,6 +19,7 @@ use crate::infer::rewrite_pipes;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::fmt;
+#[cfg(feature = "net")]
 use std::io::{BufRead, Write as IoWrite};
 use std::rc::Rc;
 
@@ -39,7 +40,9 @@ pub enum Value {
     Builtin(&'static str),
     /// a namespace object: fs, net (fields resolve to builtins)
     Ns(&'static str),
+    #[cfg(feature = "net")]
     Conn(Rc<RefCell<std::net::TcpStream>>),
+    #[cfg(feature = "net")]
     Listener(Rc<std::net::TcpListener>),
     Err(Rc<String>),
 }
@@ -195,6 +198,7 @@ impl Interp {
                 let it_v = self.expr(&rewrite_pipes(iter), env)?;
                 // a listener is an infinite accept loop (sequential v0.1):
                 // each accepted connection runs the body, then accept again
+                #[cfg(feature = "net")]
                 if let Value::Listener(l) = &it_v {
                     loop {
                         let Ok((stream, _)) = l.accept() else { break };
@@ -787,6 +791,7 @@ impl Interp {
             },
             "lines" => match &args[0] {
                 Value::Str(s) => Ok(list(s.lines().map(|l| Value::Str(Rc::new(l.to_string()))).collect())),
+                #[cfg(feature = "net")]
                 Value::Conn(stream) => {
                     // read lines from the socket until EOF
                     let mut out = Vec::new();
@@ -1000,14 +1005,20 @@ impl Interp {
                 if !self.caps.net {
                     return Ok(err("net capability not granted (run with --net)"));
                 }
+                #[cfg(feature = "net")]
                 match &args[0] {
                     Value::Int(port) => std::net::TcpListener::bind(("127.0.0.1", *port as u16))
                         .map(|l| Value::Listener(Rc::new(l)))
                         .map_err(|e| fail(format!("net.listen {port}: {e}"))),
                     _ => Err(fail("net.listen port")),
                 }
+                // no-net build (wasm32-wasip1): same rescuable err shape as
+                // the cap-denied path — language semantics unchanged
+                #[cfg(not(feature = "net"))]
+                Ok(err("net unavailable in this build"))
             }
             "write" => match (&args[0], &args[1]) {
+                #[cfg(feature = "net")]
                 (Value::Str(s), Value::Conn(stream)) => {
                     let mut st = stream.borrow_mut();
                     st.write_all(s.as_bytes()).map(|_| Value::Unit).map_err(|e| fail(format!("write: {e}")))
@@ -1477,7 +1488,9 @@ pub fn show(v: &Value) -> String {
         }
         Value::Fn(_) | Value::Builtin(_) => "<fn>".into(),
         Value::Ns(n) => format!("<{n}>"),
+        #[cfg(feature = "net")]
         Value::Conn(_) => "<conn>".into(),
+        #[cfg(feature = "net")]
         Value::Listener(_) => "<listener>".into(),
         Value::Err(m) => format!("err({m})"),
     }

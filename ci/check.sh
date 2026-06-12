@@ -49,6 +49,10 @@ sys.exit(0 if n <= 2500 else 1)
 EOF
 "$VENV/bin/python" tools/cheatsheet/emit_llms.py --check
 
+say "wasm32-wasip1 gate: build + corpus smoke under wasmtime"
+rustup target add wasm32-wasip1 --toolchain "$(rustup show active-toolchain | cut -d' ' -f1)" >/dev/null 2>&1 || rustup target add wasm32-wasip1 >/dev/null
+./ci/wasm_smoke.sh
+
 say "token cost table (regression evidence in the log)"
 "$VENV/bin/python" tools/tokens/count.py
 

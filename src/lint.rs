@@ -30,8 +30,14 @@ use crate::diag::Diag;
 pub fn lint(src: &str) -> Result<Vec<Diag>, Diag> {
     let (stmts, pos) = crate::parse_source_spanned(src)?;
     let lines: Vec<&str> = src.lines().collect();
+    #[cfg(feature = "tokens")]
     let bpe = tiktoken_rs::o200k_base().ok();
+    #[cfg(feature = "tokens")]
     let tok = |s: &str| bpe.as_ref().map(|b| b.encode_ordinary(s).len()).unwrap_or(0);
+    // no-tokens build: byte length is the documented monotone proxy — the
+    // strictly-cheaper gate still holds (shorter statement => fewer bytes)
+    #[cfg(not(feature = "tokens"))]
+    let tok = |s: &str| s.len();
 
     let mut out = Vec::new();
     for (i, s) in stmts.iter().enumerate() {

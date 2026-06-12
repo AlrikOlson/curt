@@ -55,6 +55,7 @@ fn main() -> ExitCode {
                 }
             };
             // o200k ranks load lazily here only; the parse path stays fast.
+            #[cfg(feature = "tokens")]
             match tiktoken_rs::o200k_base() {
                 Ok(bpe) => {
                     println!("{}", bpe.encode_ordinary(&src).len());
@@ -64,6 +65,12 @@ fn main() -> ExitCode {
                     eprintln!("tokenizer: {e}");
                     ExitCode::FAILURE
                 }
+            }
+            #[cfg(not(feature = "tokens"))]
+            {
+                let _ = src;
+                eprintln!("tokens: built without the `tokens` feature");
+                ExitCode::from(2)
             }
         }
         "fmt" => {

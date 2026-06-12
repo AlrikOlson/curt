@@ -1110,6 +1110,7 @@ fn occurs(i: usize, ty: &Ty) -> bool {
 }
 
 /// Lazy o200k token cost for the identifier lint (loads ranks on first use).
+#[cfg(feature = "tokens")]
 fn token_cost(name: &str) -> usize {
     use std::sync::OnceLock;
     static BPE: OnceLock<Option<tiktoken_rs::CoreBPE>> = OnceLock::new();
@@ -1117,6 +1118,12 @@ fn token_cost(name: &str) -> usize {
         Some(bpe) => bpe.encode_ordinary(&format!(" {name}")).len(),
         None => 1,
     }
+}
+
+/// no-tokens build: the documented ranks-unavailable fallback, statically
+#[cfg(not(feature = "tokens"))]
+fn token_cost(_name: &str) -> usize {
+    1
 }
 
 /// Elaboration rewrite shared by the checker AND the evaluator (interp-d):
