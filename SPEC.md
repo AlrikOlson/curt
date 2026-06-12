@@ -222,6 +222,15 @@ arena/region annotations (§13), never required.
   present. Shape adopted 2026-06-12 from a 32-error × 4-rendering repair
   tournament (typed fields beat the canned prose hint +9.4pp turn-1
   repair success at 1.13× tokens; `tools/bench/tourney/`).
+- **Machine-applicable repair synthesis** (`src/repair.rs`): for
+  mechanically fixable classes (expected-token splices, numeric/str
+  conversions, multi-line literal missing commas, near-miss renames),
+  the toolchain emits `repair.replacement: [{line, new}]` — whole-line
+  edits, 1-based — **only when applying them makes the whole program
+  re-pass parse+check** (generate-and-validate; a payload is never a
+  guess). Measured on the frozen tournament corpus: 25% coverage, 0%
+  wrong payloads, covered cells repaired 8/8 turn-1 by haiku vs 5/8
+  without the payload (BENCHMARK.md "Fix synthesis").
 
 ## 8. Exports and FFI
 

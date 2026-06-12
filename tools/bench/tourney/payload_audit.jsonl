@@ -1,0 +1,32 @@
+{"id": "r2_rep00979", "err": "type_mismatch", "verdict": "none", "replacement": null}
+{"id": "r2_rep00920", "err": "type_mismatch", "verdict": "none", "replacement": null}
+{"id": "r2_rep00356", "err": "type_mismatch", "verdict": "none", "replacement": null}
+{"id": "r2_rep00303", "err": "expected", "verdict": "none", "replacement": null}
+{"id": "r2_rep00496", "err": "type_mismatch", "verdict": "none", "replacement": null}
+{"id": "r2_rep00725", "err": "expected", "verdict": "none", "replacement": null}
+{"id": "r2_rep00572", "err": "unknown_name", "verdict": "correct", "replacement": [{"line": 3, "new": "active = nums | keep (n -> n % 2 != 0) | map (n -> n * 3)"}]}
+{"id": "r2_rep00030", "err": "type_mismatch", "verdict": "none", "replacement": null}
+{"id": "r2_rep00679", "err": "type_mismatch", "verdict": "none", "replacement": null}
+{"id": "r2_rep00006", "err": "type_mismatch", "verdict": "correct", "replacement": [{"line": 19, "new": "  {label: \"apple\",  score: 3, active: true},"}, {"line": 20, "new": "  {label: \"banana\", score: 7, active: false},"}, {"line": 21, "new": "  {label: \"cherry\", score: 5, active: true},"}, {"line": 22, "new": "  {label: \"date\",   score: 9, active: true},"}]}
+{"id": "r2_rep00537", "err": "expected", "verdict": "correct", "replacement": [{"line": 10, "new": "totals = {}"}]}
+{"id": "r2_rep00228", "err": "expected", "verdict": "correct", "replacement": [{"line": 13, "new": "print (match result { err e -> 7, int n -> n })"}]}
+{"id": "r2_rep00871", "err": "type_mismatch", "verdict": "correct", "replacement": [{"line": 2, "new": "  {name: \"apple\",  price: 1.5,  qty: 10},"}, {"line": 3, "new": "  {name: \"banana\", price: 0.75, qty: 3},"}, {"line": 4, "new": "  {name: \"cherry\", price: 3.0,  qty: 7},"}]}
+{"id": "r2_rep00063", "err": "unknown_name", "verdict": "none", "replacement": null}
+{"id": "r2_rep00999", "err": "runtime", "verdict": "none", "replacement": null}
+{"id": "r2_rep00799", "err": "runtime", "verdict": "none", "replacement": null}
+{"id": "r2_rep00019", "err": "type_mismatch", "verdict": "none", "replacement": null}
+{"id": "r2_rep00216", "err": "type_mismatch", "verdict": "none", "replacement": null}
+{"id": "r2_rep00408", "err": "type_mismatch", "verdict": "correct", "replacement": [{"line": 15, "new": "total = lines | fold 0.float acc line -> {"}]}
+{"id": "r2_rep00429", "err": "type_mismatch", "verdict": "none", "replacement": null}
+{"id": "r2_rep00913", "err": "type_mismatch", "verdict": "correct", "replacement": [{"line": 29, "new": "  {name: \"alice\", score: 88},"}, {"line": 30, "new": "  {name: \"bob\",   score: 95},"}, {"line": 31, "new": "  {name: \"cara\",  score: 72},"}]}
+{"id": "r2_rep00363", "err": "type_mismatch", "verdict": "correct", "replacement": [{"line": 15, "new": "  {player: \"ana\",   score: 42, active: true},"}, {"line": 16, "new": "  {player: \"boris\", score: 17, active: false},"}, {"line": 17, "new": "  {player: \"cara\",  score: 88, active: true},"}, {"line": 18, "new": "  {player: \"dan\",   score: 55, active: true},"}]}
+{"id": "r2_rep00351", "err": "unknown_field", "verdict": "none", "replacement": null}
+{"id": "r2_rep00256", "err": "unknown_field", "verdict": "none", "replacement": null}
+{"id": "r2_rep00436", "err": "unknown_name", "verdict": "none", "replacement": null}
+{"id": "r2_rep00760", "err": "unknown_name", "verdict": "none", "replacement": null}
+{"id": "r2_rep00190", "err": "type_mismatch", "verdict": "none", "replacement": null}
+{"id": "r2_rep00051", "err": "type_mismatch", "verdict": "none", "replacement": null}
+{"id": "r2_rep00499", "err": "type_mismatch", "verdict": "none", "replacement": null}
+{"id": "r2_rep00165", "err": "expected", "verdict": "none", "replacement": null}
+{"id": "r2_rep00927", "err": "type_mismatch", "verdict": "none", "replacement": null}
+{"id": "r2_rep01019", "err": "expected", "verdict": "none", "replacement": null}

@@ -498,3 +498,38 @@ format-heavy worked example (a receipt printer — the class, not the
 99-bottles answer) took haiku's 99-bottles from 0/3 to **3/3** under
 the identical head-to-head protocol
 (`tools/bench/h2h/rerun_99bottles_ext.jsonl`).
+
+## Fix synthesis: the compiler earns part of the oracle's prize (2026-06-12)
+
+The diagnostics tournament's arm D (docs/VS-ZERO.md) set an
+oracle-assisted bound: with verified `repair.replacement` payloads,
+haiku repairs 32/32 single-shot. `fix-synthesis` replaces the oracle
+with real compiler synthesis (`src/repair.rs`): for the mechanically
+fixable classes — expected-token splices, `.int`/`.float`/`.str`
+conversions, multi-line literal missing commas, unparseable-annotation
+removal, `print match` parenthesization, unknown-name aliases and
+edit-distance-1 renames — the toolchain generates bounded candidate
+edits and emits a payload **only when the patched program re-passes the
+full parse+check gate** (rustc's machine-applicable bar; APR's
+generate-and-validate). Arm E is today's shipped `curt check/run`
+output, same frozen corpus and protocol ($0.13):
+
+| rendering | diag o200k | turn-1 repair | final | lane $ |
+|---|---|---|---|---|
+| A — pre-tournament (prose hint) | 38.4 | 18/32 | 21/32 | $0.152 |
+| C — typed + hint | 60.3 | 22/32 | 26/32 | $0.139 |
+| D — oracle payloads (bound) | 82.8 | 32/32 | 32/32 | $0.107 |
+| **E — shipped, real synthesis** | 53.9 | **24/32** | **27/32** | $0.131 |
+
+Synthesis coverage is **8/32 (25%)** with a **0% wrong-payload rate**:
+every emitted payload, applied mechanically, reproduces the verified
+fix's output (`diag_tourney.py payload`, no API). The mechanism
+transfers intact — the 8 payload-bearing cells repaired **8/8 turn-1**
+(the same cells under C: 5/8) while bare cells ran 16/24, matching the
+oracle arm's per-cell behavior. The remaining gap to 32/32 is entirely
+*coverage*: the other 24 corpus errors need structural rewrites
+(match-to-assignment, multi-line brace repair) that single-line
+verified edits cannot express. Honest qualifiers: n=32 single-sample
+cells (the unknown_name row wobbled 2/4 vs C's 3/4 on uncovered
+cells), and the candidate generators were built while the corpus was
+visible — the coverage number is in-distribution, not held-out.

@@ -24,16 +24,29 @@ pub struct Diag {
     pub col: u32,
     pub msg: String,
     pub fix: String,
+    /// Verified machine-applicable edits (repair::synthesize): 1-based line
+    /// number -> new text for that line. Rendered inside `repair`.
+    pub replacement: Option<Vec<(u32, String)>>,
 }
 
 impl Diag {
     pub fn at(err: &str, line: u32, col: u32, msg: &str, fix: &str) -> Self {
-        Diag { err: err.into(), line, col, msg: msg.into(), fix: fix.into() }
+        Diag {
+            err: err.into(),
+            line,
+            col,
+            msg: msg.into(),
+            fix: fix.into(),
+            replacement: None,
+        }
     }
 }
 
 fn esc(s: &str) -> String {
-    s.replace('\\', "\\\\").replace('"', "\\\"")
+    s.replace('\\', "\\\\")
+        .replace('"', "\\\"")
+        .replace('\n', "\\n")
+        .replace('\t', "\\t")
 }
 
 /// Stable repair operation per error code (tournament arm-B table).
@@ -89,15 +102,26 @@ impl fmt::Display for Diag {
                 esc(&self.fix)
             ),
         };
+        let replacement = match &self.replacement {
+            Some(rs) if !rs.is_empty() => {
+                let items: Vec<String> = rs
+                    .iter()
+                    .map(|(l, n)| format!("{{\"line\":{},\"new\":\"{}\"}}", l, esc(n)))
+                    .collect();
+                format!(",\"replacement\":[{}]", items.join(","))
+            }
+            _ => String::new(),
+        };
         write!(
             f,
-            "{{\"err\":\"{}\",\"at\":\"{}:{}\",{},\"repair\":{{\"id\":\"{}\",\"summary\":\"{}\"}}}}",
+            "{{\"err\":\"{}\",\"at\":\"{}:{}\",{},\"repair\":{{\"id\":\"{}\",\"summary\":\"{}\"{}}}}}",
             esc(&self.err),
             self.line,
             self.col,
             body,
             rid,
-            rsum
+            rsum,
+            replacement
         )
     }
 }
@@ -144,5 +168,19 @@ mod tests {
         assert!(s.contains("\"id\":\"manual-review\""), "{s}");
         // escaping check: the inner quote arrives escaped, brace balance holds
         assert_eq!(s.matches('{').count(), s.matches('}').count(), "{s}");
+    }
+
+    #[test]
+    fn replacement_renders_inside_repair_and_escapes() {
+        let mut d = Diag::at("expected", 2, 5, "expected }, found Comma", "h");
+        d.replacement = Some(vec![(2, "a = 1\nb = \"x\"".into())]);
+        let s = d.to_string();
+        assert!(
+            s.contains("\"repair\":{\"id\":\"fix-syntax\",\"summary\":\"correct the syntax at the span\",\"replacement\":[{\"line\":2,\"new\":\"a = 1\\nb = \\\"x\\\"\"}]}"),
+            "{s}"
+        );
+        // the rendered diag must itself stay single-line valid JSON
+        // (no brace-balance check here: the literal `}` in `want` skews it)
+        assert!(!s.contains('\n'), "{s}");
     }
 }

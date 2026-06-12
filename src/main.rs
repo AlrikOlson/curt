@@ -161,7 +161,8 @@ fn main() -> ExitCode {
                     }
                     ExitCode::SUCCESS
                 }
-                Err(d) => {
+                Err(mut d) => {
+                    d.replacement = curt::repair::synthesize(&src, &d);
                     eprintln!("{d}");
                     ExitCode::FAILURE
                 }
@@ -205,7 +206,8 @@ fn main() -> ExitCode {
                         ExitCode::FAILURE
                     }
                 },
-                Err(d) => {
+                Err(mut d) => {
+                    d.replacement = curt::repair::synthesize(&src, &d);
                     eprintln!("{d}");
                     ExitCode::FAILURE
                 }

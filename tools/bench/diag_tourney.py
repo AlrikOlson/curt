@@ -13,6 +13,11 @@ Four renderings of THE SAME underlying curt error, fed back for repair:
      derived by diffing broken vs the VERIFIED fixed program — an
      ORACLE-ASSISTED upper bound on compiler fix synthesis, single-turn
      only, excluded from the convergence metric
+  E  the SHIPPED toolchain with REAL synthesis (fix-synthesis chunk):
+     today's `curt check/run` re-derives the diag fresh, including any
+     repair.replacement the compiler's generate-and-validate synthesizer
+     (src/repair.rs) emitted. A/B/C protocol (<=2 turns). `payload`
+     subcommand measures coverage + mechanical correctness with no API.
 
 Corpus: data/py2curt/repairs.jsonl.gz (toolchain-verified triples).
 Admission: stored diag parses; today's `curt run broken` reproduces a
@@ -47,7 +52,7 @@ TOURNEY = HERE / "tourney"
 REPAIRS = ROOT / "data" / "py2curt" / "repairs.jsonl.gz"
 N_CORPUS = 32
 SEED = 42
-ARMS = ["A", "B", "C", "D"]
+ARMS = ["A", "B", "C", "D", "E"]
 MODEL = "haiku"
 
 REPAIR_IDS = {
@@ -187,12 +192,74 @@ def cmd_sample(_args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_run(_args: argparse.Namespace) -> int:
+def apply_payload(src: str, reps: list[dict]) -> str:
+    """Apply {line,new} whole-line replacements (1-based; new may be multi-line)."""
+    lines = src.splitlines()
+    for r in sorted(reps, key=lambda r: -r["line"]):
+        i = r["line"] - 1
+        if 0 <= i < len(lines):
+            lines[i:i + 1] = r["new"].split("\n")
+    return "\n".join(lines) + "\n"
+
+
+def cmd_payload(_args: argparse.Namespace) -> int:
+    """Mechanical synthesis audit on the frozen corpus — no API calls.
+
+    coverage: % of corpus errors for which today's toolchain emits a
+    repair.replacement. correct: applying it yields the oracle's stdout.
+    plausible-but-wrong: the payload checks clean (by construction) but the
+    patched program's output differs from the oracle — APR's overfitting
+    rate, the cost of a wrong payload.
+    """
+    corpus = [json.loads(ln) for ln in (TOURNEY / "corpus.jsonl").open()]
+    tmp = pathlib.Path("/tmp/tourney_payload.curt")
+    rows: list[dict] = []
+    by_err: dict[str, list[str]] = {}
+    for item in corpus:
+        d = today_diag(item["broken"], tmp)
+        reps = (d or {}).get("repair", {}).get("replacement")
+        verdict = "none"
+        if reps:
+            patched = apply_payload(item["broken"], reps)
+            try:
+                stdout, _, code = run_curt(patched, tmp)
+            except subprocess.TimeoutExpired:
+                stdout, code = "", 1
+            if code == 0 and norm_eq(stdout, item["oracle"]):
+                verdict = "correct"
+            else:
+                verdict = "wrong"
+        rows.append({"id": item["id"], "err": d["err"] if d else "?",
+                     "verdict": verdict, "replacement": reps})
+        by_err.setdefault(rows[-1]["err"], []).append(verdict)
+        print(f"{item['id']} {rows[-1]['err']:14s} {verdict}", flush=True)
+    n = len(rows)
+    cov = sum(1 for r in rows if r["verdict"] != "none")
+    cor = sum(1 for r in rows if r["verdict"] == "correct")
+    wrong = sum(1 for r in rows if r["verdict"] == "wrong")
+    with (TOURNEY / "payload_audit.jsonl").open("w") as f:
+        for r in rows:
+            f.write(json.dumps(r) + "\n")
+    print(f"\ncoverage {cov}/{n} ({100 * cov / n:.0f}%)  "
+          f"correct {cor}/{n}  plausible-but-wrong {wrong}/{n} "
+          f"(wrong-payload rate {100 * wrong / cov:.0f}% of emitted)"
+          if cov else f"\ncoverage 0/{n}")
+    print("by err class (correct/covered/total):")
+    for e, vs in sorted(by_err.items()):
+        c = sum(1 for v in vs if v == "correct")
+        k = sum(1 for v in vs if v != "none")
+        print(f"  {e:16s} {c}/{k}/{len(vs)}")
+    return 0
+
+
+def cmd_run(args: argparse.Namespace) -> int:
     key = api_key()
     corpus = [json.loads(ln) for ln in (TOURNEY / "corpus.jsonl").open()]
     tmp = pathlib.Path("/tmp/tourney_run.curt")
     total_cost = 0.0
-    for arm in ARMS:
+    # A-D transcripts are FROZEN (vz-diag); default reruns only the new arm
+    arms = args.arms.split(",") if args.arms else ["E"]
+    for arm in arms:
         out = TOURNEY / f"{arm}.jsonl"
         cells = []
         for item in corpus:
@@ -201,7 +268,17 @@ def cmd_run(_args: argparse.Namespace) -> int:
                 payload, n_reps = replacement_payload(item["broken"], item["fixed"])
                 if n_reps > 3:
                     print(f"D {item['id']}: payload capped 3/{n_reps} hunks", flush=True)
-            diag_text = render(arm, item["diag"], item["diag"].get("fix", ""), payload)
+            if arm == "E":
+                # the shipped toolchain, fresh: typed fields + any synthesized
+                # repair.replacement, exactly as `curt check/run` emits today
+                fresh = today_diag(item["broken"], tmp)
+                if fresh is None:
+                    print(f"E {item['id']}: no longer errors under today's "
+                          f"toolchain — feeding stored diag", flush=True)
+                diag_text = (json.dumps(fresh, separators=(",", ":")) if fresh
+                             else render("A", item["diag"], "", None))
+            else:
+                diag_text = render(arm, item["diag"], item["diag"].get("fix", ""), payload)
             max_turns = 1 if arm == "D" else 2
             turns, solved, program = [], False, item["broken"]
             feedback = diag_text
@@ -296,7 +373,11 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("sample").set_defaults(fn=cmd_sample)
-    sub.add_parser("run").set_defaults(fn=cmd_run)
+    runp = sub.add_parser("run")
+    runp.add_argument("--arms", default="E",
+                      help="comma-separated arms to (re)run; A-D are frozen")
+    runp.set_defaults(fn=cmd_run)
+    sub.add_parser("payload").set_defaults(fn=cmd_payload)
     sub.add_parser("report").set_defaults(fn=cmd_report)
     args = ap.parse_args()
     return args.fn(args)

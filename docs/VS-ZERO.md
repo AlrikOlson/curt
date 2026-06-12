@@ -161,7 +161,10 @@ derived from the verified fixes (an oracle-assisted upper bound, not
 shipped capability), so the number bounds the prize: a compiler that
 synthesizes actual replacements converts ~34pp of residual repair
 failure into first-turn success. That work is filed on the roadmap
-(`fix-synthesis`). Neither Zero's `repair.id: "manual-review"` (its
+(`fix-synthesis`) — and landed the same week: real compiler synthesis
+(arm E, the shipped toolchain) reaches 24/32 turn-1 at 25% payload
+coverage and a 0% wrong-payload rate, with covered cells repairing 8/8
+turn-1 (BENCHMARK.md "Fix synthesis"). Neither Zero's `repair.id: "manual-review"` (its
 captured behavior) nor curt's pre-tournament hints come close to this
 bound.
 
