@@ -7,6 +7,7 @@
 import {
   readFileSync, writeFileSync, mkdirSync, readdirSync, copyFileSync, rmSync, statSync, existsSync,
 } from "node:fs";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { dirname, join, relative } from "node:path";
 
@@ -14,6 +15,13 @@ const here = dirname(fileURLToPath(import.meta.url));
 const repo = join(here, "..");
 const dist = join(here, "dist");
 const SITE = "https://curtlang.com";
+
+// Content-hash the styles/script so each change busts the CDN + browser cache.
+// (A stable /assets/brand.css URL silently served a stale stylesheet after a
+// deploy — versioned URLs make every asset change fetch fresh.)
+const hash8 = (p) => createHash("sha256").update(readFileSync(p)).digest("hex").slice(0, 8);
+const CSS_V = hash8(join(here, "assets", "brand.css"));
+const JS_V = hash8(join(here, "assets", "site.js"));
 
 // ---- nav + layout ----------------------------------------------------------
 const NAV = [
@@ -83,7 +91,7 @@ function layout({ title, desc, active, main, ogPath }) {
 <meta property="og:url" content="${SITE}${ogPath}" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23b6f24a'/%3E%3Ctext x='16' y='23' font-family='monospace' font-size='20' font-weight='700' text-anchor='middle' fill='%230b0d10'%3Ec%3C/text%3E%3C/svg%3E" />
-<link rel="stylesheet" href="/assets/brand.css" />
+<link rel="stylesheet" href="/assets/brand.css?v=${CSS_V}" />
 <script>(function(){try{var t=localStorage.getItem('curt-theme');if(!t)t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head>
 <body>
@@ -92,7 +100,7 @@ ${navHtml(active)}
 ${main}
 </main>
 ${FOOTER}
-<script src="/assets/site.js" defer></script>
+<script src="/assets/site.js?v=${JS_V}" defer></script>
 </body>
 </html>`;
 }
@@ -131,10 +139,16 @@ copyDir(join(here, "assets"), join(dist, "assets"));
 const pg = join(repo, "playground");
 mkdirSync(join(dist, "play", "dist"), { recursive: true });
 for (const [s, d] of [
-  ["index.html", "index.html"],
   ["styles.css", "styles.css"],
   ["curt.wasm", "curt.wasm"],
   ["dist/app.bundle.js", "dist/app.bundle.js"],
 ]) copyFileSync(join(pg, s), join(dist, "play", d));
+// version the playground's own asset refs (same cache-bust discipline)
+const pgCss = hash8(join(pg, "styles.css"));
+const pgJs = hash8(join(pg, "dist", "app.bundle.js"));
+const pgHtml = readFileSync(join(pg, "index.html"), "utf8")
+  .replace('href="./styles.css"', `href="./styles.css?v=${pgCss}"`)
+  .replace('src="./dist/app.bundle.js"', `src="./dist/app.bundle.js?v=${pgJs}"`);
+writeFileSync(join(dist, "play", "index.html"), pgHtml);
 
 console.log(`built site → ${relative(repo, dist)} (${PAGES.length} pages + /play/)`);
