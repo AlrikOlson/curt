@@ -26,20 +26,23 @@ fn corpus_fmt_is_byte_identical() {
     // The canonical corpus is already canonical: fmt must be a fixpoint.
     for (name, src) in corpus_files() {
         let formatted = format(&src).unwrap_or_else(|d| panic!("{name}: {d}"));
-        if name == "22_logmill.curt" {
-            // fmt rewrites raw '...' strings to the token-costlier escaped
-            // form: the SPEC §10 Postel slip rule ('x'→"x") conflicts with
-            // the raw-string feature, and in-hole raw strings are left
-            // untouched while statement-level ones are rewritten. Tracked
-            // as roadmap chunk fmt-rawstr; this exemption dies with it.
-            // Until then the flagship must still reach a fixpoint in one
-            // pass:
-            let fixed = format(&formatted).unwrap();
-            assert_eq!(fixed, formatted, "{name}: fmt not a fixpoint after one pass");
-            continue;
-        }
         assert_eq!(formatted, src, "{name}: fmt changed a canonical file");
     }
+}
+
+#[test]
+fn raw_strings_round_trip() {
+    // fmt-rawstr tournament verdict: '...' spelling is preserved verbatim,
+    // statement-level and in-hole alike — never rewritten to escaped form
+    let src = "base = '{\"title\": \"x\"}'\nprint \"{xs | join ', '}\"\nch = 'a'\n";
+    assert_eq!(fmt1(src), src);
+}
+
+#[test]
+fn char_escape_postel_still_canonicalizes() {
+    // the narrowed Postel survivor: a raw spelling cannot express an escape,
+    // and a model writing '\n' means newline
+    assert_eq!(fmt1("print '\\n'\n"), "print \"\\n\"\n");
 }
 
 #[test]

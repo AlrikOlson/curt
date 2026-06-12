@@ -170,27 +170,22 @@ pub fn lex_raw(src: &str) -> Result<Vec<Token>, Diag> {
                 prev_end = usize::MAX;
             }
             b'\'' => {
-                // Postel: 'x' (single character, optionally escaped) is the
-                // C/Rust char-literal habit — canonicalize to a 1-char string
-                // (token-bench: 2 cells failed on '\''-vowel comparisons)
+                // '...' is the RAW string literal: verbatim text, no escapes,
+                // no interpolation holes; the spelling is PRESERVED end-to-end
+                // so fmt round-trips it (fmt-rawstr tournament: cheapest-
+                // spelling rewriting saved 8/646 o200k but churned frozen
+                // canonical files — preservation won).
                 let (start, startcol) = (i, col);
                 let rest = &b[i + 1..];
-                let (ch, len) = match rest {
-                    [b'\\', e, b'\'', ..] => (format!("\\{}", *e as char), 4),
-                    [c2, b'\'', ..] if *c2 != b'\'' && *c2 != b'\n' => ((*c2 as char).to_string(), 3),
+                let (text, len) = match rest {
+                    // narrowed Postel survivor: '\n' (the C char-escape habit)
+                    // still canonicalizes — a raw spelling cannot express an
+                    // escape, and a model writing '\n' means newline
+                    [b'\\', e, b'\'', ..] => (format!("\"\\{}\"", *e as char), 4),
                     _ if rest.iter().take_while(|c| **c != b'\n').any(|c| *c == b'\'') => {
-                        // Postel: '...' multi-char single-quoted string —
-                        // canonicalize to a double-quoted string, escaping
-                        // any embedded double quotes (domain-bench:
-                        // interpolation holes can't carry double quotes)
                         let end = rest.iter().position(|c| *c == b'\'').unwrap();
-                        // raw semantics: escape quotes AND interpolation
-                        // braces so '...' text never opens a hole
-                        let body = String::from_utf8_lossy(&rest[..end])
-                            .replace('\\', "\\\\")
-                            .replace('"', "\\\"")
-                            .replace('{', "\\{");
-                        (body, end + 2)
+                        let body = String::from_utf8_lossy(&rest[..end]);
+                        (format!("'{body}'"), end + 2)
                     }
                     _ => {
                         return Err(Diag::at(
@@ -202,7 +197,7 @@ pub fn lex_raw(src: &str) -> Result<Vec<Token>, Diag> {
                         ))
                     }
                 };
-                push!(Tok::Str(format!("\"{ch}\"")), start, startcol);
+                push!(Tok::Str(text), start, startcol);
                 i += len;
                 col += len as u32;
                 prev_end = i;

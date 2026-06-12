@@ -264,8 +264,14 @@ The parser accepts, and `fmt` canonicalizes (never errors): `==`←`=` (in
 expression position), `&&`→`and`, `||`→`or`, `!x`→`not x` (expression
 position), `True/False/None`→`true/false/()`, `return`→`ret`, `elif`→`else
 if`, trailing commas, `f(x, y)`→`f x y` (paren-call form), smart quotes,
-`++`→`+` and `'x'`→`"x"` *(added in spec-truth: both measured as recurring
-model slips in token-bench)*.
+`++`→`+` and `'\x'`→`"\x"` *(the char-ESCAPE habit only — a raw spelling
+cannot express an escape)*. Bare `'...'` is NOT a slip: it is the raw-string
+literal (verbatim text, no escapes, no interpolation holes) and `fmt`
+preserves its spelling, statement-level and in-hole alike *(fmt-rawstr
+tournament 2026-06-12: cheapest-spelling rewriting saved 8/646 o200k over
+corpus literals but churned 8 frozen canonical files and fights the
+measured double-quote prior — preservation won; the earlier `'x'`→`"x"`
+rule conflicted with the raw-string feature and is retired)*.
 Rationale: language-confusion drift toward Python/Rust is measured behavior
 (arXiv 2503.13620); recoverable habits must never cost a repair loop.
 

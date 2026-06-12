@@ -216,12 +216,11 @@ def process(job, key, seen, lock):
     why = verify(feature, code, fixture)
     if why:
         return {"feature": feature, "status": "reject", "why": why, "usage": usage}
-    # fmt canonicalization rewrites raw '...' strings into escaped "..."
-    # form — it would erase the very feature the rawstr quota targets
-    # (measured in the first full run: 89 'rawstr' pairs without a single
-    # raw string). Preserve the surface form for that family.
-    if feature != "rawstr":
-        code = canonical(code)
+    # fmt preserves raw '...' spellings since fmt-rawstr (2026-06-12) —
+    # the old rawstr exemption (89 erased pairs in the first full run) is
+    # no longer needed, but kept harmless: canonical(code) is now a no-op
+    # on raw strings either way.
+    code = canonical(code)
     digest = hashlib.sha256(code.encode()).hexdigest()
     with lock:
         if digest in seen:

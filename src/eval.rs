@@ -304,6 +304,10 @@ impl Interp {
         match e {
             Expr::Num(n) => Ok(parse_num(n)),
             Expr::Str(s) => {
+                // raw '...' lexeme: verbatim value — no holes, no escapes
+                if let Some(body) = raw_str_body(s) {
+                    return Ok(Value::Str(Rc::new(body.to_string())));
+                }
                 // the lexer keeps the quoted lexeme; values are the inner text
                 let inner = s.strip_prefix('"').and_then(|x| x.strip_suffix('"')).unwrap_or(s);
                 self.interpolate(inner, env)
@@ -350,8 +354,12 @@ impl Interp {
             Expr::MapLit(entries) => {
                 let mut pairs = Vec::new();
                 for (k, v) in entries {
-                    let inner = k.strip_prefix('"').and_then(|x| x.strip_suffix('"')).unwrap_or(k);
-                    let key = self.interpolate(inner, env)?;
+                    let key = if let Some(body) = raw_str_body(k) {
+                        Value::Str(Rc::new(body.to_string()))
+                    } else {
+                        let inner = k.strip_prefix('"').and_then(|x| x.strip_suffix('"')).unwrap_or(k);
+                        self.interpolate(inner, env)?
+                    };
                     let val = self.expr(v, env)?;
                     pairs.push((key, val));
                 }
@@ -1281,6 +1289,11 @@ fn binop(op: &str, l: &Value, r: &Value) -> R<Value> {
             _ => Result::Err(fail(format!("cannot {op} {} and {}", show(l), show(r)))),
         },
     }
+}
+
+/// The inner text of a raw `'...'` lexeme, or None for `"..."` lexemes.
+fn raw_str_body(lexeme: &str) -> Option<&str> {
+    lexeme.strip_prefix('\'').and_then(|x| x.strip_suffix('\''))
 }
 
 fn unescape(s: &str) -> String {
