@@ -1,0 +1,10 @@
+lines = fs.read "users.txt" ? "" | lines
+users = lines | keep (l -> {
+  parts = l.split " " | keep (p -> p.len > 0)
+  parts.len == 3 && (parts[2].int ?) != err
+}) | map (l -> {
+  parts = l.split " " | keep (p -> p.len > 0)
+  {id: parts[0], name: parts[1], age: parts[2].int?}
+})
+print users.len
+print (users | map .age | sum) / users.len

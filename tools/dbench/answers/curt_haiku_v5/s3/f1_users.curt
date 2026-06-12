@@ -1,0 +1,16 @@
+lines = fs.read "users.txt" ? ""
+users = []
+for line in lines.lines {
+  parts = line.split " "
+  if parts.len == 3 {
+    id = parts[0]
+    name = parts[1]
+    age = parts[2].int ? null
+    if age != null {
+      users = users + [{id, name, age}]
+    }
+  }
+}
+print users.len
+avg = (users | map .age | sum) / users.len
+print avg.int

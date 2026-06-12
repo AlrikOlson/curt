@@ -1,0 +1,2 @@
+orders = fs.read("orders.json").json
+print (orders | keep .amt > 25 | top 1000 .amt | map .id | join ",")

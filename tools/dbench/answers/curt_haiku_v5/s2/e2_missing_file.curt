@@ -1,0 +1,5 @@
+cfg = fs.read "missing.cfg" ? "{}"
+print (json cfg)["name"] ? "default"
+
+cfg = fs.read "app.cfg" ? "{}"
+print (json cfg)["port"] ? 0

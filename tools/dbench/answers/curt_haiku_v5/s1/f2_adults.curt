@@ -1,0 +1,9 @@
+lines = fs.read "users.txt" ? ""
+users = lines.split "\n" | keep x -> x.len > 0 | map x -> {
+  parts = x.split ","
+  name = parts[0]
+  age = parts[1].int
+  {name, age}
+}
+names = users | keep x -> x.age > 25 | map .name
+print (names | join " ")

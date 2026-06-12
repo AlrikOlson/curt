@@ -1,0 +1,7 @@
+text = fs.read "users.txt" ? ""
+text.lines | keep (line -> line.trim.len > 0) | map line -> {
+  parts = line.split ","
+  name = parts[0].trim
+  age = parts[1].trim.int ? 0
+  if age > 25 { name } else { "" }
+} | keep (s -> s.len > 0) | join " " | print

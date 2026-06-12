@@ -35,7 +35,8 @@ print greet "ana"               # application is juxtaposition: f x y
   `row.split "," | sum` pipes the split result.
 - `print` and `?` wrap a pipeline, never head it: `print (xs | sum)`,
   `print (m["k"] ? 0)` — `print xs | sum` pipes print's unit (checker
-  rejects it).
+  rejects it). Same for operators: `print (total / 3)`, NEVER
+  `print total / 3` (that divides print's unit).
 - Dots chain only when GLUED: `xs.keep(f).map(g)` chains; with spaces,
   chain with `|` instead.
 - Application binds tighter than operators: `c.write x + y` is
@@ -58,8 +59,9 @@ float str bool bytes`. Lists `[1,2]`, tuples `(1, "a")` (fields `.0 .1`),
 records. `xs + ys` concatenates lists; `acc += [x]` appends. A mixed
 literal like `[7, "ok"]` is a `[int | str]` union list. Multiline list
 literals are fine (newlines inside `[ ]` and `( )` are plain whitespace).
-Map literal: `m = {"k": 1, "n": 2}` (string keys; `{}` is the empty
-map; build dynamic keys with `m[k] = v`); index `m["k"]` or `m.k`
+Map literal: `m = {"k": 1, "n": 2}` (string keys, multi-line fine;
+`{}` is the empty map; build dynamic keys with `m[k] = v`); index
+`m["k"]` or `m.k`
 (field syntax does key lookup), rescue a missing key: `m["k"] ? 0`;
 iterate `m.pairs` which yields records with fields `.k` and `.v`.
 Maps also arrive from `counts`, `.json`, `group`. Records (ident

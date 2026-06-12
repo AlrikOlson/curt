@@ -1,0 +1,9 @@
+describe v = match v {
+  int i -> "int {i + 1}",
+  float f -> "float {f}",
+  str s -> "str {s.len}"
+}
+
+print (describe 42)
+print (describe 3.5)
+print (describe "abc")

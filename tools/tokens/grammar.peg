@@ -101,9 +101,9 @@ atom        = matchexpr / ifexpr / number / string / recordlit / maplit / anonre
             / list / tuple / paren / block / projatom / tname / name
 projatom    = "." name
 recordlit   = tname "{" _ field (_ "," _ field)* _ "}"
-anonrecord  = ("{" _ field (_ "," _ field)* _ "}") / ("{" _ "}")
+anonrecord  = ("{" bws field ((bws "," bws / nl bws) field)* bws ("," bws)? "}") / ("{" bws "}")
 field       = name ":" _ expr
-maplit      = "{" _ mapentry (_ "," _ mapentry)* _ "}"
+maplit      = "{" bws mapentry ((bws "," bws / nl bws) mapentry)* bws ("," bws)? "}"
 mapentry    = string ":" _ expr
 # brackets suspend statement separation (spec-truth): canonical multiline
 # layout allows a newline after '[' / '(', after commas, and before ']' / ')'

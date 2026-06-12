@@ -1,0 +1,7 @@
+cfg = fs.read "app.cfg" ? {}
+orders = fs.read "orders.json" ? []
+name = cfg.name ? "svc"
+paid = orders | keep .paid
+count = paid.len
+total = paid | map .amt | sum
+print "{name}: {count} paid, total {total}"

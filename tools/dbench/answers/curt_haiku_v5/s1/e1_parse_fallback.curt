@@ -1,0 +1,5 @@
+nums = ["12", "x", "7", "-", "30"]
+total = nums | map (s -> (int s) ? 0) | sum
+bad = nums | keep (s -> (int s) | match { err _ -> true, _ -> false }) | len
+print total
+print bad

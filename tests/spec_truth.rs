@@ -177,3 +177,35 @@ fn record_literal_distinct_from_map_literal() {
     assert!(!ok, "records must not be string-indexable");
     assert!(err.contains("not indexable"), "got: {err}");
 }
+
+/// multiline-maplit: the largest v4-lane failure class — models write
+/// map literals across lines (synth-v2 repair triples + 10/45 v4 cells).
+#[test]
+fn map_literal_multiline() {
+    run_ok(
+        "m = {\n  \"a\": 1,\n  \"b\": 2,\n}\nprint m[\"a\"]\nprint m.len\n",
+        "1\n2\n",
+    );
+    // blocks opening with an annotated binding still parse as blocks
+    run_ok("f x = {\n  y: int = 2\n  ret y + x\n}\nprint (f 1)\n", "3\n");
+    // fmt round-trips the multi-line form verbatim
+    let src = "m = {\n  \"a\": 1\n}\nprint m[\"a\"]\n";
+    let (out, _, ok) = run_src("fmt", src);
+    assert!(ok);
+    assert_eq!(out, src);
+}
+
+/// multiline-maplit (v0.3.1): records too — newline-separated, comma-less
+/// fields are the exact v4 failing shape; annotated-binding blocks are
+/// disambiguated by the bare `=` before end-of-line.
+#[test]
+fn record_literal_multiline() {
+    run_ok(
+        "r = {\n  name: \"amy\"\n  age: 34\n}\nprint r.name\nprint r.age\n",
+        "amy\n34\n",
+    );
+    run_ok(
+        "u = [\"a 1\", \"b 2\"] | map x -> {\n  name: x.words[0]\n  num: x.words[1].int\n}\nprint (u | map .num | sum)\n",
+        "3\n",
+    );
+}

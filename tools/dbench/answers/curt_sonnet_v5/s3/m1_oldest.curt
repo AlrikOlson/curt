@@ -1,0 +1,8 @@
+lines = (fs.read "users.txt") ? ""
+users = lines.lines | keep x -> x.trim.len > 0 | map x -> {
+  parts: x.trim.split " ",
+  name: (x.trim.split " ")[0],
+  age: (x.trim.split " ")[1].int ? -1
+} | keep x -> x.age > 0
+oldest = users | top 1 x -> x.age | first
+print "{oldest.name} {oldest.age}"

@@ -1,0 +1,5 @@
+words = "pack my box with five dozen liquor jugs".words
+longest = words | top 1 .len | map (w -> w) | first
+avg = (words | map .len | sum) / words.len
+print longest
+print avg

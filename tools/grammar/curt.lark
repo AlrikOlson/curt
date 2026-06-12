@@ -105,8 +105,8 @@ hatom: NUMBER | STRING | list | tuple | paren | projatom | NAME
 atom: matchexpr | ifexpr | NUMBER | STRING | recordlit | maplit | anonrecord | list | tuple | paren | block | projatom | TNAME | NAME
 projatom: "." NAME
 recordlit: TNAME "{" _ws field (_ws "," _ws field)* _ws "}"
-anonrecord: ("{" _ws field (_ws "," _ws field)* _ws "}") | ("{" _ws "}")
-maplit: "{" _ws mapentry (_ws "," _ws mapentry)* _ws "}"
+anonrecord: ("{" _bws field ((_bws "," _bws | NL _bws) field)* _bws ("," _bws)? "}") | ("{" _bws "}")
+maplit: "{" _bws mapentry ((_bws "," _bws | NL _bws) mapentry)* _bws ("," _bws)? "}"
 mapentry: STRING ":" _ws expr
 field: NAME ":" _ws expr
 // brackets suspend statement separation (spec-truth): canonical multiline

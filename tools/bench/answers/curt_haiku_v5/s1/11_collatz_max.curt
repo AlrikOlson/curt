@@ -1,0 +1,14 @@
+collatz_steps n = {
+  steps = 0
+  current = n
+  while current != 1 {
+    current = if current % 2 == 0 { current / 2 } else { 3 * current + 1 }
+    steps += 1
+  }
+  steps
+}
+
+results = range 1 11 | map n -> {n, steps: collatz_steps n}
+best = results | top 1 .steps | first
+
+print "{best.n} {best.steps} steps"

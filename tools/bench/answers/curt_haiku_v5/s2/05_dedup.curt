@@ -1,0 +1,7 @@
+xs = [3, 1, 3, 2, 1, 4]
+seen = {}
+out = []
+for x in xs {
+  if seen[x] ? false { } else { out += [x]; seen[x] = true }
+}
+print (out | map str | join " ")

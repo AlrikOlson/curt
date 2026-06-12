@@ -1,0 +1,13 @@
+items = [
+  {name: "widget", qty: 4, price: 2.5},
+  {name: "gizmo",  qty: 2, price: 7.25},
+  {name: "bolt",   qty: 10, price: 0.1}
+]
+
+total item = item.qty * item.price
+
+grand = items | map total | sum
+best  = items | top 1 total | map .name | join ""
+
+print grand
+print best

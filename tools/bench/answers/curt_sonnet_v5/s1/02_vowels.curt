@@ -1,0 +1,3 @@
+s = "the quick brown fox jumps over the lazy dog"
+count = s.chars | keep c -> c in "aeiou" | len
+print count

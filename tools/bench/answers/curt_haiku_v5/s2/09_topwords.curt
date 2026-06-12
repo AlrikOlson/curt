@@ -1,0 +1,4 @@
+sent = "the cat sat on the mat with the cat"
+freq = sent.lower.split " " | counts
+top_2 = freq.pairs | top 2 .v | map .k
+for word in top_2 { print "{word} {freq[word]}" }

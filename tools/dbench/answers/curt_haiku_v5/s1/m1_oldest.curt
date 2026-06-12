@@ -1,0 +1,10 @@
+users = fs.read "users.txt"?
+lines = users.split "\n"
+valid = lines | keep (line -> line.len > 0) | map (line -> {
+  parts = line.split " "
+  name = parts[0]
+  age = parts[1].int
+  {name, age}
+})
+oldest = valid | top 1 .age | first
+print "{oldest.name} {oldest.age}"

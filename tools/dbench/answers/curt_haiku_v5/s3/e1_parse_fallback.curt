@@ -1,0 +1,5 @@
+xs = ["12", "x", "7", "-", "30"]
+total = xs | map (s -> int s ? 0) | sum
+unparseable = xs | keep (s -> (int s) ? false) | len
+print total
+print unparseable

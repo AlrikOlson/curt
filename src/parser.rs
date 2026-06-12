@@ -756,23 +756,50 @@ impl Parser {
                 }
             }
             Tok::LBrace if !self.in_header => {
-                // {} -> empty record; {name: ...} -> record; else block
-                if matches!(self.peek_at(1), Tok::RBrace) {
-                    self.bump();
+                // {} -> empty record; {name: ...} -> record; {"k": ...} -> map;
+                // else block. Classification skips newlines (v0.3: models
+                // write multi-line literals — the largest measured v4 failure
+                // class), so `{` NL `"k": v` commits to a map literal.
+                let mut i = self.pos + 1;
+                while matches!(&self.toks[i.min(self.toks.len() - 1)].tok, Tok::Newline) {
+                    i += 1;
+                }
+                let first = self.toks[i.min(self.toks.len() - 1)].tok.clone();
+                let second = self.toks[(i + 1).min(self.toks.len() - 1)].tok.clone();
+                if matches!(first, Tok::RBrace) {
+                    while !matches!(self.peek(), Tok::RBrace) {
+                        self.bump();
+                    }
                     self.bump();
                     return Ok(Expr::RecordLit { name: None, fields: Vec::new() });
                 }
-                if matches!(self.peek_at(1), Tok::Name(_)) && matches!(self.peek_at(2), Tok::Colon) {
-                    self.bump();
-                    let fields = self.record_fields()?;
-                    return Ok(Expr::RecordLit { name: None, fields });
-                }
-                // {"k": v} -> string-keyed map literal (v0.3); a block can
-                // never start with Str+Colon, so the lookahead is exact
-                if matches!(self.peek_at(1), Tok::Str(_)) && matches!(self.peek_at(2), Tok::Colon) {
+                // Str+Colon is unambiguous across newlines (no block statement
+                // starts with a string literal followed by a colon) — commit
+                // to a map literal. Name+Colon stays single-line: a block may
+                // open with an annotated binding (`{` NL `count: int = 43`).
+                if matches!(first, Tok::Str(_)) && matches!(second, Tok::Colon) {
                     self.bump();
                     let entries = self.map_entries()?;
                     return Ok(Expr::MapLit(entries));
+                }
+                // Name+Colon is a record UNLESS a bare `=` appears before the
+                // line ends — that is an annotated binding opening a block
+                // (`{` NL `y: int = 2`). Record fields never contain bare `=`
+                // (expressions have no assignment form).
+                if matches!(first, Tok::Name(_)) && matches!(second, Tok::Colon) {
+                    let mut j = i + 2;
+                    let is_block = loop {
+                        match &self.toks[j.min(self.toks.len() - 1)].tok {
+                            Tok::Assign => break true,
+                            Tok::Newline | Tok::Comma | Tok::RBrace | Tok::Eof => break false,
+                            _ => j += 1,
+                        }
+                    };
+                    if !is_block {
+                        self.bump();
+                        let fields = self.record_fields()?;
+                        return Ok(Expr::RecordLit { name: None, fields });
+                    }
                 }
                 Ok(Expr::Block(self.block()?))
             }
@@ -797,8 +824,12 @@ impl Parser {
     }
 
     fn record_fields(&mut self) -> Result<Vec<(String, Expr)>, Diag> {
+        // newlines are whitespace AND valid field separators (v0.3.1:
+        // models write multi-line records, frequently comma-less — the
+        // largest v4-lane failure class)
         let mut fields = Vec::new();
         loop {
+            self.skip_newlines();
             let name = match self.bump() {
                 Tok::Name(n) => n,
                 other => {
@@ -809,20 +840,23 @@ impl Parser {
             self.expect(&Tok::Colon, ":", "field syntax is name: value")?;
             let value = self.expr()?;
             fields.push((name, value));
-            if !self.eat(&Tok::Comma) {
+            let sep = self.eat(&Tok::Comma) || matches!(self.peek(), Tok::Newline);
+            self.skip_newlines();
+            if !sep || matches!(self.peek(), Tok::RBrace) {
                 break;
             }
-            if matches!(self.peek(), Tok::RBrace) {
-                break; // trailing comma
-            }
         }
+        self.skip_newlines();
         self.expect(&Tok::RBrace, "}", "close the record")?;
         Ok(fields)
     }
 
     fn map_entries(&mut self) -> Result<Vec<(String, Expr)>, Diag> {
+        // newlines are whitespace throughout a map literal (v0.3: models
+        // write them multi-line; the largest measured v4 failure class)
         let mut entries = Vec::new();
         loop {
+            self.skip_newlines();
             let key = match self.bump() {
                 Tok::Str(s) => s,
                 other => {
@@ -833,13 +867,13 @@ impl Parser {
             self.expect(&Tok::Colon, ":", "map entry syntax is \"key\": value")?;
             let value = self.expr()?;
             entries.push((key, value));
-            if !self.eat(&Tok::Comma) {
+            let sep = self.eat(&Tok::Comma) || matches!(self.peek(), Tok::Newline);
+            self.skip_newlines();
+            if !sep || matches!(self.peek(), Tok::RBrace) {
                 break;
             }
-            if matches!(self.peek(), Tok::RBrace) {
-                break; // trailing comma
-            }
         }
+        self.skip_newlines();
         self.expect(&Tok::RBrace, "}", "close the map literal")?;
         Ok(entries)
     }

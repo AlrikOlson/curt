@@ -1,0 +1,3 @@
+text = "the quick brown fox jumps over the lazy dog"
+vowels = text.lower.chars | keep (c -> c in "aeiou") | len
+print vowels

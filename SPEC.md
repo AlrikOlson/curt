@@ -117,8 +117,12 @@ the structural rules an implementer must honor:
   functions. **Map literals (v0.3):** `{"k": v, …}` with string-literal
   keys (tournament: 15 tok vs builder 16 / assign-each 19); `{}` is the
   empty map; dynamic keys via `m[k] = v`. Disambiguation is exact: `{`
-  followed by a string and `:` is a map literal, an identifier and `:` is
-  a record literal, anything else opens a block. (The v0.1 erratum that
+  followed (possibly across newlines) by a string and `:` is a map
+  literal, an identifier and `:` on the same line is a record literal,
+  anything else opens a block. Map literals may span lines (v0.3.1:
+  models write them multi-line — the largest failure class in the v4
+  generation lanes and in synthesis repair data); record literals stay
+  single-line because a block may open with an annotated binding. (The v0.1 erratum that
   deferred the literal is resolved by this admission.) Maps also arrive
   from `counts`, `.json`, `group`.
 - **Mixed list literals widen to unions** *(amended in spec-truth)*:

@@ -1,0 +1,5 @@
+lines = (fs.read "users.txt") ? ""
+print (lines.lines | keep x -> {
+  parts = x.split ","
+  parts.len == 2 and (parts[1].trim.int ? 0) > 25
+} | map x -> x.split "," | map parts -> parts[0].trim | join " ")

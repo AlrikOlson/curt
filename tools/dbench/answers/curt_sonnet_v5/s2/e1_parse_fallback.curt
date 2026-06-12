@@ -1,0 +1,5 @@
+nums = ["12", "x", "7", "-", "30"]
+parsed = nums | map s -> s.int ? 0
+bad = nums | keep s -> (s.int ? "bad") == "bad"
+print (parsed | sum)
+print bad.len

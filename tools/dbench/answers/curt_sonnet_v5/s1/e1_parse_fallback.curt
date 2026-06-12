@@ -1,0 +1,4 @@
+items = ["12", "x", "7", "-", "30"]
+vals = items | map s -> s.int ? 0
+print (vals | sum)
+print (items | keep s -> (s.int ? "err") == "err" | len)

@@ -1,0 +1,11 @@
+s = "aaabbcccca"
+out = ""
+i = 0
+while i < s.len {
+  c = s[i]
+  run = 1
+  while i + run < s.len && s[i + run] == c { run = run + 1 }
+  out = out + c + (run | str)
+  i = i + run
+}
+print out

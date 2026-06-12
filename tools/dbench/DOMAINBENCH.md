@@ -147,3 +147,20 @@ footgun (`print (x) / y` → unit operand, 3 — also the dominant error in
 synthetic generation), invented verbs (`mod`, 2), and task-comprehension
 misses. Token ratios on solved v4 cells: bench 1.14x, dbench 1.12x
 py/curt (n=15/8) — denser than prior lanes' parity, small-n caveat.
+
+## v5 lanes (2026-06-12): after multi-line literal support + sheet teaching
+
+Same protocol as v4 (gen_lanes.py). Language fix: map AND record
+literals may span lines (newline-separated, comma-less fields accepted;
+annotated-binding blocks disambiguated by the bare `=`). Sheet adds the
+operator-wrapping rule (`print (total / 3)`).
+
+Results: bench haiku 38/45 (v4: 33), sonnet 40/45 (v4: 42, within
+3-sample noise); dbench haiku 12/30 (v4: 11), sonnet 18/30 (v4: 18).
+The multi-line parse class is eliminated from fresh failures; the
+regraded v4 lanes converted ZERO cells because every parse-blocked
+program also misread the fixture format (parse errors were masking
+semantic errors). dbench residuals are dominated by task-comprehension
+misses and a newly identified idiom gap: record field PUNNING
+(`{name, age}` shorthand), now the largest remaining parse-failure
+shape — filed for three-gate evaluation.

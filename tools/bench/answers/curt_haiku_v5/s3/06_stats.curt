@@ -1,0 +1,4 @@
+nums = [4, 8, 15, 16, 23]
+print (nums | min)
+print (nums | max)
+print (nums | sum / nums.len)
