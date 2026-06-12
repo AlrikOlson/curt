@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>curt — browser playground</title>
+  <meta name="description" content="Run curt in your browser via wasm, with a live o200k token meter. A machine-first language where the tokenizer is the ISA." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='13'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">curt</span>
+      <span class="tagline">a machine-first language · the tokenizer is the ISA</span>
+    </div>
+    <button id="theme-toggle" class="theme-toggle" data-testid="theme-toggle" aria-label="Toggle color theme">
+      <span class="theme-toggle-icon" aria-hidden="true"></span>
+      <span class="theme-toggle-label">Dark</span>
+    </button>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Playground sections">
+    <button class="tab" role="tab" data-tab="run" data-testid="tab-run" aria-selected="true">Playground</button>
+    <button class="tab" role="tab" data-tab="vs" data-testid="tab-vs" aria-selected="false">curt vs Python</button>
+    <button class="tab" role="tab" data-tab="gallery" data-testid="tab-gallery" aria-selected="false">Constrained decode</button>
+  </nav>
+
+  <main>
+    <!-- Playground -->
+    <section class="panel" data-panel="run" data-testid="panel-run">
+      <div class="run-grid">
+        <div class="editor-col">
+          <div class="row between">
+            <label for="example-select" class="label">Example</label>
+            <div class="meter" data-testid="token-meter">
+              <span class="meter-num" id="token-count" data-testid="token-count">0</span>
+              <span class="meter-unit">o200k tokens</span>
+            </div>
+          </div>
+          <select id="example-select" class="select" data-testid="example-select" aria-label="Load an example program"></select>
+          <textarea id="editor" class="editor" data-testid="editor" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+          <div class="row">
+            <button id="run-btn" class="btn primary" data-testid="run-btn">Run ▸</button>
+            <span class="hint">runs entirely in your browser — curt.wasm, no server</span>
+          </div>
+        </div>
+        <div class="output-col">
+          <div class="label">Output</div>
+          <pre class="output" id="stdout" data-testid="stdout" aria-live="polite"></pre>
+          <div class="label err-label" id="stderr-label" hidden>Diagnostics</div>
+          <pre class="output err" id="stderr" data-testid="stderr" hidden></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- curt vs Python -->
+    <section class="panel" data-panel="vs" data-testid="panel-vs" hidden>
+      <p class="blurb">
+        The same program in curt and Python, counted with the exact o200k_base tokenizer.
+        Lower is cheaper to emit. Measured, not estimated.
+      </p>
+      <div class="vs-summary" id="vs-summary" data-testid="vs-summary"></div>
+      <table class="vs-table" data-testid="vs-table">
+        <thead>
+          <tr><th>Example</th><th class="num">curt</th><th class="num">Python</th><th class="num">savings</th></tr>
+        </thead>
+        <tbody id="vs-body"></tbody>
+      </table>
+    </section>
+
+    <!-- Constrained decode gallery -->
+    <section class="panel" data-panel="gallery" data-testid="panel-gallery" hidden>
+      <p class="blurb" id="gallery-blurb"></p>
+      <div class="gallery-stats" id="gallery-stats" data-testid="gallery-stats"></div>
+      <div class="gallery-grid" id="gallery-grid" data-testid="gallery-grid"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span id="status" data-testid="status">loading curt.wasm…</span>
+    <span class="sep">·</span>
+    <a href="https://github.com/AlrikOlson/curt">source</a>
+  </footer>
+
+  <script type="module" src="./dist/app.bundle.js"></script>
+</body>
+</html>

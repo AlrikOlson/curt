@@ -29,11 +29,11 @@
   - acceptance: curt-mcp 0.1.0 installable via pip from PyPI
   - acceptance: server listed on registry.modelcontextprotocol.io under io.github.therikkening/curt
   - acceptance: README install instructions updated to the published package
-- [ ] **HF Space playground — browser-only cmm (wasm) with live token meter** — RETARGETED 2026-06-11 (think:29): ship as a STATIC Hugging Face Space — Spaces run browser-only apps with no backend (static SDK; Transformers.js precedent), so cmm.wasm (from wasm-embed) + a live o200k token meter + cmm-vs-Python side-by-side runs at zero server cost on the Hub, embedded in the org page. Include a constrained-decoding gallery tab rendering gd-b-oss samples. The launch glamour piece.
-  - deps: wasm-embed, hf-publish
-  - acceptance: Playground runs the canonical corpus in-browser via wasm
-  - acceptance: Live token meter matches tools/tokens output exactly
-  - acceptance: GUI passes /gui-scrutiny (light+dark, mechanical assertions)
+- [!] **playground-deploy — push the static playground to a Hugging Face Space (user credentials)** — The playground/ dir is a ready-to-serve static HF Space (sdk: static, README frontmatter in place; built bundle + curt.wasm committed). Deploying is the credential-gated half, same shape as hf-publish's HF leg: create the Space repo at hf.co/spaces/<user>/curt-playground, then `git push` the playground/ contents (or `hf upload`). PREREQUISITE (user action, the only blocker): HF write token / `hf auth login` and the Space namespace choice. One sitting once credentials exist. Optionally link the live Space from README + the HF org card.
+  - deps: playground
+  - acceptance: Static Space live at hf.co/spaces/<user>/curt-playground, serving index.html
+  - acceptance: In-browser run + token meter work on the hosted Space (smoke check)
+  - acceptance: README/org card links the live playground
 
 ## Done
 
@@ -318,6 +318,11 @@
   - acceptance: saga verdict stated against the pre-registered condition — won/lost/degraded — in one sentence, no hedging
   - acceptance: if any axis lost: gap chunks filed with measured targets; if won: reproduction commands published
   - acceptance: close-out think step (pinned) records the saga's findings and recommends/declines a follow-on distribution saga
+- [x] **HF Space playground — browser-only cmm (wasm) with live token meter** — RETARGETED 2026-06-11 (think:29): ship as a STATIC Hugging Face Space — Spaces run browser-only apps with no backend (static SDK; Transformers.js precedent), so cmm.wasm (from wasm-embed) + a live o200k token meter + cmm-vs-Python side-by-side runs at zero server cost on the Hub, embedded in the org page. Include a constrained-decoding gallery tab rendering gd-b-oss samples. The launch glamour piece.
+  - deps: wasm-embed, hf-publish
+  - acceptance: Playground runs the canonical corpus in-browser via wasm
+  - acceptance: Live token meter matches tools/tokens output exactly
+  - acceptance: GUI passes /gui-scrutiny (light+dark, mechanical assertions)
 - [x] **HYPOTHESIS hx1 — prior-collision (uncanny-valley syntax): failures peak at similar-but-divergent constructs, not alien ones** — ORIGINAL THEORY (think:139), born from the h2h anomaly: haiku failed 100-doors 3/3 by emitting Python's 3-arg range INSIDE curt syntax — the similar surface (curt `range a b` looks like Python's) ACTIVATED the Python prior, which then emitted Python semantics curt violates. CLAIM: per-exposure failure rate on a new language is non-monotone in surface similarity to the model's strongest prior — highest for similar-but-divergent constructs, lower for both identical-semantics and visibly-alien constructs (the uncanny valley of syntax). Adjacent prior cited honestly: arXiv 2503.13620 documents that cross-language confusion occurs; the dose-response shape and the design rule are the new content. PHASE 1 ($0): classify every failure in the frozen lanes (v4/v5 gen, loop, h2h, tourney) by construct similarity class {identical / similar-divergent / alien} with a written rubric, two-rater (model-assisted) classification, per-exposure rates with CIs. PHASE 2 (~$0.5, only if phase 1 supports): targeted probe set of matched constructs across the three classes. REFUTATION: similar-divergent rate not the maximum, or rates monotone in similarity. PAYOFF if confirmed: a syntax admission rule — match the dominant prior exactly or differ visibly, never in between — added to the tournament gates; also explains WHY Postel-slip canonicalization works (it absorbs prior-collisions instead of fighting them).
   - acceptance: similarity rubric written and frozen BEFORE classification; all frozen-lane failures classified; per-exposure rates by class published with honest n
   - acceptance: verdict against the pre-registered non-monotonicity prediction, whatever it shows
@@ -396,5 +401,4 @@
   - acceptance: par proven order-preserving and concurrency-bounded under a stress test
   - acceptance: Budget caps trigger rescuable errors (test per cap type)
   - acceptance: Error-as-prompt fixture: each structured error category round-trips to a one-edit fix
-
 
