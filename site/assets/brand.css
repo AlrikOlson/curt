@@ -118,7 +118,8 @@ section:last-of-type { border-bottom: none; }
 .specimen-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); margin-bottom: var(--s-3); }
 .specimen-title { font-family: var(--mono); font-size: 13.5px; color: var(--dim); }
 .specimen-title b { color: var(--ink); font-weight: 650; }
-.specimen-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: var(--s-4); align-items: start; }
+.specimen-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: var(--s-4); align-items: stretch; }
+.spec-main { display: flex; flex-direction: column; justify-content: space-between; gap: var(--s-4); }
 .code {
   margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r);
   padding: var(--s-5) var(--s-6); font-size: 14.5px; line-height: 1.7; overflow-x: auto;
@@ -145,13 +146,14 @@ section:last-of-type { border-bottom: none; }
 .dots i.on { background: var(--accent); }
 
 /* ---- compare rail ---- */
-.compare { margin-top: var(--s-5); display: flex; flex-wrap: wrap; align-items: center; gap: 0; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--panel); }
-.compare .cell { display: flex; flex-direction: column; gap: 2px; padding: var(--s-4) var(--s-6); border-right: 1px solid var(--line); }
-.compare .cell:last-child { border-right: none; margin-left: auto; }
+.compare { margin-top: 0; display: flex; align-items: stretch; gap: 0; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--panel); }
+.compare .cell { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: var(--s-4) var(--s-5); border-right: 1px solid var(--line); }
+.compare .cell:last-child { border-right: none; align-items: flex-end; text-align: right; }
 .compare .lang { font-family: var(--mono); font-size: 12px; color: var(--dim); text-transform: lowercase; }
 .compare .n { font-family: var(--mono); font-size: 24px; font-weight: 700; }
 .compare .cell.win .n { color: var(--accent-strong); }
 .compare .repro { font-size: 13px; }
+@media (max-width: 560px) { .compare { flex-wrap: wrap; } .compare .cell { flex-basis: 33%; } }
 
 /* ---- proof band (flat, divider-separated — not stat cards) ---- */
 .proof { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: var(--s-7); border-top: 1px solid var(--line); }
