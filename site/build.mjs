@@ -24,7 +24,7 @@ const NAV = [
 ];
 const EXT = [
   { href: "https://github.com/AlrikOlson/curt", label: "GitHub" },
-  { href: "https://huggingface.co/datasets/therikkening/curt-benchmarks", label: "🤗 Data" },
+  { href: "https://huggingface.co/datasets/therikkening/curt-benchmarks", label: "Dataset" },
 ];
 
 function navHtml(active) {

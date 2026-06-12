@@ -3,14 +3,14 @@
   <h1>The tokenizer is the ISA.</h1>
   <p class="lede">curt is statically typed and compiled, with one prime directive: <b>output-token cost</b>. Compiled-language semantics at dynamic-language emission cost — and every claim is measured, never estimated.</p>
   <div class="cta-row">
-    <a class="btn primary" href="/play/">Try it in your browser ▸</a>
+    <a class="btn primary" href="/play/">Try it in your browser</a>
     <a class="btn ghost" href="/language">Read the language</a>
     <a class="btn ghost" href="https://github.com/AlrikOlson/curt">GitHub ↗</a>
   </div>
 
   <div class="specimen" id="specimen" data-testid="specimen">
     <div class="specimen-head">
-      <span class="specimen-title">specimen ▸ <b id="spec-title">tcp uppercase echo</b></span>
+      <span class="specimen-title">specimen · <b id="spec-title">tcp uppercase echo</b></span>
       <span class="dim tiny">o200k_base · real corpus program</span>
     </div>
     <div class="specimen-grid">
@@ -66,15 +66,15 @@ for c in net.listen 8080 { go handle c }</pre>
       <h2>Brevity is the architecture, not a style.</h2>
       <p class="lead">Every construct's o200k cost is measured before it enters the language. Equations and juxtaposition remove definition and call ceremony; untagged unions with full inference remove the ADT tax; a dense single-token stdlib does the rest. Human-readable formatting is a derived view (<code>curt expand</code>), not a property of the source.</p>
       <div class="links-row">
-        <a class="btn ghost" href="/language">The language tour ▸</a>
-        <a class="btn ghost" href="/benchmarks">The measurements ▸</a>
+        <a class="btn ghost" href="/language">The language tour</a>
+        <a class="btn ghost" href="/benchmarks">The measurements</a>
       </div>
     </div>
-    <div class="annotations">
-      <div class="annot lit"><span class="meaning">Capability-gated effects — <code>fs</code> and <code>net</code> are deny-by-default; ungranted ops yield a rescuable <code>err</code>, never a crash.</span></div>
-      <div class="annot"><span class="meaning">Machine diagnostics — single-line JSON with a verbatim <code>fix</code>; agents repair in one turn.</span></div>
-      <div class="annot"><span class="meaning">Grammar shipped as constrained-decoding artifacts — syntax errors become impossible.</span></div>
-      <div class="annot"><span class="meaning">Embeds everywhere — out-of-process (MCP), portable (wasm), in-process (C FFI) — same diagnostics and capabilities across all three.</span></div>
+    <div class="featurelist">
+      <div class="feat"><b>capability model</b><span><code>fs</code> and <code>net</code> are deny-by-default; an ungranted op yields a rescuable <code>err</code>, never a crash.</span></div>
+      <div class="feat"><b>machine diagnostics</b><span>Single-line JSON with a verbatim <code>fix</code> — agents repair in one turn.</span></div>
+      <div class="feat"><b>constrained decoding</b><span>The grammar ships as decoding artifacts, so syntax errors become impossible.</span></div>
+      <div class="feat"><b>embeds everywhere</b><span>Out-of-process (MCP), portable (wasm), in-process (C FFI) — the same diagnostics and capabilities across all three.</span></div>
     </div>
   </div>
 </section>
