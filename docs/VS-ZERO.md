@@ -87,8 +87,8 @@ small), so this is an indication of scale, not a leaderboard entry.
 
 | axis | curt | Zerolang |
 |---|---|---|
-| diagnostic token cost (captured samples) | 41 | 61–114 |
-| diagnostic actionability (captured samples) | verbatim `fix` | `repair: manual-review` |
+| diagnostic token cost (captured samples) | ~44 (typed, post-tournament) | 61–114 |
+| diagnostic actionability (captured samples) | typed `repair{id,summary}` + `want`/`got` (tournament-adopted) | `repair: manual-review` |
 | LLM-token cost as a design gate | yes (o200k-measured admission) | no (lexer-token accounting) |
 | constrained-decoding artifacts | shipped, 0/200 violations measured | none found in repo surface |
 | authoring surface | text (6-token hello) | graph patches (26-token hello) |
@@ -121,3 +121,54 @@ derived view, not a source property) — and Armin Ronacher's "A Language
 For Agents" (lucumr.pocoo.org, 2026-02-09) argues the category is viable.
 Zerolang independently chose the same projection framing from the graph
 side. The category is real; the measurements will decide the rest.*
+
+## The diagnostics tournament (saga stage 3, 2026-06-12)
+
+Zero's bet: stable error codes with **typed repair identifiers**. curt's
+shipped design: a prose `fix` hint (in practice a canned per-error-class
+string). The two designs were tournamented on curt's own repair corpus —
+32 toolchain-verified broken programs (stratified over 26 distinct error
+shapes), each rendered four ways and fed to claude-haiku-4-5 for repair
+(1 sample/cell, ≤2 turns, verified-fix stdout as oracle, transcripts
+frozen in `tools/bench/tourney/`; $0.54 total). The verdict rule was
+pre-registered before any API call.
+
+| rendering | diag o200k | turn-1 repair | final | lane $ |
+|---|---|---|---|---|
+| A — shipped (prose hint) | 38.4 | 18/32 | 21/32 | $0.152 |
+| B — typed (Zero-style steelman) | 43.3 | 21/32 | 25/32 | $0.143 |
+| C — hybrid (typed + hint) | 60.3 | 22/32 | 26/32 | $0.139 |
+| D — typed + replacement payload | 82.8 | **32/32** | 32/32 | $0.107 |
+
+**Verdict: ADOPT — Zero's design direction wins on curt's own corpus,
+and curt shipped it the same day.** Typed fields beat the prose hint by
++9.4pp turn-1 success at 1.13× diagnostic tokens (the pre-registered
+adopt gate was >5pp at ≤1.15×); the hybrid's extra prose added one cell
+at 1.57× cost and failed its gate. curt's diagnostics now emit
+`want`/`got`/`symbol`/`callee` typed fields plus a stable
+`repair{id,summary}` operation (diag.rs, SPEC §7) — at single-line curt
+economy (~44 tokens vs the 114 of Zero's captured multi-field form).
+Two honest qualifiers: the margin is 3 cells at n=32, single-sample,
+one model; and the adopted shape keeps SPEC §7's original `want`/`got`
+vocabulary rather than arm B's `expected`/`actual` keys (the measured
+treatment was typed-vs-prose, not key spelling).
+
+**The headline is arm D.** When the diagnostic carries a rustc-style
+machine-applicable replacement (`repair.replacement: [{line, new}]`),
+repair is **32/32 single-shot — and the cheapest lane**, because turn
+count dominates diagnostic size in loop dollars. D's payloads were
+derived from the verified fixes (an oracle-assisted upper bound, not
+shipped capability), so the number bounds the prize: a compiler that
+synthesizes actual replacements converts ~34pp of residual repair
+failure into first-turn success. That work is filed on the roadmap
+(`fix-synthesis`). Neither Zero's `repair.id: "manual-review"` (its
+captured behavior) nor curt's pre-tournament hints come close to this
+bound.
+
+Found while building the tournament, and recorded in the same spirit:
+curt's *runtime* error path emits invalid JSON when the message embeds
+quotes (nested-diagnostic case, `main.rs`; filed as `diag-esc-runtime`)
+— a diagnostic that breaks parsers forfeits any arms race, ours
+included. Prior-art note: we found no published measurement of typed
+vs prose diagnostic feedback for LLM repair (searched 2026-06-12); the
+frozen lanes above appear to be the first.

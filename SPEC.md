@@ -209,9 +209,14 @@ arena/region annotations (§13), never required.
   Measured in v0.1 drafts at 4 tokens vs Python's 24-token try/except-retry
   shape.
 - **Diagnostics are prompts** (machine-first): single-line JSON —
-  `{err:"type_mismatch", at:"19:7", want:"float", got:"str", fix:"insert .float after w"}`
-  — designed to be fed back verbatim for one-edit self-repair. Every
-  diagnostic category ships a golden fixture in interp-mvp.
+  `{"err":"type_mismatch","at":"19:7","want":"float","got":"str","repair":{"id":"align-types","summary":"make the operand types agree"}}`
+  — designed to be fed back verbatim for one-edit self-repair. Typed
+  fields (`want`/`got`, `symbol`, `callee`) are emitted where mechanically
+  derivable; prose `msg` + `fix` are retained only where no typed
+  derivation exists; a typed `repair{id,summary}` operation is always
+  present. Shape adopted 2026-06-12 from a 32-error × 4-rendering repair
+  tournament (typed fields beat the canned prose hint +9.4pp turn-1
+  repair success at 1.13× tokens; `tools/bench/tourney/`).
 
 ## 8. Exports and FFI
 
