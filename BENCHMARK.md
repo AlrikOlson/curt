@@ -374,3 +374,37 @@ The instrument is therefore useful for what it was most needed for —
 screening ceremony-heavy designs before any API spend — and wrong in a
 way that teaches: for dense languages, measure absolute ceremony cost,
 not ceremony share.
+
+## Prior-collision: a hypothesis refuted by its own pre-registration (2026-06-12)
+
+Hypothesis ("uncanny-valley syntax"): failure rates on a new language
+peak where constructs are similar-but-divergent from the model's
+strongest prior (Python), not where they are alien — motivated by a
+real anomaly (haiku emitted Python's three-argument `range` inside curt
+syntax in 3 of 3 head-to-head samples). Rubric (20 construct families
+pre-assigned to identical / similar-divergent / alien), prediction, and
+refutation conditions were frozen before counting; 354 first-turn
+generated programs from the frozen lanes, 88 toolchain failures
+attributed by diagnostic line (`tools/bench/priorcollision.py`, $0).
+
+| similarity class | exposed lines | attributed failures | rate |
+|---|---|---|---|
+| identical | 1,180 | 54 | 4.58% |
+| similar-divergent | 1,203 | 82 | 6.82% |
+| alien | 1,233 | 88 | 7.14% |
+
+**Refuted.** Both pre-registered refutation conditions triggered: the
+alien class rate is not below the similar-divergent rate, and class
+separation is 1.6× (below the 2× floor). Failure risk is weakly
+monotone in unfamiliarity, not valley-shaped. The informative residue
+is at family granularity, where within-class variance dwarfs the class
+effect (0.8%–13.9% inside the *identical* class alone): the high-risk
+families are `for-in` (13.9%), lambda arrows (12.3%), pipelines
+(11.1%), and `range` (10.0%) — construct-specific footguns that cut
+across similarity classes, consistent with the earlier footgun-anatomy
+and idiom-density findings. No syntax-admission rule is licensed by
+this evidence; the actionable artifact is the family-level footgun
+table, which now has per-exposure rates instead of anecdotes. Known
+approximations stated in the script header: line-level attribution
+counts every family on a multi-family line, the rubric is single-rater,
+and failures are re-derived under the current toolchain.
